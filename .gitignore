@@ -1,0 +1,13 @@
+.metadata
+.settings
+[Rr]elease
+[Dd]ebug
+*.launch
+
+# VSCode: Embedded Tools
+vcpkg-configuration.json
+CMakePresets.json
+CMakeLists.txt
+.vs
+.vscode
+cmake
