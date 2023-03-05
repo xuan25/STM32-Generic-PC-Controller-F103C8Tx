@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : usbd_custom_hid_if.c
-  * @version        : v2.0_Cube
-  * @brief          : USB Device Custom HID interface file.
+  * @file           : usbd_midi_if.c
+  * @version        : v1.0_Cube
+  * @brief          : USB Device MIDI interface file.
   ******************************************************************************
   * @attention
   *
@@ -19,7 +19,8 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbd_custom_hid_if.h"
+#include "usbd_midi_if.h"
+#include "usbd_midi.h"
 
 /* USER CODE BEGIN INCLUDE */
 
@@ -39,11 +40,11 @@
   * @{
   */
 
-/** @addtogroup USBD_CUSTOM_HID
+/** @addtogroup USBD_MIDI
   * @{
   */
 
-/** @defgroup USBD_CUSTOM_HID_Private_TypesDefinitions USBD_CUSTOM_HID_Private_TypesDefinitions
+/** @defgroup USBD_MIDI_Private_TypesDefinitions USBD_MIDI_Private_TypesDefinitions
   * @brief Private types.
   * @{
   */
@@ -56,7 +57,7 @@
   * @}
   */
 
-/** @defgroup USBD_CUSTOM_HID_Private_Defines USBD_CUSTOM_HID_Private_Defines
+/** @defgroup USBD_MIDI_Private_Defines USBD_MIDI_Private_Defines
   * @brief Private defines.
   * @{
   */
@@ -69,7 +70,7 @@
   * @}
   */
 
-/** @defgroup USBD_CUSTOM_HID_Private_Macros USBD_CUSTOM_HID_Private_Macros
+/** @defgroup USBD_MIDI_Private_Macros USBD_MIDI_Private_Macros
   * @brief Private macros.
   * @{
   */
@@ -82,19 +83,10 @@
   * @}
   */
 
-/** @defgroup USBD_CUSTOM_HID_Private_Variables USBD_CUSTOM_HID_Private_Variables
+/** @defgroup USBD_MIDI_Private_Variables USBD_MIDI_Private_Variables
   * @brief Private variables.
   * @{
   */
-
-/** Usb HID report descriptor. */
-__ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DESC_SIZE] __ALIGN_END =
-{
-  /* USER CODE BEGIN 0 */
-  0x00,
-  /* USER CODE END 0 */
-  0xC0    /*     END_COLLECTION	             */
-};
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
 
@@ -104,7 +96,7 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
   * @}
   */
 
-/** @defgroup USBD_CUSTOM_HID_Exported_Variables USBD_CUSTOM_HID_Exported_Variables
+/** @defgroup USBD_MIDI_Exported_Variables USBD_MIDI_Exported_Variables
   * @brief Public variables.
   * @{
   */
@@ -117,68 +109,33 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
   * @}
   */
 
-/** @defgroup USBD_CUSTOM_HID_Private_FunctionPrototypes USBD_CUSTOM_HID_Private_FunctionPrototypes
+/** @defgroup USBD_MIDI_Private_FunctionPrototypes USBD_MIDI_Private_FunctionPrototypes
   * @brief Private functions declaration.
   * @{
   */
 
-static int8_t CUSTOM_HID_Init_FS(void);
-static int8_t CUSTOM_HID_DeInit_FS(void);
-static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state);
+static int8_t MIDI_Init_FS(void);
+static int8_t MIDI_DeInit_FS(void);
+static int8_t MIDI_OutEvent_FS(uint8_t event_idx, uint8_t state);
 
 /**
   * @}
   */
 
-USBD_CUSTOM_HID_ItfTypeDef USBD_CustomHID_fops_FS =
-{
-  CUSTOM_HID_ReportDesc_FS,
-  CUSTOM_HID_Init_FS,
-  CUSTOM_HID_DeInit_FS,
-  CUSTOM_HID_OutEvent_FS
-};
+// USBD_MIDI_ItfTypeDef USBD_MIDI_fops_FS =
+// {
+//   MIDI_ReportDesc_FS,
+//   MIDI_Init_FS,
+//   MIDI_DeInit_FS,
+//   MIDI_OutEvent_FS
+// };
 
-/** @defgroup USBD_CUSTOM_HID_Private_Functions USBD_CUSTOM_HID_Private_Functions
+/** @defgroup USBD_MIDI_Private_Functions USBD_MIDI_Private_Functions
   * @brief Private functions.
   * @{
   */
 
 /* Private functions ---------------------------------------------------------*/
-
-/**
-  * @brief  Initializes the CUSTOM HID media low layer
-  * @retval USBD_OK if all operations are OK else USBD_FAIL
-  */
-static int8_t CUSTOM_HID_Init_FS(void)
-{
-  /* USER CODE BEGIN 4 */
-  return (USBD_OK);
-  /* USER CODE END 4 */
-}
-
-/**
-  * @brief  DeInitializes the CUSTOM HID media low layer
-  * @retval USBD_OK if all operations are OK else USBD_FAIL
-  */
-static int8_t CUSTOM_HID_DeInit_FS(void)
-{
-  /* USER CODE BEGIN 5 */
-  return (USBD_OK);
-  /* USER CODE END 5 */
-}
-
-/**
-  * @brief  Manage the CUSTOM HID class events
-  * @param  event_idx: Event index
-  * @param  state: Event state
-  * @retval USBD_OK if all operations are OK else USBD_FAIL
-  */
-static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
-{
-  /* USER CODE BEGIN 6 */
-  return (USBD_OK);
-  /* USER CODE END 6 */
-}
 
 /* USER CODE BEGIN 7 */
 /**
@@ -188,11 +145,26 @@ static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
   * @retval USBD_OK if all operations are OK else USBD_FAIL
   */
 /*
-static int8_t USBD_CUSTOM_HID_SendReport_FS(uint8_t *report, uint16_t len)
+static int8_t USBD_MIDI_SendReport_FS(uint8_t *report, uint16_t len)
 {
-  return USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, report, len);
+  return USBD_MIDI_SendReport(&hUsbDeviceFS, report, len);
 }
 */
+
+uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cable_number, uint8_t channel_number, uint8_t controller_number, uint8_t new_value) {
+  uint8_t code_index_number = 0xB;
+  uint8_t message_number = 0xB;
+  
+  uint8_t cc_buffer[4] = {
+    cable_number << 4 | code_index_number,
+    message_number << 4 | channel_number,
+    controller_number,
+    new_value
+  };
+  
+  return USBD_MIDI_SendReport(&hUsbDeviceFS, cc_buffer, 4);
+}
+
 /* USER CODE END 7 */
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
