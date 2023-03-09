@@ -71,6 +71,8 @@ void Error_Handler(void);
 #define ENC_2_B_GPIO_Port GPIOB
 #define ENC_2_P_Pin GPIO_PIN_14
 #define ENC_2_P_GPIO_Port GPIOB
+#define STATE_LED_Pin GPIO_PIN_15
+#define STATE_LED_GPIO_Port GPIOB
 #define COL_3_Pin GPIO_PIN_15
 #define COL_3_GPIO_Port GPIOA
 #define COL_2_Pin GPIO_PIN_3
