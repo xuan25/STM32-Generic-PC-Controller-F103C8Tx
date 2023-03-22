@@ -24,8 +24,8 @@ typedef struct GPIOKey {
   uint16_t GPIO_Pin;
 } GPIOKey;
 
-void Key_Init(GPIOKey* gpio_key);
-void Key_Scan(GPIOKey* gpio_key);
+void GPIOKey_Init(GPIOKey* gpio_key);
+void GPIOKey_Scan(GPIOKey* gpio_key);
 void Key_Update(Key* key, uint8_t level);
 
 #ifdef __cplusplus

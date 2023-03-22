@@ -212,7 +212,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  Key_Init(gpio_key_def);
+  GPIOKey_Init(gpio_key_def);
   Keymat_Init(keymat_rows_def, keymat_cols_def, keymat_keys_def, NUM_MATKEYS);
   Encoder_Init(encoder_def);
   /* USER CODE END 2 */
@@ -238,7 +238,7 @@ int main(void)
     // key matrix test
     Keymat_Scan();
     // single key test
-    Key_Scan(gpio_key_def);
+    GPIOKey_Scan(gpio_key_def);
     // encoder test
     Encoder_Scan(encoder_def);
   }
