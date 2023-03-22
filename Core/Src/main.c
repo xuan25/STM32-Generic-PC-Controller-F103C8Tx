@@ -25,6 +25,9 @@
 
 #include "usbd_hid_if.h"
 #include "usbd_midi_if.h"
+#include "key.h"
+#include "keymat.h"
+#include "encoder.h"
 
 /* USER CODE END Includes */
 
@@ -35,6 +38,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define KEY_PRESSED  GPIO_PIN_SET
+#define KEY_RELEASED GPIO_PIN_RESET
+
+#define NUM_MATKEYS 1u
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,6 +57,15 @@ DMA_HandleTypeDef hdma_tim2_ch2_ch4;
 
 /* USER CODE BEGIN PV */
 
+GPIO_Pin keymat_rows_def[KEYMAT_ROWS];
+GPIO_Pin keymat_cols_def[KEYMAT_COLS];
+MatKey* keymat_keys_def[NUM_MATKEYS];
+GPIOKey* gpio_key_def;
+Encoder* encoder_def;
+
+uint16_t ctrlState = 0x0000;
+uint8_t midiState = 0xff;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,10 +75,107 @@ static void MX_DMA_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
+void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState);
+void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState) {
+  if (newState == KEY_PRESSED) {
+    HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+    ctrlState = ctrlState | CTRL_PLAY_PAUSE;
+    USBD_HID_SendCtrlReport_FS(ctrlState);
+  } else {
+    HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+    ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
+    USBD_HID_SendCtrlReport_FS(ctrlState);
+  }
+}
+
+void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge) {
+  if (direction > 0) {
+    HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+    if(midiState < 0xff) {
+      midiState++;
+    }
+    USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
+  } else {
+    HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+    if(midiState > 0x00) {
+      midiState--;
+    }
+    USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
+  }
+}
+
+GPIO_Pin keymat_rows_def[KEYMAT_ROWS] = {
+  {
+    .GPIOx = ROW_0_GPIO_Port,
+    .GPIO_Pin = ROW_0_Pin,
+  },
+  {
+    .GPIOx = ROW_1_GPIO_Port,
+    .GPIO_Pin = ROW_1_Pin,
+  },
+  {
+    .GPIOx = ROW_2_GPIO_Port,
+    .GPIO_Pin = ROW_2_Pin,
+  },
+  {
+    .GPIOx = ROW_3_GPIO_Port,
+    .GPIO_Pin = ROW_3_Pin,
+  }
+};
+
+GPIO_Pin keymat_cols_def[KEYMAT_COLS] = {
+  {
+    .GPIOx = COL_0_GPIO_Port,
+    .GPIO_Pin = COL_0_Pin,
+  },
+  {
+    .GPIOx = COL_1_GPIO_Port,
+    .GPIO_Pin = COL_1_Pin,
+  },
+  {
+    .GPIOx = COL_2_GPIO_Port,
+    .GPIO_Pin = COL_2_Pin,
+  },
+  {
+    .GPIOx = COL_3_GPIO_Port,
+    .GPIO_Pin = COL_3_Pin,
+  }
+};
+
+MatKey* keymat_keys_def[NUM_MATKEYS] = {
+  &((MatKey){
+    .Key = &((Key){
+      .State = KEY_RELEASED,
+      .OnStateChanged = OnKeyStateChanged,
+    }),
+    .X = 0,
+    .Y = 0,
+  }),
+};
+
+GPIOKey* gpio_key_def = &((GPIOKey){
+  .Key = &((Key){
+    .State = KEY_RELEASED,
+    .OnStateChanged = OnKeyStateChanged,
+  }),
+  .GPIOx = ENC_2_P_GPIO_Port,
+  .GPIO_Pin = ENC_2_P_Pin,
+});
+
+Encoder* encoder_def = &((Encoder){
+  .GPIOx_A = ENC_1_A_GPIO_Port,
+  .GPIO_Pin_A = ENC_1_A_Pin,
+  .GPIOx_B = ENC_1_B_GPIO_Port,
+  .GPIO_Pin_B = ENC_1_B_Pin,
+  .OnTicked = OnEncoderTicked,
+});
 
 /* USER CODE END 0 */
 
@@ -97,6 +212,9 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+  Key_Init(gpio_key_def);
+  Keymat_Init(keymat_rows_def, keymat_cols_def, keymat_keys_def, NUM_MATKEYS);
+  Encoder_Init(encoder_def);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,6 +224,23 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+    // USB test
+    // HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+    // // USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, 0x00);
+    // // USBD_HID_SendCtrlReport_FS(CTRL_PLAY_PAUSE);
+    // HAL_Delay(500);
+    // HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+    // // USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, 0xff);
+    // // USBD_HID_SendCtrlReport_FS(0);
+    // HAL_Delay(500);
+
+    // key matrix test
+    Keymat_Scan();
+    // single key test
+    Key_Scan(gpio_key_def);
+    // encoder test
+    Encoder_Scan(encoder_def);
   }
   /* USER CODE END 3 */
 }
