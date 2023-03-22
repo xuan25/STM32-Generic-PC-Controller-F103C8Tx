@@ -7,20 +7,24 @@ extern "C" {
 
 #include "stm32f1xx_hal.h"
 
+#define ENCODER_DE_JITTERING_MS 0u
+
 typedef struct Encoder {
   GPIO_TypeDef* GPIOx_A;
   uint16_t GPIO_Pin_A;
   GPIO_TypeDef* GPIOx_B;
   uint16_t GPIO_Pin_B;
+#if ENCODER_DE_JITTERING_MS > 0
   uint32_t LastLevelChangedMs;
   uint8_t LastChangedLevelA;
   uint8_t LastChangedLevelB;
+#endif
   uint8_t LastStateA;
   uint8_t LastStateB;
   void (*OnTicked)(struct Encoder* sender, int8_t direction, uint8_t edge);
 } Encoder;
 
-#define ENCODER_DE_JITTERING_MS 0u
+
 
 #define ENCODER_EDGE_A 0u
 #define ENCODER_EDGE_B 1u

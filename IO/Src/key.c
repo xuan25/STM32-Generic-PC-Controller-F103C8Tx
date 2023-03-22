@@ -2,10 +2,11 @@
 
 void Key_Init(GPIOKey* gpio_key) {
   uint8_t keyLevel = HAL_GPIO_ReadPin(gpio_key->GPIOx, gpio_key->GPIO_Pin);
-  uint32_t tickMs = HAL_GetTick();
-  
   gpio_key->Key->LastChangedLevel = keyLevel;
+#if KEY_DE_JITTERING_MS > 0
+  uint32_t tickMs = HAL_GetTick();
   gpio_key->Key->LastLevelChangedMs = tickMs;
+#endif
 }
 
 void Key_Scan(GPIOKey* gpio_key) {
@@ -14,7 +15,7 @@ void Key_Scan(GPIOKey* gpio_key) {
 }
 
 void Key_Update(Key* key, uint8_t level) {
-  // Pressed level
+#if KEY_DE_JITTERING_MS > 0
   uint32_t tickMs = HAL_GetTick();
   // Level update
   if(key->LastChangedLevel != level) {
@@ -27,4 +28,12 @@ void Key_Update(Key* key, uint8_t level) {
     key->State = level;
     (*key->OnStateChanged)(key, oldState, level);
   }
+#else
+  // State update
+  if(key->State != level) {
+    uint8_t oldState = key->State;
+    key->State = level;
+    (*key->OnStateChanged)(key, oldState, level);
+  }
+#endif
 }
