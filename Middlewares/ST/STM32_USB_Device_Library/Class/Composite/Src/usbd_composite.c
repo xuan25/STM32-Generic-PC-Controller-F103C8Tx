@@ -600,7 +600,13 @@ static uint8_t *USBD_COMPOSITE_DeviceQualifierDescriptor (uint16_t *length)
   */
 static uint8_t  USBD_COMPOSITE_EP0_RxReady (USBD_HandleTypeDef *pdev)
 {
-	return USBD_HID_EP0_RxReady(pdev);
+  uint8_t res;
+  
+  if (res = USBD_HID_EP0_RxReady(pdev) != USBD_OK) {
+    Error_Handler();
+  }
+
+  return USBD_OK;
 }
 
 /**
