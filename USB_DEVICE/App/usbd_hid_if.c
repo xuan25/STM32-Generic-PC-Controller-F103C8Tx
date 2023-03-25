@@ -91,6 +91,38 @@
 __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIGN_END =
 {
   /* USER CODE BEGIN 0 */
+
+  // ==== Vender Report ====
+  /*                                     == Report Structure ==
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |  0x00  |                                     Report ID (1)                                     |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x08  |                                         Data                                          |
+    |  ...   |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+
+  */
+  0x06, 0x00, 0xff,              // Usage Page (Vender)
+  0x09, 0x01,                    // Usage (Vender)
+  0xa1, 0x01,                    // Collection (Application)
+  0x85, VENDER_REPORT_ID,           //   REPORT_ID (1)
+
+  0x09, 0x01,                    //   Usage (Vender)
+  0x15, 0x00,                    //   Logical Minimum (0)
+  0x26, 0xff, 0x00,              //   Logical Maximum (255) (1 byte)
+  0x75, 0x08,                    //   Report Size (8) (1 byte = 8 bit)
+  0x95, VENDER_REPORT_LENGTH,       //   Report Count (63)
+  0x81, 0x02,                    //   Input (Data, Variable, Abs)
+  0x09, 0x01,                    //   Usage (Vender)
+  0x95, VENDER_REPORT_LENGTH,       //   Report Count (63)
+  0x91, 0x02,                    //   Output (Data, Variable, Abs)
+  0x09, 0x01,                    //   Usage (Vender)
+  0x95, VENDER_REPORT_LENGTH,       //   Report Count (63)
+  0xb1, 0x02,                    //   Feature (Data, Variable, Abs)
+
+  0xc0,                          // End Collection
   
   // ==== Consumer Control ====
   /*                                     == Report Structure ==
@@ -230,6 +262,8 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
 
+uint8_t venderBuffer[1 + VENDER_REPORT_LENGTH];
+
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -256,7 +290,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 static int8_t HID_Init_FS(void);
 static int8_t HID_DeInit_FS(void);
-static int8_t HID_OutEvent_FS(uint8_t event_idx, uint8_t state);
+static int8_t HID_OutEvent_FS(uint8_t* buffer);
 
 /**
   * @}
@@ -305,9 +339,16 @@ static int8_t HID_DeInit_FS(void)
   * @param  state: Event state
   * @retval USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
+static int8_t HID_OutEvent_FS(uint8_t* buffer)
 {
   /* USER CODE BEGIN 6 */
+  uint8_t reportId = buffer[0];
+  if (reportId == VENDER_REPORT_ID) {
+    venderBuffer[0] = VENDER_REPORT_ID;
+    memcpy(venderBuffer + 1, buffer + 1, VENDER_REPORT_LENGTH);
+    while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, 1 + VENDER_REPORT_LENGTH) == USBD_BUSY);
+  }
+  
   return (USBD_OK);
   /* USER CODE END 6 */
 }

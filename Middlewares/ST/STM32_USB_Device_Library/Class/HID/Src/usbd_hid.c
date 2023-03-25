@@ -624,8 +624,7 @@ uint8_t  USBD_HID_DataOut(USBD_HandleTypeDef *pdev,
 
   USBD_HID_HandleTypeDef     *hhid = (USBD_HID_HandleTypeDef *)pdev->pClassData;
 
-  ((USBD_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
-                                                            hhid->Report_buf[1]);
+  ((USBD_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf);
 
   USBD_LL_PrepareReceive(pdev, HID_EPOUT_ADDR, hhid->Report_buf,
                          USBD_HID_OUTREPORT_BUF_SIZE);
@@ -645,8 +644,7 @@ uint8_t USBD_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
 
   if (hhid->IsReportAvailable == 1U)
   {
-    ((USBD_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
-                                                              hhid->Report_buf[1]);
+    ((USBD_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf);
     hhid->IsReportAvailable = 0U;
   }
 

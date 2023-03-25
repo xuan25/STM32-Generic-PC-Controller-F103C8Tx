@@ -50,6 +50,8 @@
 
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
+#define VENDER_REPORT_ID        1u
+#define VENDER_REPORT_LENGTH    0x40u - 1   // reserve one byte for report ID
 
 #define CTRL_REPORT_ID      2u
 #define CTRL_REPORT_LENGTH  3u
@@ -122,6 +124,7 @@ extern USBD_HID_ItfTypeDef USBD_HID_fops_FS;
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 
+uint8_t USBD_HID_OutEvent_FS(uint8_t* buffer);
 uint8_t USBD_HID_SendCtrlReport_FS(uint16_t ctrl);
 uint8_t USBD_HID_SendKeyboardReport_FS(uint8_t modifier, uint8_t oem, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6);
 uint8_t USBD_HID_SendMouseReport_FS(uint8_t buttons, uint8_t x, uint8_t y, uint8_t wheel);
