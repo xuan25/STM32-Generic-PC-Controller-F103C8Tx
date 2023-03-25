@@ -97,30 +97,28 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (1)                                     |
+    |  0x00  |                                  Report ID (Vender)                                   |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x08  |                                         Data                                          |
+    |  0x01  |                                         Data                                          |
     |  ...   |                                                                                       |
+    |  0x40  |                                                                                       |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
 
   */
   0x06, 0x00, 0xff,              // Usage Page (Vender)
   0x09, 0x01,                    // Usage (Vender)
   0xa1, 0x01,                    // Collection (Application)
-  0x85, VENDER_REPORT_ID,           //   REPORT_ID (1)
+  0x85, VENDER_REPORT_ID,        //   REPORT_ID (1)
 
   0x09, 0x01,                    //   Usage (Vender)
   0x15, 0x00,                    //   Logical Minimum (0)
   0x26, 0xff, 0x00,              //   Logical Maximum (255) (1 byte)
   0x75, 0x08,                    //   Report Size (8) (1 byte = 8 bit)
-  0x95, VENDER_REPORT_LENGTH,       //   Report Count (63)
+  0x95, VENDER_REPORT_LENGTH,    //   Report Count (63)
   0x81, 0x02,                    //   Input (Data, Variable, Abs)
   0x09, 0x01,                    //   Usage (Vender)
-  0x95, VENDER_REPORT_LENGTH,       //   Report Count (63)
+  0x95, VENDER_REPORT_LENGTH,    //   Report Count (63)
   0x91, 0x02,                    //   Output (Data, Variable, Abs)
-  0x09, 0x01,                    //   Usage (Vender)
-  0x95, VENDER_REPORT_LENGTH,       //   Report Count (63)
-  0xb1, 0x02,                    //   Feature (Data, Variable, Abs)
 
   0xc0,                          // End Collection
   
@@ -129,11 +127,11 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (2)                                     |
+    |  0x00  |                             Report ID (Consumer Control)                              |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x08  | Vol Inc  | Vol Dec  |   Mute   |Play/Pause|   Next   | Previous | Reserved | Reserved |
+    |  0x01  | Vol Inc  | Vol Dec  |   Mute   |Play/Pause|   Next   | Previous | Reserved | Reserved |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x10  | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+    |  0x02  | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
   */
   0x05, 0x0c,                    // Usage Page (Consumer Devices)
@@ -160,23 +158,23 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |  bit   |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (3)                                     |
+    |  0x00  |                                 Report ID (Keyboard)                                  |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x08  |                                       Modifiers                                       |
+    |  0x01  |                                       Modifiers                                       |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x10  |                                          OEM                                          |
+    |  0x02  |                                          OEM                                          |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x18  |                                         Key 1                                         |
+    |  0x03  |                                         Key 1                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x20  |                                         Key 2                                         |
+    |  0x04  |                                         Key 2                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x28  |                                         Key 3                                         |
+    |  0x05  |                                         Key 3                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x30  |                                         Key 4                                         |
+    |  0x06  |                                         Key 4                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x38  |                                         Key 5                                         |
+    |  0x07  |                                         Key 5                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x40  |                                         Key 6                                         |
+    |  0x08  |                                         Key 6                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
   */
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)  // 47
@@ -213,15 +211,15 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (4)                                     |
+    |  0x00  |                                   Report ID (Mouse)                                   |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x08  | Button 1 | Button 2 | Button 3 | Reserved | Reserved | Reserved | Reserved | Reserved |
+    |  0x01  | Button 1 | Button 2 | Button 3 | Reserved | Reserved | Reserved | Reserved | Reserved |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x10  |                                           X                                           |
+    |  0x02  |                                           X                                           |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x18  |                                           Y                                           |
+    |  0x03  |                                           Y                                           |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x20  |                                         Wheel                                         |
+    |  0x04  |                                         Wheel                                         |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
   */
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)  // 54
@@ -255,12 +253,274 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x81, 0x06,                    //     INPUT (Data,Var,Rel)
 
   0xc0,                          //   END_COLLECTION
+  0xc0,                          // END_COLLECTION
+
+
+  // ==== Windows radial controller ====
+  /*                                     == Report Structure ==
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |  0x00  |                            Report ID (Radial Controller)                              |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x01  |  Button  |                              Dial                                          |
+    +--------+----------+                                                                            +
+    |  0x02  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x03  |                                           X                                           |
+    +--------+                                                                                       +
+    |  0x04  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x05  |                                           Y                                           |
+    +--------+                                                                                       +
+    |  0x06  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x07  |                                         Width                                         |
+    +--------+                                                                                       +
+    |  0x08  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+  */
+    /*                                     == Report Structure (Feature) ==
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |  0x00  |                             Report ID (Haptic Feedback)                               |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x01  |                                     Auto Trigger                                      |
+    +--------+                                                                                       +
+    |  0x02  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x03  |                           Auto Trigger Associated Control                             |
+    +--------+                                                                                       +
+    |  0x04  |                                                                                       |
+    +--------+                                                                                       +
+    |  0x05  |                                                                                       |
+    +--------+                                                                                       +
+    |  0x06  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x07  |                                       Intensity                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x08  |                                     Repeat Count                                      |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x09  |                                   Retrigger Period                                    |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x0a  |                                 Waveform Cutoff Time                                  |
+    +--------+                                                                                       +
+    |  0x0b  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x0c  |                                Waveform List Ordinal 3                                |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x0d  |                                Waveform List Ordinal 4                                |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x0e  |                                Duration List Ordinal 3                                |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x0f  |                                Duration List Ordinal 4                                |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+
+  */
+   /*                                     == Report Structure (Output) ==
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |  0x00  |                             Report ID (Haptic Feedback)                               |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x01  |                                    Manual Trigger                                     |
+    +--------+                                                                                       +
+    |  0x02  |                                                                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x03  |                                       Intensity                                       |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x04  |                                     Repeat Count                                      |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x05  |                                   Retrigger Period                                    |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+
+  */
+  0x05, 0x01,                     // USAGE_PAGE (Generic Desktop)          
+  0x09, 0x0e,                     // USAGE (System Multi-Axis Controller)                      
+  0xa1, 0x01,                     // COLLECTION (Application)
+
+  0x85, RADIAL_REPORT_ID,         //   REPORT_ID (Radial Controller)                
+  0x05, 0x0d,                     //   USAGE_PAGE (Digitizers)
+  0x09, 0x21,                     //   USAGE (Puck)                 
+  0xa1, 0x00,                     //   COLLECTION (Physical)
+  0x05, 0x09,                     //     USAGE_PAGE (Buttons)           
+  0x09, 0x01,                     //     USAGE (Button 1)
+  0x95, 0x01,                     //     REPORT_COUNT (1)
+  0x75, 0x01,                     //     REPORT_SIZE (1)   
+  0x15, 0x00,                     //     LOGICAL_MINIMUM (0)      
+  0x25, 0x01,                     //     LOGICAL_MAXIMUM (1)         
+  0x81, 0x02,                     //     INPUT (Data,Var,Abs)
+  0x05, 0x01,                     //     USAGE_PAGE (Generic Desktop)          
+  0x09, 0x37,                     //     USAGE (Dial)
+  0x95, 0x01,                     //     REPORT_COUNT (1)
+  0x75, 0x0f,                     //     REPORT_SIZE (15)  
+  0x55, 0x0f,                     //     UNIT_EXPONENT (-1)           
+  0x65, 0x14,                     //     UNIT (Degrees, English Rotation)        
+  0x36, 0xf0, 0xf1,               //     PHYSICAL_MINIMUM (-3600)         
+  0x46, 0x10, 0x0e,               //     PHYSICAL_MAXIMUM (3600)      
+  0x16, 0xf0, 0xf1,               //     LOGICAL_MINIMUM (-3600)      
+  0x26, 0x10, 0x0e,               //     LOGICAL_MAXIMUM (3600)        
+  0x81, 0x06,                     //     INPUT (Data,Var,Rel)  
+  0x09, 0x30,                     //     USAGE (X)
+  0x75, 0x10,                     //     REPORT_SIZE (16)                    
+  0x55, 0x0d,                     //     UNIT_EXPONENT (-3)           
+  0x65, 0x13,                     //     UNIT (Inch,EngLinear)        
+  0x35, 0x00,                     //     PHYSICAL_MINIMUM (0)         
+  0x46, 0xc0, 0x5d,               //     PHYSICAL_MAXIMUM (24000)      
+  0x15, 0x00,                     //     LOGICAL_MINIMUM (0)      
+  0x26, 0xff, 0x7f,               //     LOGICAL_MAXIMUM (32767)      
+  0x81, 0x02,                     //     INPUT (Data,Var,Abs)         
+  0x09, 0x31,                     //     USAGE (Y)                    
+  0x46, 0xb0, 0x36,               //     PHYSICAL_MAXIMUM (14000)      
+  0x81, 0x02,                     //     INPUT (Data,Var,Abs)        
+  0x05, 0x0d,                     //     USAGE_PAGE (Digitizers)
+  0x09, 0x48,                     //     USAGE (Width)
+  0x36, 0xb8, 0x0b,               //     PHYSICAL_MINIMUM (3000)
+  0x46, 0xb8, 0x0b,               //     PHYSICAL_MAXIMUM (3000)
+  0x16, 0xb8, 0x0b,               //     LOGICAL_MINIMUM (3000)    
+  0x26, 0xb8, 0x0b,               //     LOGICAL_MAXIMUM (3000)      
+  0x81, 0x03,                     //     INPUT (Cnst,Var,Abs)                               
+  0xc0,                           //   END_COLLECTION
+
+  0x85, RADIAL_HAPTIC_REPORT_ID,  //   REPORT_ID (Haptic Feedback)                
+  0x05, 0x0e,                     //   USAGE_PAGE (Haptics)          
+  0x09, 0x01,                     //   USAGE (Simple Haptic Controller)                      
+  0xa1, 0x02,                     //   COLLECTION (Logical)
+  0x09, 0x20,                     //     USAGE (Auto Trigger)
+  0x16, 0x00, 0x10,               //     LOGICAL_MINIMUM (0x1000)    
+  0x26, 0x04, 0x10,               //     LOGICAL_MAXIMUM (0x1004)
+  0x95, 0x01,                     //     REPORT_COUNT (1)
+  0x75, 0x10,                     //     REPORT_SIZE (16)
+  0xb1, 0x02,                     //     FEATURE (Data,Var,Abs)
+  0x09, 0x21,                     //     USAGE (Manual Trigger)
+  0x91, 0x02,                     //     OUTPUT (Data,Var,Abs)
+  0x09, 0x22,                     //     USAGE (Auto Trigger Associated Control)
+  0x17, 0x37, 0x00, 0x01, 0x00,   //     LOGICAL_MINIMUM (0x00010037)    
+  0x27, 0x37, 0x00, 0x01, 0x00,   //     LOGICAL_MAXIMUM (0x00010037)
+  0x95, 0x01,                     //     REPORT_COUNT (1)
+  0x75, 0x20,                     //     REPORT_SIZE (32)
+  0xb1, 0x03,                     //     FEATURE (Cnst,Var,Abs)
+  0x09, 0x23,                     //     USAGE (Intensity)
+  0x15, 0x00,                     //     LOGICAL_MINIMUM (0)    
+  0x25, 0x7f,                     //     LOGICAL_MAXIMUM (127)
+  0x75, 0x08,                     //     REPORT_SIZE (8)
+  0x91, 0x02,                     //     OUTPUT (Data,Var,Abs)
+  0x09, 0x23,                     //     USAGE (Intensity)
+  0xb1, 0x02,                     //     FEATURE (Data,Var,Abs)
+  0x09, 0x24,                     //     USAGE (Repeat Count)
+  0x91, 0x02,                     //     OUTPUT (Data,Var,Abs)
+  0x09, 0x24,                     //     USAGE (Repeat Count)
+  0xb1, 0x02,                     //     FEATURE (Data,Var,Abs)
+  0x09, 0x25,                     //     USAGE (Retrigger Period)
+  0x91, 0x02,                     //     OUTPUT (Data,Var,Abs)
+  0x09, 0x25,                     //     USAGE (Retrigger Period)
+  0xb1, 0x02,                     //     FEATURE (Data,Var,Abs)
+  0x09, 0x28,                     //     USAGE (Waveform Cutoff Time)
+  0x26, 0xff, 0x7f,               //     LOGICAL_MAXIMUM (32,767)
+  0x75, 0x10,                     //     REPORT_SIZE (16)
+  0xb1, 0x02,                     //     FEATURE (Data,Var,Abs)
+  0x05, 0x0e,                     //     USAGE_PAGE (Haptics)          
+  0x09, 0x10,                     //     USAGE (Waveform List)                     
+  0xa1, 0x02,                     //     COLLECTION (Logical)
+  0x05, 0x0A,                     //       USAGE_PAGE (Ordinal)          
+  0x09, 0x03,                     //       USAGE (Ordinal 3)
+  0x95, 0x01,                     //       REPORT_COUNT (1)
+  0x75, 0x08,                     //       REPORT_SIZE (8)
+  0x15, 0x03,                     //       LOGICAL_MINIMUM (3)
+  0x25, 0x03,                     //       LOGICAL_MAXIMUM (3)
+  0x36, 0x03, 0x10,               //       PHYSICAL_MINIMUM (0x1003)
+  0x46, 0x03, 0x10,               //       PHYSICAL_MAXIMUM (0x1003)
+  0xb1, 0x03,                     //       FEATURE (Cnst,Var,Abs)
+  0x09, 0x04,                     //       USAGE (Ordinal 4)
+  0x15, 0x04,                     //       LOGICAL_MINIMUM (4)
+  0x25, 0x04,                     //       LOGICAL_MAXIMUM (4)
+  0x36, 0x04, 0x10,               //       PHYSICAL_MINIMUM (0x1004)
+  0x46, 0x04, 0x10,               //       PHYSICAL_MAXIMUM (0x1004)
+  0xb1, 0x03,                     //       FEATURE (Cnst,Var,Abs)
+  0xc0,                           //     END_COLLECTION         
+  0x05, 0x0e,                     //     USAGE_PAGE (Haptics)          
+  0x09, 0x11,                     //     USAGE (Duration List)                     
+  0xa1, 0x02,                     //     COLLECTION (Logical)
+  0x05, 0x0a,                     //       USAGE_PAGE (Ordinal)          
+  0x09, 0x03,                     //       USAGE (Ordinal 3)
+  0x09, 0x04,                     //       USAGE (Ordinal 4)
+  0x15, 0x00,                     //       LOGICAL_MINIMUM (0)
+  0x26, 0xff, 0x0f,               //       LOGICAL_MAXIMUM (4095)
+  0x95, 0x02,                     //       REPORT_COUNT (2)
+  0x75, 0x08,                     //       REPORT_SIZE (8)
+  0xb1, 0x02,                     //       FEATURE (Data,Var,Abs)
+  0xc0,                           //     END_COLLECTION
+  0xc0,                           //   END_COLLECTION
+
+  0xc0,                           // END_COLLECTION
+
+  
+
+  // ==== LEDs ====
+  /*                                     == Report Structure ==
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |  bit   |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
+    +========+==========+==========+==========+==========+==========+==========+==========+==========+
+    |  0x00  |                                    Report ID (LED)                                    |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x01  |                                        LampId                                         |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x02  |                                           R                                           |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x03  |                                           G                                           |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x04  |                                           B                                           |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x05  |                                           A                                           |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+  */
+  0x05, 0x59,                    // USAGE_PAGE (LightingAndIllumination)
+  0x09, 0x01,                    // USAGE (LampArray)
+  0xa1, 0x01,                    // COLLECTION (Application)
+  0x85, LED_REPORT_ID,           //   REPORT_ID (7)
+  0x09, 0x20,                    //   USAGE (LampMultiUpdateReport)
+  0xa1, 0x02,                    //   COLLECTION (Logical)
+  
+  0x09, 0x21,                    //     USAGE (LampId)
+  0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+  0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
+  0x75, 0x10,                    //     REPORT_SIZE (16)
+  0x95, 0x01,                    //     REPORT_COUNT (1)
+  0xb1, 0x02,                    //     FEATURE (Data,Var,Abs)
+
+  0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+  0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
+  0x09, 0x51,                    //     USAGE (RedUpdateChannel)
+  0x09, 0x52,                    //     USAGE (GreenUpdateChannel)
+  0x09, 0x53,                    //     USAGE (BlueUpdateChannel)
+  0x09, 0x54,                    //     USAGE (IntensityUpdateChannel)
+  0x75, 0x08,                    //     REPORT_SIZE (8)
+  0x95, 0x04,                    //     REPORT_COUNT (4)
+  0xb1, 0x02,                    //     OUTPUT (Data,Var,Abs)
+
+  0xc0,                          //   END_COLLECTION
+  0xc0,                          // END_COLLECTION
   
   /* USER CODE END 0 */
-  0xC0    /*     END_COLLECTION	             */
 };
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
+
+// TODO: Feature reports may not working.
+__ALIGN_BEGIN static uint8_t HID_FeatureReport6[] __ALIGN_END = {
+  0x06,
+  0x00, 0x10,
+  0x37, 0x00, 0x01, 0x00,
+  0x7f,
+  0x7f,
+  0x7f,
+  0xff, 0x7f,
+  0x03,
+  0x04,
+  100,
+  100,
+};
 
 uint8_t venderBuffer[1 + VENDER_REPORT_LENGTH];
 
@@ -291,6 +551,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 static int8_t HID_Init_FS(void);
 static int8_t HID_DeInit_FS(void);
 static int8_t HID_OutEvent_FS(uint8_t* buffer);
+uint8_t* HID_GetReport_FS(uint8_t reportId, uint8_t reportType, uint16_t* length);
 
 /**
   * @}
@@ -299,6 +560,7 @@ static int8_t HID_OutEvent_FS(uint8_t* buffer);
 USBD_HID_ItfTypeDef USBD_HID_fops_FS =
 {
   HID_ReportDesc_FS,
+  HID_GetReport_FS,
   HID_Init_FS,
   HID_DeInit_FS,
   HID_OutEvent_FS
@@ -347,6 +609,7 @@ static int8_t HID_OutEvent_FS(uint8_t* buffer)
     venderBuffer[0] = VENDER_REPORT_ID;
     memcpy(venderBuffer + 1, buffer + 1, VENDER_REPORT_LENGTH);
     while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, 1 + VENDER_REPORT_LENGTH) == USBD_BUSY);
+    return (USBD_OK);
   }
   
   return (USBD_OK);
@@ -367,6 +630,13 @@ static int8_t USBD_HID_SendReport_FS(uint8_t *report, uint16_t len)
 }
 */
 
+uint8_t* HID_GetReport_FS(uint8_t reportId, uint8_t reportType, uint16_t* length) {
+  if (reportId == 6 && reportType == 3) {
+    *length = sizeof(HID_FeatureReport6);
+    return HID_FeatureReport6;
+  }
+}
+
 uint8_t USBD_HID_SendCtrlReport_FS(uint16_t ctrl){
   uint8_t ctrlReportBuffer[CTRL_REPORT_LENGTH];
   ctrlReportBuffer[0] = CTRL_REPORT_ID;
@@ -386,7 +656,7 @@ uint8_t USBD_HID_SendKeyboardReport_FS(uint8_t modifier, uint8_t oem, uint8_t ke
   keyboardReportBuffer[6] = key4;
   keyboardReportBuffer[7] = key5;
   keyboardReportBuffer[8] = key6;
-  return USBD_HID_SendReport(&hUsbDeviceFS, keyboardReportBuffer, CTRL_REPORT_LENGTH);
+  return USBD_HID_SendReport(&hUsbDeviceFS, keyboardReportBuffer, KEYBOARD_REPORT_LENGTH);
 }
 
 uint8_t USBD_HID_SendMouseReport_FS(uint8_t buttons, uint8_t x, uint8_t y, uint8_t wheel) {
@@ -396,9 +666,22 @@ uint8_t USBD_HID_SendMouseReport_FS(uint8_t buttons, uint8_t x, uint8_t y, uint8
   mouseReportBuffer[2] = x;
   mouseReportBuffer[3] = y;
   mouseReportBuffer[4] = wheel;
-  return USBD_HID_SendReport(&hUsbDeviceFS, mouseReportBuffer, CTRL_REPORT_LENGTH);
+  return USBD_HID_SendReport(&hUsbDeviceFS, mouseReportBuffer, MOUSE_REPORT_LENGTH);
 }
 
+uint8_t USBD_HID_SendRadialReport_FS(uint8_t button, int16_t dial, uint16_t x, uint16_t y, uint16_t width) {
+  uint8_t buffer[RADIAL_REPORT_LENGTH];
+  buffer[0x00] = RADIAL_REPORT_ID;
+  buffer[0x01] = (button & 0b1) | (dial << 1);
+  buffer[0x02] = dial >> 7;
+  buffer[0x03] = LOBYTE(x);
+  buffer[0x04] = HIBYTE(x);
+  buffer[0x05] = LOBYTE(y);
+  buffer[0x06] = HIBYTE(y);
+  buffer[0x07] = LOBYTE(width);
+  buffer[0x08] = HIBYTE(width);
+  return USBD_HID_SendReport(&hUsbDeviceFS, buffer, RADIAL_REPORT_LENGTH);
+}
 
 /* USER CODE END 7 */
 

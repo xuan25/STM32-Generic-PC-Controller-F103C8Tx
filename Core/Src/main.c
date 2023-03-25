@@ -65,6 +65,7 @@ Encoder* encoder_def;
 
 uint16_t ctrlState = 0x0000;
 uint8_t midiState = 0xff;
+uint8_t dialBtn = 0x0;
 
 /* USER CODE END PV */
 
@@ -86,28 +87,54 @@ void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge);
 void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState) {
   if (newState == KEY_PRESSED) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+
+    // Consumer Control
     ctrlState = ctrlState | CTRL_PLAY_PAUSE;
     USBD_HID_SendCtrlReport_FS(ctrlState);
+
+    // Dial
+    // dialBtn = 1;
+    // USBD_HID_SendRadialReport_FS(dialBtn, 0, 0, 0, 0);
+
   } else {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+
+    // Consumer Control
     ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
     USBD_HID_SendCtrlReport_FS(ctrlState);
+
+    // Dial
+    // dialBtn = 0;
+    // USBD_HID_SendRadialReport_FS(dialBtn, 0, 0, 0, 0);
+    
   }
 }
 
 void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge) {
   if (direction > 0) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+
+    // MIDI-CC
     if(midiState < 0xff) {
       midiState++;
     }
     USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
+
+    // Dial
+    // USBD_HID_SendRadialReport_FS(dialBtn, 10, 0, 0, 0);
+
   } else {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+
+    // MIDI-CC
     if(midiState > 0x00) {
       midiState--;
     }
     USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
+
+    // Dial
+    // USBD_HID_SendRadialReport_FS(dialBtn, -10, 0, 0, 0);
+
   }
 }
 

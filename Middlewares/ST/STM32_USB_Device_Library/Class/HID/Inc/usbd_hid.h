@@ -105,6 +105,7 @@ HID_StateTypeDef;
 typedef struct _USBD_HID_Itf
 {
   uint8_t                  *pReport;
+  uint8_t* (* GetReport)(uint8_t reportId, uint8_t reportType, uint16_t* length);
   int8_t (* Init)(void);
   int8_t (* DeInit)(void);
   int8_t (* OutEvent)(uint8_t* buffer);

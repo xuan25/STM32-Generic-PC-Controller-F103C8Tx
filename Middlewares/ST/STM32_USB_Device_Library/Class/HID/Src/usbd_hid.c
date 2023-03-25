@@ -152,8 +152,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ] __ALIGN
   0x00,         /*bCountryCode: Hardware target country*/
   0x01,         /*bNumDescriptors: Number of HID class descriptors to follow*/
   0x22,         /*bDescriptorType*/
-  USBD_HID_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
-  0x00,
+  LOBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (lower byte) */
+  HIBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (higher byte) */
   /******************** Descriptor of HID endpoints ********************/
   /* 27 */
   0x07,          /*bLength: Endpoint Descriptor size*/
@@ -211,8 +211,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgHSDesc[USB_HID_CONFIG_DESC_SIZ] __ALIGN
   0x00,         /*bCountryCode: Hardware target country*/
   0x01,         /*bNumDescriptors: Number of HID class descriptors to follow*/
   0x22,         /*bDescriptorType*/
-  USBD_HID_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
-  0x00,
+  LOBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (lower byte) */
+  HIBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (higher byte) */
   /******************** Descriptor of HID endpoints ********************/
   /* 27 */
   0x07,          /*bLength: Endpoint Descriptor size*/
@@ -270,8 +270,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_OtherSpeedCfgDesc[USB_HID_CONFIG_DESC_SIZ]
   0x00,         /*bCountryCode: Hardware target country*/
   0x01,         /*bNumDescriptors: Number of HID class descriptors to follow*/
   0x22,         /*bDescriptorType*/
-  USBD_HID_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
-  0x00,
+  LOBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (lower byte) */
+  HIBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (higher byte) */
   /******************** Descriptor of HID endpoints ********************/
   /* 27 */
   0x07,          /*bLength: Endpoint Descriptor size*/
@@ -305,8 +305,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_Desc[USB_HID_DESC_SIZ] __ALIGN_END =
   0x00,         /*bCountryCode: Hardware target country*/
   0x01,         /*bNumDescriptors: Number of HID class descriptors to follow*/
   0x22,         /*bDescriptorType*/
-  USBD_HID_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
-  0x00,
+  LOBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (lower byte) */
+  HIBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (higher byte) */
 };
 
 /* USB Standard Device Descriptor */
@@ -448,6 +448,15 @@ uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
           USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
           break;
 
+        case HID_REQ_GET_REPORT: 
+          {
+            uint8_t reportID = LOBYTE(req->wValue);
+            uint8_t reportType = HIBYTE(req->wValue);
+            uint16_t length;
+            uint8_t* report = ((USBD_HID_ItfTypeDef *)pdev->pUserData)->GetReport(reportID, reportType, &length);
+            USBD_CtlSendData(pdev, report, length);
+          }
+          break;
         default:
           USBD_CtlError(pdev, req);
           ret = USBD_FAIL;

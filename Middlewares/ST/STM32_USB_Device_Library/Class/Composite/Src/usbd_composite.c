@@ -135,8 +135,9 @@ __ALIGN_BEGIN uint8_t USBD_COMPOSITE_CfgDesc[USB_COMPOSITE_CONFIG_DESC_SIZ] __AL
   0x01,                                               /* bNumDescriptors: Number of HID class descriptors
                                                          to follow */
   0x22,                                               /* bDescriptorType */
-  USBD_HID_REPORT_DESC_SIZE,                   /* wItemLength: Total length of Report descriptor */
-  0x00,
+  LOBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (lower byte) */
+  HIBYTE(USBD_HID_REPORT_DESC_SIZE),                  /* wItemLength: Total length of Report descriptor (higher byte) */
+
   /******************** Descriptor of HID endpoints ********************/
   /* 27 */
   0x07,                                               /* bLength: Endpoint Descriptor size */
