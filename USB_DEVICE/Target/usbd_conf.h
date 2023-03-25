@@ -76,7 +76,7 @@
 /*---------- -----------*/
 #define USBD_HID_REPORT_DESC_SIZE       167
 /*---------- -----------*/
-#define HID_FS_BINTERVAL     0x5
+#define HID_FS_BINTERVAL     0x1
 
 /****************************************/
 /* #define for FS and HS identification */
