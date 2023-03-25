@@ -97,7 +97,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (4)                                     |
+    |  0x00  |                                     Report ID (2)                                     |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
     |  0x08  | Vol Inc  | Vol Dec  |   Mute   |Play/Pause|   Next   | Previous | Reserved | Reserved |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
@@ -107,7 +107,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x05, 0x0c,                    // Usage Page (Consumer Devices)
   0x09, 0x01,                    // Usage (Consumer Control)
   0xa1, 0x01,                    // Collection (Application)
-  0x85, 0x04,                    //   REPORT_ID (4)
+  0x85, CTRL_REPORT_ID,          //   REPORT_ID (2)
   
   0x09, 0xe9,                    //   Usage (Volume Increment)
   0x09, 0xea,                    //   Usage (Volume Decrement)
@@ -128,7 +128,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |  bit   |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (2)                                     |
+    |  0x00  |                                     Report ID (3)                                     |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
     |  0x08  |                                       Modifiers                                       |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
@@ -150,7 +150,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)  // 47
   0x09, 0x06,                    // USAGE (Keyboard)
   0xa1, 0x01,                    // COLLECTION (Application)
-  0x85, 0x02,                    //   REPORT_ID (2)
+  0x85, KEYBOARD_REPORT_ID,      //   REPORT_ID (3)
 
   0x05, 0x07,                    //   USAGE_PAGE (Keyboard)
   0x19, 0xe0,                    //   USAGE_MINIMUM (Keyboard LeftControl)
@@ -181,7 +181,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                     Report ID (1)                                     |
+    |  0x00  |                                     Report ID (4)                                     |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
     |  0x08  | Button 1 | Button 2 | Button 3 | Reserved | Reserved | Reserved | Reserved | Reserved |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
@@ -197,7 +197,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0xa1, 0x01,                    // COLLECTION (Application)
   0x09, 0x01,                    //   USAGE (Pointer)
   0xa1, 0x00,                    //   COLLECTION (Physical)
-  0x85, 0x01,                    //     REPORT_ID (1)
+  0x85, MOUSE_REPORT_ID,         //     REPORT_ID (4)
 
   0x05, 0x09,                    //     USAGE_PAGE (Button)
   0x19, 0x01,                    //     USAGE_MINIMUM (Button 1)

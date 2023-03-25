@@ -50,7 +50,8 @@
 
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
-#define CTRL_REPORT_ID      4u
+
+#define CTRL_REPORT_ID      2u
 #define CTRL_REPORT_LENGTH  3u
 
 #define CTRL_VOLUME_INCREMENT   0x01u
@@ -60,10 +61,10 @@
 #define CTRL_NEXT               0x10u
 #define CTRL_PREVIOUS           0x20u
 
-#define KEYBOARD_REPORT_ID      2u
+#define KEYBOARD_REPORT_ID      3u
 #define KEYBOARD_REPORT_LENGTH  9u
 
-#define MOUSE_REPORT_ID     1u
+#define MOUSE_REPORT_ID     4u
 #define MOUSE_REPORT_LENGTH 5u
 
 /* USER CODE END EXPORTED_DEFINES */
