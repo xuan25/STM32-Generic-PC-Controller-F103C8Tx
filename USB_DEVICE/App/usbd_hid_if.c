@@ -313,8 +313,12 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     |  0x0d  |                                Waveform List Ordinal 4                                |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
     |  0x0e  |                                Duration List Ordinal 3                                |
+    +--------+                                                                                       +
+    |  0x0f  |                                                                                       |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x0f  |                                Duration List Ordinal 4                                |
+    |  0x10  |                                Duration List Ordinal 4                                |
+    +--------+                                                                                       +
+    |  0x11  |                                                                                       |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
 
   */
@@ -448,7 +452,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x15, 0x00,                     //       LOGICAL_MINIMUM (0)
   0x26, 0xff, 0x0f,               //       LOGICAL_MAXIMUM (4095)
   0x95, 0x02,                     //       REPORT_COUNT (2)
-  0x75, 0x08,                     //       REPORT_SIZE (8)
+  0x75, 0x10,                     //       REPORT_SIZE (8)
   0xb1, 0x02,                     //       FEATURE (Data,Var,Abs)
   0xc0,                           //     END_COLLECTION
   0xc0,                           //   END_COLLECTION
@@ -457,47 +461,78 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
 
   
 
-  // ==== LEDs ====
+  // ==== Lighting ====
   /*                                     == Report Structure ==
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |  bit   |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                    Report ID (LED)                                    |
+    |  0x00  |                                 Report ID (Lighting)                                  |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x01  |                                        LampId                                         |
+    |  0x01  |              LampUpdateFlags              |                 LampCount                 |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x02  |                                           R                                           |
+    |  0x02  |                                       LampId 0                                        |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x03  |                                           G                                           |
+    |  ...   |                                          ...                                          |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x04  |                                           B                                           |
+    |  0x10  |                                       LampId 14                                       |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x05  |                                           A                                           |
+    |  0x11  |                                  RedUpdateChannel 0                                   |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  ...   |                                          ...                                          |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x1f  |                                  RedUpdateChannel 14                                  |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x20  |                                 GreenUpdateChannel 0                                  |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  ...   |                                          ...                                          |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x2e  |                                 GreenUpdateChannel 14                                 |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x2f  |                                  BlueUpdateChannel 0                                  |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  ...   |                                          ...                                          |
+    +--------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |  0x3d  |                                  BlueUpdateChannel 14                                 |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
   */
   0x05, 0x59,                    // USAGE_PAGE (LightingAndIllumination)
   0x09, 0x01,                    // USAGE (LampArray)
   0xa1, 0x01,                    // COLLECTION (Application)
-  0x85, LED_REPORT_ID,           //   REPORT_ID (7)
+  0x85, LIGHTING_REPORT_ID,      //   REPORT_ID (7)
   0x09, 0x20,                    //   USAGE (LampMultiUpdateReport)
   0xa1, 0x02,                    //   COLLECTION (Logical)
-  
+  0x09, 0x55,                    //     USAGE (LampUpdateFlags)
+  0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+  0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+  0x75, 0x04,                    //     REPORT_SIZE (4)
+  0x95, 0x01,                    //     REPORT_COUNT (1)
+  0x91, 0x02,                    //     OUTPUT (Data,Var,Abs)
+
+  0x09, 0x03,                    //     USAGE (LampCount)
+  0x25, 0x0f,                    //     LOGICAL_MAXIMUM (15)
+  0x91, 0x02,                    //     OUTPUT (Data,Var,Abs)
+
   0x09, 0x21,                    //     USAGE (LampId)
   0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
   0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
-  0x75, 0x10,                    //     REPORT_SIZE (16)
-  0x95, 0x01,                    //     REPORT_COUNT (1)
-  0xb1, 0x02,                    //     FEATURE (Data,Var,Abs)
+  0x75, 0x08,                    //     REPORT_SIZE (8)
+  0x95, 0x0f,                    //     REPORT_COUNT (15)
+  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
 
+  0x09, 0x51,                    //     USAGE (RedUpdateChannel)
   0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
   0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
-  0x09, 0x51,                    //     USAGE (RedUpdateChannel)
-  0x09, 0x52,                    //     USAGE (GreenUpdateChannel)
-  0x09, 0x53,                    //     USAGE (BlueUpdateChannel)
-  0x09, 0x54,                    //     USAGE (IntensityUpdateChannel)
   0x75, 0x08,                    //     REPORT_SIZE (8)
-  0x95, 0x04,                    //     REPORT_COUNT (4)
-  0xb1, 0x02,                    //     OUTPUT (Data,Var,Abs)
+  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+
+  0x09, 0x52,                    //     USAGE (GreenUpdateChannel)
+  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+
+  0x09, 0x53,                    //     USAGE (BlueUpdateChannel)
+  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+
+  0x09, 0x54,                    //     USAGE (IntensityUpdateChannel)
+  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
 
   0xc0,                          //   END_COLLECTION
   0xc0,                          // END_COLLECTION
@@ -518,11 +553,9 @@ __ALIGN_BEGIN static uint8_t HID_FeatureReport6[] __ALIGN_END = {
   0xff, 0x7f,
   0x03,
   0x04,
-  100,
-  100,
+  0xff, 0x0f,
+  0xff, 0x0f,
 };
-
-uint8_t venderBuffer[1 + VENDER_REPORT_LENGTH];
 
 /* USER CODE END PRIVATE_VARIABLES */
 
@@ -605,11 +638,38 @@ static int8_t HID_OutEvent_FS(uint8_t* buffer)
 {
   /* USER CODE BEGIN 6 */
   uint8_t reportId = buffer[0];
-  if (reportId == VENDER_REPORT_ID) {
+  switch (reportId)
+  {
+  case VENDER_REPORT_ID:
+  {
+    // TODO: handle cmd
+    // echo test
+    uint8_t venderBuffer[1 + VENDER_REPORT_LENGTH];
     venderBuffer[0] = VENDER_REPORT_ID;
     memcpy(venderBuffer + 1, buffer + 1, VENDER_REPORT_LENGTH);
     while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, 1 + VENDER_REPORT_LENGTH) == USBD_BUSY);
     return (USBD_OK);
+    break;
+  }
+  case LIGHTING_REPORT_ID:
+  {
+    uint8_t updateFlag = buffer[1] &  0xf;
+    uint8_t updateCount = buffer[1] >> 4 & 0xf;
+    for (int i = 0; i < updateCount; i++) {
+      uint8_t id = buffer[0x02 + i];
+      uint8_t r = buffer[0x11 + i];
+      uint8_t g = buffer[0x20 + i];
+      uint8_t b = buffer[0x2f + i];
+      // TODO: update state buffer
+    }
+    if (updateFlag == 1) {
+      // TODO: push updates
+    }
+    return (USBD_OK);
+    break;
+  }
+  default:
+    break;
   }
   
   return (USBD_OK);
@@ -639,33 +699,33 @@ uint8_t* HID_GetReport_FS(uint8_t reportId, uint8_t reportType, uint16_t* length
 
 uint8_t USBD_HID_SendCtrlReport_FS(uint16_t ctrl){
   uint8_t ctrlReportBuffer[CTRL_REPORT_LENGTH];
-  ctrlReportBuffer[0] = CTRL_REPORT_ID;
-  ctrlReportBuffer[1] = ctrl & 0xFF;
-  ctrlReportBuffer[2] = ctrl >> 8 & 0xFF;
+  ctrlReportBuffer[0x00] = CTRL_REPORT_ID;
+  ctrlReportBuffer[0x01] = ctrl & 0xFF;
+  ctrlReportBuffer[0x02] = ctrl >> 8 & 0xFF;
   return USBD_HID_SendReport(&hUsbDeviceFS, ctrlReportBuffer, CTRL_REPORT_LENGTH);
 }
 
 uint8_t USBD_HID_SendKeyboardReport_FS(uint8_t modifier, uint8_t oem, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6) {
   uint8_t keyboardReportBuffer[KEYBOARD_REPORT_LENGTH];
-  keyboardReportBuffer[0] = KEYBOARD_REPORT_ID;
-  keyboardReportBuffer[1] = modifier;
-  keyboardReportBuffer[2] = oem;
-  keyboardReportBuffer[3] = key1;
-  keyboardReportBuffer[4] = key2;
-  keyboardReportBuffer[5] = key3;
-  keyboardReportBuffer[6] = key4;
-  keyboardReportBuffer[7] = key5;
-  keyboardReportBuffer[8] = key6;
+  keyboardReportBuffer[0x00] = KEYBOARD_REPORT_ID;
+  keyboardReportBuffer[0x01] = modifier;
+  keyboardReportBuffer[0x02] = oem;
+  keyboardReportBuffer[0x03] = key1;
+  keyboardReportBuffer[0x04] = key2;
+  keyboardReportBuffer[0x05] = key3;
+  keyboardReportBuffer[0x06] = key4;
+  keyboardReportBuffer[0x07] = key5;
+  keyboardReportBuffer[0x08] = key6;
   return USBD_HID_SendReport(&hUsbDeviceFS, keyboardReportBuffer, KEYBOARD_REPORT_LENGTH);
 }
 
 uint8_t USBD_HID_SendMouseReport_FS(uint8_t buttons, uint8_t x, uint8_t y, uint8_t wheel) {
   uint8_t mouseReportBuffer[MOUSE_REPORT_LENGTH];
-  mouseReportBuffer[0] = MOUSE_REPORT_ID;
-  mouseReportBuffer[1] = buttons;
-  mouseReportBuffer[2] = x;
-  mouseReportBuffer[3] = y;
-  mouseReportBuffer[4] = wheel;
+  mouseReportBuffer[0x00] = MOUSE_REPORT_ID;
+  mouseReportBuffer[0x01] = buttons;
+  mouseReportBuffer[0x02] = x;
+  mouseReportBuffer[0x03] = y;
+  mouseReportBuffer[0x04] = wheel;
   return USBD_HID_SendReport(&hUsbDeviceFS, mouseReportBuffer, MOUSE_REPORT_LENGTH);
 }
 
