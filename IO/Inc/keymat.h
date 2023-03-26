@@ -9,6 +9,7 @@ extern "C" {
 #include "key.h"
 
 typedef struct MatKey {
+  void (*UserData);
   Key (*Key);
   uint16_t X;
   uint16_t Y;

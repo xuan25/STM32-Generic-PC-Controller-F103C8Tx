@@ -10,6 +10,7 @@ extern "C" {
 #define ENCODER_DE_JITTERING_MS 0u
 
 typedef struct Encoder {
+  void (*UserData);
   GPIO_TypeDef* GPIOx_A;
   uint16_t GPIO_Pin_A;
   GPIO_TypeDef* GPIOx_B;
@@ -26,8 +27,8 @@ typedef struct Encoder {
 
 
 
-#define ENCODER_EDGE_A 0u
-#define ENCODER_EDGE_B 1u
+#define ENCODER_EDGE_A 1 << 0
+#define ENCODER_EDGE_B 1 << 1
 
 #define ENCODER_ON  GPIO_PIN_SET
 

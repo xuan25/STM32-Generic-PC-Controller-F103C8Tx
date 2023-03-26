@@ -28,6 +28,7 @@
 #include "key.h"
 #include "keymat.h"
 #include "encoder.h"
+#include "wheel.h"
 
 /* USER CODE END Includes */
 
@@ -66,6 +67,8 @@ Encoder* encoder_def;
 uint16_t ctrlState = 0x0000;
 uint8_t midiState = 0xff;
 uint8_t dialBtn = 0x0;
+// uint32_t encoderLastTick = 0x0;
+// int8_t encoderState = 0x0;
 
 /* USER CODE END PV */
 
@@ -115,10 +118,10 @@ void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
     // MIDI-CC
-    if(midiState < 0xff) {
-      midiState++;
-    }
-    USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
+    // if(midiState < 0xff) {
+    //   midiState++;
+    // }
+    // USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
 
     // Dial
     // USBD_HID_SendRadialReport_FS(dialBtn, 10, 0, 0, 0);
@@ -127,14 +130,30 @@ void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
 
     // MIDI-CC
-    if(midiState > 0x00) {
-      midiState--;
-    }
-    USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
+    // if(midiState > 0x00) {
+    //   midiState--;
+    // }
+    // USBD_MIDI_SendCCMessage_FS(0x0, 0x0, 80, midiState);
 
     // Dial
     // USBD_HID_SendRadialReport_FS(dialBtn, -10, 0, 0, 0);
+    
+  }
+}
 
+void OnWheelTicked(Wheel* sender, int8_t direction) {
+  if (direction > 0) {
+    // Consumer Control
+    ctrlState = ctrlState | CTRL_NEXT;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+    ctrlState = ctrlState & ~CTRL_NEXT;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  } else {
+    // Consumer Control
+    ctrlState = ctrlState | CTRL_PREVIOUS;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+    ctrlState = ctrlState & ~CTRL_PREVIOUS;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
 }
 
@@ -204,6 +223,18 @@ Encoder* encoder_def = &((Encoder){
   .OnTicked = OnEncoderTicked,
 });
 
+Wheel* wheel_def = &((Wheel){
+  .Encoder = &((Encoder){
+    .GPIOx_A = ENC_1_A_GPIO_Port,
+    .GPIO_Pin_A = ENC_1_A_Pin,
+    .GPIOx_B = ENC_1_B_GPIO_Port,
+    .GPIO_Pin_B = ENC_1_B_Pin,
+  }),
+  .TickInterval = 10,
+  .ResetDelay = 500,
+  .OnTicked = OnWheelTicked,
+});
+
 /* USER CODE END 0 */
 
 /**
@@ -242,6 +273,7 @@ int main(void)
   GPIOKey_Init(gpio_key_def);
   Keymat_Init(keymat_rows_def, keymat_cols_def, keymat_keys_def, NUM_MATKEYS);
   Encoder_Init(encoder_def);
+  Wheel_Init(wheel_def);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -268,6 +300,8 @@ int main(void)
     GPIOKey_Scan(gpio_key_def);
     // encoder test
     Encoder_Scan(encoder_def);
+    // wheel test
+    Wheel_Scan(wheel_def);
   }
   /* USER CODE END 3 */
 }

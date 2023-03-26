@@ -10,6 +10,7 @@ extern "C" {
 #define KEY_DE_JITTERING_MS 10u
 
 typedef struct Key {
+  void (*UserData);
   uint8_t State;
 #if KEY_DE_JITTERING_MS > 0
   uint32_t LastLevelChangedMs;
@@ -19,6 +20,7 @@ typedef struct Key {
 } Key;
 
 typedef struct GPIOKey {
+  void (*UserData);
   Key (*Key);
   GPIO_TypeDef* GPIOx;
   uint16_t GPIO_Pin;
