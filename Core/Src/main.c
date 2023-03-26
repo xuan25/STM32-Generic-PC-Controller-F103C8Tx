@@ -43,8 +43,6 @@
 #define KEY_PRESSED  GPIO_PIN_SET
 #define KEY_RELEASED GPIO_PIN_RESET
 
-#define NUM_MATKEYS 1u
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -58,17 +56,12 @@ DMA_HandleTypeDef hdma_tim2_ch2_ch4;
 
 /* USER CODE BEGIN PV */
 
-GPIO_Pin keymat_rows_def[KEYMAT_ROWS];
-GPIO_Pin keymat_cols_def[KEYMAT_COLS];
-MatKey* keymat_keys_def[NUM_MATKEYS];
 GPIOKey* gpio_key_def;
 Encoder* encoder_def;
 
 uint16_t ctrlState = 0x0000;
 uint8_t midiState = 0xff;
 uint8_t dialBtn = 0x0;
-// uint32_t encoderLastTick = 0x0;
-// int8_t encoderState = 0x0;
 
 /* USER CODE END PV */
 
@@ -157,54 +150,57 @@ void OnWheelTicked(Wheel* sender, int8_t direction) {
   }
 }
 
-GPIO_Pin keymat_rows_def[KEYMAT_ROWS] = {
-  {
-    .GPIOx = ROW_0_GPIO_Port,
-    .GPIO_Pin = ROW_0_Pin,
-  },
-  {
-    .GPIOx = ROW_1_GPIO_Port,
-    .GPIO_Pin = ROW_1_Pin,
-  },
-  {
-    .GPIOx = ROW_2_GPIO_Port,
-    .GPIO_Pin = ROW_2_Pin,
-  },
-  {
-    .GPIOx = ROW_3_GPIO_Port,
-    .GPIO_Pin = ROW_3_Pin,
-  }
-};
-
-GPIO_Pin keymat_cols_def[KEYMAT_COLS] = {
-  {
-    .GPIOx = COL_0_GPIO_Port,
-    .GPIO_Pin = COL_0_Pin,
-  },
-  {
-    .GPIOx = COL_1_GPIO_Port,
-    .GPIO_Pin = COL_1_Pin,
-  },
-  {
-    .GPIOx = COL_2_GPIO_Port,
-    .GPIO_Pin = COL_2_Pin,
-  },
-  {
-    .GPIOx = COL_3_GPIO_Port,
-    .GPIO_Pin = COL_3_Pin,
-  }
-};
-
-MatKey* keymat_keys_def[NUM_MATKEYS] = {
-  &((MatKey){
-    .Key = &((Key){
-      .State = KEY_RELEASED,
-      .OnStateChanged = OnKeyStateChanged,
+KeyMat* keymat_def = &((KeyMat){
+  .NumMatKeys = 1,
+  .MatKeys = ((MatKey*[]){
+    &((MatKey){
+      .Key = &((Key){
+        .State = KEY_RELEASED,
+        .OnStateChanged = OnKeyStateChanged,
+      }),
+      .X = 0,
+      .Y = 0,
     }),
-    .X = 0,
-    .Y = 0,
   }),
-};
+  .NumRows = 4,
+  .Rows = ((GPIO_Pin*[]){
+    &((GPIO_Pin){
+      .GPIOx = ROW_0_GPIO_Port,
+      .GPIO_Pin = ROW_0_Pin,
+    }),
+    &((GPIO_Pin){
+      .GPIOx = ROW_1_GPIO_Port,
+      .GPIO_Pin = ROW_1_Pin,
+    }),
+    &((GPIO_Pin){
+      .GPIOx = ROW_2_GPIO_Port,
+      .GPIO_Pin = ROW_2_Pin,
+    }),
+    &((GPIO_Pin){
+      .GPIOx = ROW_3_GPIO_Port,
+      .GPIO_Pin = ROW_3_Pin,
+    })
+  }),
+  .NumCols = 4,
+  .Cols = ((GPIO_Pin*[]){
+    &((GPIO_Pin){
+      .GPIOx = COL_0_GPIO_Port,
+      .GPIO_Pin = COL_0_Pin,
+    }),
+    &((GPIO_Pin){
+      .GPIOx = COL_1_GPIO_Port,
+      .GPIO_Pin = COL_1_Pin,
+    }),
+    &((GPIO_Pin){
+      .GPIOx = COL_2_GPIO_Port,
+      .GPIO_Pin = COL_2_Pin,
+    }),
+    &((GPIO_Pin){
+      .GPIOx = COL_3_GPIO_Port,
+      .GPIO_Pin = COL_3_Pin,
+    })
+  }),
+});
 
 GPIOKey* gpio_key_def = &((GPIOKey){
   .Key = &((Key){
@@ -271,7 +267,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   GPIOKey_Init(gpio_key_def);
-  Keymat_Init(keymat_rows_def, keymat_cols_def, keymat_keys_def, NUM_MATKEYS);
+  // Keymat_Init(keymat_rows_def, keymat_cols_def, keymat_keys_def, NUM_MATKEYS);
+  Keymat_Init(keymat_def);
   Encoder_Init(encoder_def);
   Wheel_Init(wheel_def);
   /* USER CODE END 2 */
@@ -295,7 +292,8 @@ int main(void)
     // HAL_Delay(500);
 
     // key matrix test
-    Keymat_Scan();
+    // Keymat_Scan();
+    Keymat_Scan(keymat_def);
     // single key test
     GPIOKey_Scan(gpio_key_def);
     // encoder test

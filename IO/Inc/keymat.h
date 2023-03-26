@@ -20,11 +20,6 @@ typedef struct MatKey {
   uint16_t Y;         // Y coordinate of the key
 } MatKey;
 
-// Number of rows of the key matrix
-#define KEYMAT_ROWS 4u
-// Number of columns of the key matrix
-#define KEYMAT_COLS 4u
-
 /**
  * @brief GPIO_Pin Structure definition
  * 
@@ -36,23 +31,38 @@ typedef struct GPIO_Pin {
 } GPIO_Pin;
 
 /**
+ * @brief KeyMat Structure definition
+ * 
+ * @note Used to managed a key matrix.
+*/
+typedef struct KeyMat {
+  void (*UserData);       // User data
+  uint16_t NumMatKeys;    // Number of defined MatKey
+  MatKey* (*MatKeys);     // A array of defined MatKey
+  uint16_t NumRows;       // Number of row pins
+  GPIO_Pin* (*Rows);      // A array of row pins
+  uint16_t NumCols;       // Number of column pins
+  GPIO_Pin* (*Cols);      // A array of column pins
+  Key* (* Keys);          // Keys for matrix coordinates
+  uint8_t* EnabledFlags;  // Enabled flags for matrix coordinates
+} KeyMat;
+
+/**
  * @brief Initialize the Key matrix
  * 
- * @param rows: An array of GPIO_Pin for row pins
- * @param cols: An array of GPIO_Pin for column pins
- * @param matkeys: An array of MatKey pointers to specify the keys in the matrix
- * @param numKeys: Number of keys in the matkeys
+ * @param keyMat The KeyMat to be initialized
  * @retval None
 */
-void Keymat_Init(GPIO_Pin rows[], GPIO_Pin cols[], MatKey* matkeys[], uint8_t numKeys);
+void Keymat_Init(KeyMat* keyMat);
 
 /**
  * @brief Scan an Key matrix hardware to update its state and potentially 
  * trigger callbacks.
  * 
+ * @param keyMat The KeyMat to be scanned
  * @retval None
 */
-void Keymat_Scan();
+void Keymat_Scan(KeyMat* keyMat);
 
 #ifdef __cplusplus
 }
