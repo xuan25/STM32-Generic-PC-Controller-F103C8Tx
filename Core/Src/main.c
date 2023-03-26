@@ -80,7 +80,7 @@ static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState);
-void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge);
+void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge);
 
 /* USER CODE END PFP */
 
@@ -113,7 +113,7 @@ void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState) {
   }
 }
 
-void OnEncoderTicked(Encoder* sender, int8_t direction, uint8_t edge) {
+void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge) {
   if (direction > 0) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
@@ -230,8 +230,8 @@ Wheel* wheel_def = &((Wheel){
     .GPIOx_B = ENC_1_B_GPIO_Port,
     .GPIO_Pin_B = ENC_1_B_Pin,
   }),
-  .TickInterval = 10,
-  .ResetDelay = 500,
+  .TickIntervalMs = 10,
+  .ResetDelayMs = 500,
   .OnTicked = OnWheelTicked,
 });
 

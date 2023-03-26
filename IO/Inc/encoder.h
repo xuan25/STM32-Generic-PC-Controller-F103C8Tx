@@ -9,6 +9,12 @@ extern "C" {
 
 #define ENCODER_DE_JITTERING_MS 0u
 
+typedef enum Encoder_Edge
+{
+  ENCODER_EDGE_A = 1 << 0,
+  ENCODER_EDGE_B = 1 << 1,
+}Encoder_Edge;
+
 typedef struct Encoder {
   void (*UserData);
   GPIO_TypeDef* GPIOx_A;
@@ -22,13 +28,9 @@ typedef struct Encoder {
 #endif
   uint8_t LastStateA;
   uint8_t LastStateB;
-  void (*OnTicked)(struct Encoder* sender, int8_t direction, uint8_t edge);
+  void (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
 } Encoder;
 
-
-
-#define ENCODER_EDGE_A 1 << 0
-#define ENCODER_EDGE_B 1 << 1
 
 #define ENCODER_ON  GPIO_PIN_SET
 

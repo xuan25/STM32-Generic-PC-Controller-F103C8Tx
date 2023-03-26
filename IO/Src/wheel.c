@@ -1,7 +1,7 @@
 #include "wheel.h"
 
-void Wheel_OnEncoderTick(struct Encoder* sender, int8_t direction, uint8_t edge);
-void Wheel_InputTick(Wheel* wheel, int8_t direction, uint8_t edge);
+void Wheel_OnEncoderTick(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
+void Wheel_InputTick(Wheel* wheel, int8_t direction, Encoder_Edge edge);
 
 void Wheel_Init(Wheel* wheel) {
   uint32_t tickMs = HAL_GetTick();
@@ -16,15 +16,15 @@ void Wheel_Scan(Wheel* wheel) {
   Encoder_Scan(wheel->Encoder);
 }
 
-void Wheel_OnEncoderTick(struct Encoder* sender, int8_t direction, uint8_t edge) {
+void Wheel_OnEncoderTick(struct Encoder* sender, int8_t direction, Encoder_Edge edge) {
   Wheel* wheel = ((Wheel*)sender->UserData);
   Wheel_InputTick(wheel, direction, edge);
 }
 
-void Wheel_InputTick(Wheel* wheel, int8_t direction, uint8_t edge) {
+void Wheel_InputTick(Wheel* wheel, int8_t direction, Encoder_Edge edge) {
   // Check for reset delay 
   uint32_t currentTick = HAL_GetTick();
-  if(wheel->ResetDelay > 0 && currentTick - wheel->LastInputTick > wheel->ResetDelay){
+  if(wheel->ResetDelayMs > 0 && currentTick - wheel->LastInputTick > wheel->ResetDelayMs){
     wheel->InputState = 0;
   }
   wheel->LastInputTick = currentTick;
@@ -34,7 +34,7 @@ void Wheel_InputTick(Wheel* wheel, int8_t direction, uint8_t edge) {
     return;
   }
   wheel->InputState += direction;
-  if (wheel->InputState > wheel->TickInterval || wheel->InputState < -wheel->TickInterval) {
+  if (wheel->InputState > wheel->TickIntervalMs || wheel->InputState < -wheel->TickIntervalMs) {
     wheel->OnTicked(wheel, wheel->InputState);
     wheel->InputState = 0;
   }

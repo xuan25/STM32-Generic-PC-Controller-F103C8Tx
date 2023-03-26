@@ -13,9 +13,9 @@ typedef struct Wheel {
   Encoder* Encoder;
   uint32_t LastInputTick;
   int16_t InputState;
-  uint16_t TickInterval;
-  uint16_t ResetDelay;
-  uint8_t IgnoreInputEdge;
+  uint16_t TickIntervalMs;
+  uint16_t ResetDelayMs;
+  Encoder_Edge IgnoreInputEdge;
   void (*OnTicked)(struct Wheel* sender, int8_t direction);
 } Wheel;
 
