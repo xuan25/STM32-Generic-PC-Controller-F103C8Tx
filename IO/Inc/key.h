@@ -24,6 +24,7 @@ typedef struct Key {
   uint32_t LastLevelChangedMs;      // Time of the last level change
   uint8_t LastChangedLevel;         // Last voltage level
 #endif
+
   /**
    * @brief State changed callback of the key
    * 

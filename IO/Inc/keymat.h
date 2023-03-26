@@ -25,6 +25,7 @@ typedef struct MatKey {
  * @brief KeyMat Structure definition
  * 
  * @note Used to managed a key matrix.
+ * Please specify NumMatKeys, MatKeys, NumRows, Rows, NumCols and Cols.
 */
 typedef struct KeyMat {
   void (*UserData);       // User data

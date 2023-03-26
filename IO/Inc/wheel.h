@@ -22,6 +22,14 @@ typedef struct Wheel {
   uint16_t TickInterval;          // Specify the ratio between hardware ticks and a wheel tick
   uint16_t ResetDelayMs;          // Specify the time for reset delay that auto align the wheel to a wheel tick
   Encoder_Edge IgnoreInputEdge;   // Specify the pin to ignore its rising/falling edges
+  
+  /**
+   * @brief Tick callback of the wheel
+   * 
+   * @param sender Wheel that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @retval None
+  */
   void (*OnTicked)(struct Wheel* sender, int8_t direction);
 } Wheel;
 
