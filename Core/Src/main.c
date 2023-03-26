@@ -230,7 +230,7 @@ Wheel* wheel_def = &((Wheel){
     .GPIOx_B = ENC_1_B_GPIO_Port,
     .GPIO_Pin_B = ENC_1_B_Pin,
   }),
-  .TickIntervalMs = 10,
+  .TickInterval = 10,
   .ResetDelayMs = 500,
   .OnTicked = OnWheelTicked,
 });

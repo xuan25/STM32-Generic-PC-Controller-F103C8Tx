@@ -6,11 +6,11 @@ GPIO_Pin* keymat_cols;
 Key* keymat_keys[KEYMAT_ROWS * KEYMAT_ROWS];
 uint8_t keymat_enabled_flags[KEYMAT_ROWS * KEYMAT_ROWS];
 
-void Keymat_Init(GPIO_Pin rows[], GPIO_Pin cols[], MatKey* matkeys[], uint8_t num_keys) {
+void Keymat_Init(GPIO_Pin rows[], GPIO_Pin cols[], MatKey* matkeys[], uint8_t numKeys) {
   keymat_rows = rows;
   keymat_cols = cols;
 
-  for (int i = 0; i < num_keys; i++) {
+  for (int i = 0; i < numKeys; i++) {
     MatKey* matkey = matkeys[i];
     uint8_t idx = matkey->Y * KEYMAT_COLS + matkey->X;
     keymat_keys[idx] = matkey->Key;
