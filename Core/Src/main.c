@@ -277,7 +277,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   GPIOKey_Init(gpio_key_def);
-  // Keymat_Init(keymat_rows_def, keymat_cols_def, keymat_keys_def, NUM_MATKEYS);
   Keymat_Init(keymat_def);
   Encoder_Init(encoder_def);
   Wheel_Init(wheel_def);
@@ -302,7 +301,6 @@ int main(void)
     // HAL_Delay(500);
 
     // key matrix test
-    // Keymat_Scan();
     Keymat_Scan(keymat_def);
     // single key test
     GPIOKey_Scan(gpio_key_def);
