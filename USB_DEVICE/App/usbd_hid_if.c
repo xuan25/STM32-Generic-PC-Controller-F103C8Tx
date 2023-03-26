@@ -114,11 +114,11 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x15, 0x00,                    //   Logical Minimum (0)
   0x26, 0xff, 0x00,              //   Logical Maximum (255) (1 byte)
   0x75, 0x08,                    //   Report Size (8) (1 byte = 8 bit)
-  0x95, VENDER_REPORT_LENGTH,    //   Report Count (63)
-  0x81, 0x02,                    //   Input (Data, Variable, Abs)
+  0x95, VENDER_DATA_LENGTH,      //   Report Count (63)
+  0x81, 0x00,                    //   Input (Data, Ary, Abs)
   0x09, 0x01,                    //   Usage (Vender)
-  0x95, VENDER_REPORT_LENGTH,    //   Report Count (63)
-  0x91, 0x02,                    //   Output (Data, Variable, Abs)
+  0x95, VENDER_DATA_LENGTH,      //   Report Count (63)
+  0x91, 0x00,                    //   Output (Data, Ary, Abs)
 
   0xc0,                          // End Collection
   
@@ -517,22 +517,22 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
   0x75, 0x08,                    //     REPORT_SIZE (8)
   0x95, 0x0f,                    //     REPORT_COUNT (15)
-  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+  0x91, 0x00,                    //     OUTPUT (Data,Ary,Abs)
 
   0x09, 0x51,                    //     USAGE (RedUpdateChannel)
   0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
   0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
   0x75, 0x08,                    //     REPORT_SIZE (8)
-  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+  0x91, 0x00,                    //     OUTPUT (Data,Ary,Abs)
 
   0x09, 0x52,                    //     USAGE (GreenUpdateChannel)
-  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+  0x91, 0x00,                    //     OUTPUT (Data,Ary,Abs)
 
   0x09, 0x53,                    //     USAGE (BlueUpdateChannel)
-  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+  0x91, 0x00,                    //     OUTPUT (Data,Ary,Abs)
 
   0x09, 0x54,                    //     USAGE (IntensityUpdateChannel)
-  0x91, 0x0c,                    //     OUTPUT (Data,Ary,Abs,Wrap)
+  0x91, 0x00,                    //     OUTPUT (Data,Ary,Abs)
 
   0xc0,                          //   END_COLLECTION
   0xc0,                          // END_COLLECTION
@@ -644,10 +644,10 @@ static int8_t HID_OutEvent_FS(uint8_t* buffer)
   {
     // TODO: handle cmd
     // echo test
-    uint8_t venderBuffer[1 + VENDER_REPORT_LENGTH];
+    uint8_t venderBuffer[VENDER_REPORT_LENGTH];
     venderBuffer[0] = VENDER_REPORT_ID;
-    memcpy(venderBuffer + 1, buffer + 1, VENDER_REPORT_LENGTH);
-    while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, 1 + VENDER_REPORT_LENGTH) == USBD_BUSY);
+    memcpy(venderBuffer + 1, buffer + 1, VENDER_DATA_LENGTH);
+    while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, VENDER_REPORT_LENGTH) == USBD_BUSY);
     return (USBD_OK);
     break;
   }

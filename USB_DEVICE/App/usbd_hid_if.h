@@ -51,32 +51,33 @@
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
 #define VENDER_REPORT_ID        1u
-#define VENDER_REPORT_LENGTH    0x40u - 1   // reserve one byte for report ID
+#define VENDER_REPORT_LENGTH    0x40u
+#define VENDER_DATA_LENGTH    VENDER_REPORT_LENGTH - 1  // reserve one byte for report ID
 
 #define CTRL_REPORT_ID      2u
-#define CTRL_REPORT_LENGTH  3u
+#define CTRL_REPORT_LENGTH  0x03u
 
-#define CTRL_VOLUME_INCREMENT   0x01u
-#define CTRL_VOLUME_DECREMENT   0x02u
-#define CTRL_MUTE               0x04u
-#define CTRL_PLAY_PAUSE         0x08u
-#define CTRL_NEXT               0x10u
-#define CTRL_PREVIOUS           0x20u
+#define CTRL_VOLUME_INCREMENT   1u << 0
+#define CTRL_VOLUME_DECREMENT   1u << 1
+#define CTRL_MUTE               1u << 2
+#define CTRL_PLAY_PAUSE         1u << 3
+#define CTRL_NEXT               1u << 4
+#define CTRL_PREVIOUS           1u << 5
 
 #define KEYBOARD_REPORT_ID      3u
-#define KEYBOARD_REPORT_LENGTH  9u
+#define KEYBOARD_REPORT_LENGTH  0x09u
 
 #define MOUSE_REPORT_ID     4u
-#define MOUSE_REPORT_LENGTH 5u
+#define MOUSE_REPORT_LENGTH 0x05u
 
 #define RADIAL_REPORT_ID     5u
-#define RADIAL_REPORT_LENGTH 0x09
+#define RADIAL_REPORT_LENGTH 0x09u
 
 #define RADIAL_HAPTIC_REPORT_ID     6u
-#define RADIAL_HAPTIC_REPORT_LENGTH 0x14
+#define RADIAL_HAPTIC_REPORT_LENGTH 0x06u
 
 #define LIGHTING_REPORT_ID     7u
-#define LIGHTING_REPORT_LENGTH 0x6
+#define LIGHTING_REPORT_LENGTH 0x3eu
 
 /* USER CODE END EXPORTED_DEFINES */
 
