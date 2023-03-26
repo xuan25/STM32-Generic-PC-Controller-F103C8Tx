@@ -150,12 +150,11 @@ void OnWheelTicked(Wheel* sender, int8_t direction) {
   }
 }
 
-KeyMat* keymat_def = &((KeyMat){
+KeyMat* keyMat_def = &((KeyMat){
   .NumMatKeys = 1,
   .MatKeys = ((MatKey*[]){
     &((MatKey){
       .Key = &((Key){
-        .State = KEY_RELEASED,
         .OnStateChanged = OnKeyStateChanged,
       }),
       .X = 0,
@@ -204,7 +203,6 @@ KeyMat* keymat_def = &((KeyMat){
 
 GPIOKey* gpio_key_def = &((GPIOKey){
   .Key = &((Key){
-    .State = KEY_RELEASED,
     .OnStateChanged = OnKeyStateChanged,
   }),
   .Pin = &((GPIO_Pin){
@@ -277,7 +275,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   GPIOKey_Init(gpio_key_def);
-  Keymat_Init(keymat_def);
+  Keymat_Init(keyMat_def);
   Encoder_Init(encoder_def);
   Wheel_Init(wheel_def);
   /* USER CODE END 2 */
@@ -301,7 +299,7 @@ int main(void)
     // HAL_Delay(500);
 
     // key matrix test
-    Keymat_Scan(keymat_def);
+    Keymat_Scan(keyMat_def);
     // single key test
     GPIOKey_Scan(gpio_key_def);
     // encoder test
