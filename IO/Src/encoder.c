@@ -1,8 +1,8 @@
 #include "encoder.h"
 
 void Encoder_Init(Encoder* encoder) {
-  uint8_t levelA = HAL_GPIO_ReadPin(encoder->GPIOx_A, encoder->GPIO_Pin_A);
-  uint8_t levelB = HAL_GPIO_ReadPin(encoder->GPIOx_B, encoder->GPIO_Pin_B);
+  uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
+  uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
   encoder->LastStateA = levelA;
   encoder->LastStateB = levelB;
 
@@ -16,8 +16,8 @@ void Encoder_Init(Encoder* encoder) {
 }
 
 void Encoder_Scan(Encoder* encoder) {
-  uint8_t levelA = HAL_GPIO_ReadPin(encoder->GPIOx_A, encoder->GPIO_Pin_A);
-  uint8_t levelB = HAL_GPIO_ReadPin(encoder->GPIOx_B, encoder->GPIO_Pin_B);
+  uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
+  uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
 
 #if ENCODER_DE_JITTERING_MS > 0
   uint32_t tickMs = HAL_GetTick();

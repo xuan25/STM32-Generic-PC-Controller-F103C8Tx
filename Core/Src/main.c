@@ -207,24 +207,34 @@ GPIOKey* gpio_key_def = &((GPIOKey){
     .State = KEY_RELEASED,
     .OnStateChanged = OnKeyStateChanged,
   }),
-  .GPIOx = ENC_2_P_GPIO_Port,
-  .GPIO_Pin = ENC_2_P_Pin,
+  .Pin = &((GPIO_Pin){
+    .GPIOx = ENC_2_P_GPIO_Port,
+    .GPIO_Pin = ENC_2_P_Pin,
+  })
 });
 
 Encoder* encoder_def = &((Encoder){
-  .GPIOx_A = ENC_1_A_GPIO_Port,
-  .GPIO_Pin_A = ENC_1_A_Pin,
-  .GPIOx_B = ENC_1_B_GPIO_Port,
-  .GPIO_Pin_B = ENC_1_B_Pin,
+  .PinA = &((GPIO_Pin){
+    .GPIOx = ENC_1_A_GPIO_Port,
+    .GPIO_Pin = ENC_1_A_Pin,
+  }),
+  .PinB = &((GPIO_Pin){
+    .GPIOx = ENC_1_B_GPIO_Port,
+    .GPIO_Pin = ENC_1_B_Pin,
+  }),
   .OnTicked = OnEncoderTicked,
 });
 
 Wheel* wheel_def = &((Wheel){
   .Encoder = &((Encoder){
-    .GPIOx_A = ENC_1_A_GPIO_Port,
-    .GPIO_Pin_A = ENC_1_A_Pin,
-    .GPIOx_B = ENC_1_B_GPIO_Port,
-    .GPIO_Pin_B = ENC_1_B_Pin,
+    .PinA = &((GPIO_Pin){
+      .GPIOx = ENC_1_A_GPIO_Port,
+      .GPIO_Pin = ENC_1_A_Pin,
+    }),
+    .PinB = &((GPIO_Pin){
+      .GPIOx = ENC_1_B_GPIO_Port,
+      .GPIO_Pin = ENC_1_B_Pin,
+    })
   }),
   .TickInterval = 10,
   .ResetDelayMs = 500,

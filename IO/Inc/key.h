@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "stm32f1xx_hal.h"
+#include "gpio_pin.h"
 
 // De-jittering time for key pins.
 #define KEY_DE_JITTERING_MS 10u
@@ -43,8 +44,7 @@ typedef struct Key {
 typedef struct GPIOKey {
   void (*UserData);         // User data
   Key (*Key);               // Key structure
-  GPIO_TypeDef* GPIOx;      // Pin
-  uint16_t GPIO_Pin;        // Pin
+  GPIO_Pin* Pin;            // GPIO Pin
 } GPIOKey;
 
 /**

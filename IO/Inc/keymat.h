@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "stm32f1xx_hal.h"
+#include "gpio_pin.h"
 #include "key.h"
 
 /**
@@ -19,16 +20,6 @@ typedef struct MatKey {
   uint16_t X;         // X coordinate of the key
   uint16_t Y;         // Y coordinate of the key
 } MatKey;
-
-/**
- * @brief GPIO_Pin Structure definition
- * 
- * @note Used to define pins of the matrix
-*/
-typedef struct GPIO_Pin {
-  GPIO_TypeDef* GPIOx;    // Pin
-  uint16_t GPIO_Pin;      // Pin
-} GPIO_Pin;
 
 /**
  * @brief KeyMat Structure definition

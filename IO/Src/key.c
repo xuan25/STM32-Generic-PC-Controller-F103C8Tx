@@ -1,7 +1,7 @@
 #include "key.h"
 
 void GPIOKey_Init(GPIOKey* gpioKey) {
-  uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->GPIOx, gpioKey->GPIO_Pin);
+  uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->Pin->GPIOx, gpioKey->Pin->GPIO_Pin);
   gpioKey->Key->LastChangedLevel = keyLevel;
 #if KEY_DE_JITTERING_MS > 0
   uint32_t tickMs = HAL_GetTick();
@@ -10,7 +10,7 @@ void GPIOKey_Init(GPIOKey* gpioKey) {
 }
 
 void GPIOKey_Scan(GPIOKey* gpioKey) {
-  uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->GPIOx, gpioKey->GPIO_Pin);
+  uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->Pin->GPIOx, gpioKey->Pin->GPIO_Pin);
   Key_Update(gpioKey->Key, keyLevel);
 }
 

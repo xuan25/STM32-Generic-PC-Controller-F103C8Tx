@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "stm32f1xx_hal.h"
+#include "gpio_pin.h"
 
 // De-jittering time for encoder pins.
 #define ENCODER_DE_JITTERING_MS 0u
@@ -27,10 +28,8 @@ typedef enum Encoder_Edge
 */
 typedef struct Encoder {
   void (*UserData);                   // User data
-  GPIO_TypeDef* GPIOx_A;              // Pin A
-  uint16_t GPIO_Pin_A;                // Pin A
-  GPIO_TypeDef* GPIOx_B;              // Pin B
-  uint16_t GPIO_Pin_B;                // Pin B
+  GPIO_Pin* PinA;                     // GPIO Pin A
+  GPIO_Pin* PinB;                     // GPIO Pin B
 #if ENCODER_DE_JITTERING_MS > 0
   uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
