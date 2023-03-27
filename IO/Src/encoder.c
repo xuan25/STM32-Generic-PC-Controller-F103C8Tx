@@ -6,7 +6,7 @@ void Encoder_Init(Encoder* encoder) {
   encoder->LastStateA = levelA;
   encoder->LastStateB = levelB;
 
-#if ENCODER_DE_JITTERING_MS > 0
+#if ENCODER_DEBOUNCE_MS > 0
   uint32_t tickMs = HAL_GetTick();
 
   encoder->LastLevelChangedMs = tickMs;
@@ -19,7 +19,7 @@ void Encoder_Scan(Encoder* encoder) {
   uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
   uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
 
-#if ENCODER_DE_JITTERING_MS > 0
+#if ENCODER_DEBOUNCE_MS > 0
   uint32_t tickMs = HAL_GetTick();
 
   // Level update
@@ -35,10 +35,10 @@ void Encoder_Scan(Encoder* encoder) {
   // State update
   uint8_t stateA = encoder->LastStateA;
   uint8_t stateB = encoder->LastStateB;
-  if(encoder->LastStateA != levelA && tickMs - encoder->LastLevelChangedMs > ENCODER_DE_JITTERING_MS) {
+  if(encoder->LastStateA != levelA && tickMs - encoder->LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
     stateA = levelA;
   }
-  if(encoder->LastStateB != levelB && tickMs - encoder->LastLevelChangedMs > ENCODER_DE_JITTERING_MS) {
+  if(encoder->LastStateB != levelB && tickMs - encoder->LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
     stateB = levelB;
   }
 #else

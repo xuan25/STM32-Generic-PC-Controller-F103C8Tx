@@ -8,8 +8,8 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "gpio_pin.h"
 
-// De-jittering time for encoder pins.
-#define ENCODER_DE_JITTERING_MS 0u
+// Debounce time for encoder pins.
+#define ENCODER_DEDOUNCE_MS 0u
 
 /**
  * @brief Pin which rising/falling edge occurred.
@@ -30,7 +30,7 @@ typedef struct Encoder {
   void (*UserData);                   // User data
   GPIO_Pin* PinA;                     // GPIO Pin A
   GPIO_Pin* PinB;                     // GPIO Pin B
-#if ENCODER_DE_JITTERING_MS > 0
+#if ENCODER_DEDOUNCE_MS > 0
   uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
   uint8_t LastChangedLevelB;          // Last voltage level of Pin B

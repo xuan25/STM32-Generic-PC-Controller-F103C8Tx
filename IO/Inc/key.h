@@ -8,8 +8,8 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "gpio_pin.h"
 
-// De-jittering time for key pins.
-#define KEY_DE_JITTERING_MS 10u
+// Debounce time for key pins.
+#define KEY_DEBOUNCE_MS 10u
 
 /**
  * @brief Key Structure definition
@@ -20,7 +20,7 @@ extern "C" {
 typedef struct Key {
   void (*UserData);                 // User data
   uint8_t State;                    // State for the key
-#if KEY_DE_JITTERING_MS > 0
+#if KEY_DEBOUNCE_MS > 0
   uint32_t LastLevelChangedMs;      // Time of the last level change
   uint8_t LastChangedLevel;         // Last voltage level
 #endif
