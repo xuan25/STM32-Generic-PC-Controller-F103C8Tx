@@ -50,8 +50,8 @@ void Encoder_Scan(Encoder* encoder) {
   int8_t dir = 0, edge = 0;
   if (stateA != encoder->LastStateA) {
     edge = ENCODER_EDGE_A;
-    if (stateA == ENCODER_ON) {
-      if (stateB == ENCODER_ON) {
+    if (stateA != encoder->OffLevel) {
+      if (stateB != encoder->OffLevel) {
         dir--;
       }
       else {
@@ -59,7 +59,7 @@ void Encoder_Scan(Encoder* encoder) {
       }
     }
     else {
-      if (stateB == ENCODER_ON) {
+      if (stateB != encoder->OffLevel) {
         dir++;
       }
       else {
@@ -69,8 +69,8 @@ void Encoder_Scan(Encoder* encoder) {
   }
   else if (stateB != encoder->LastStateB) {
     edge = ENCODER_EDGE_B;
-    if (stateB == ENCODER_ON) {
-      if (stateA == ENCODER_ON) {
+    if (stateB != encoder->OffLevel) {
+      if (stateA != encoder->OffLevel) {
         dir++;
       }
       else {
@@ -78,7 +78,7 @@ void Encoder_Scan(Encoder* encoder) {
       }
     }
     else{
-      if (stateA == ENCODER_ON) {
+      if (stateA != encoder->OffLevel) {
         dir--;
       }
       else {

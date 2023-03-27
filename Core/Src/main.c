@@ -286,6 +286,7 @@ Encoder* encoder_def = &((Encoder){
     .GPIOx = ENC_1_B_GPIO_Port,
     .GPIO_Pin = ENC_1_B_Pin,
   }),
+  .OffLevel = GPIO_PIN_RESET,
   .OnTicked = OnEncoderTicked,
 });
 
@@ -298,7 +299,8 @@ Wheel* wheel_def = &((Wheel){
     .PinB = &((GPIO_Pin){
       .GPIOx = ENC_1_B_GPIO_Port,
       .GPIO_Pin = ENC_1_B_Pin,
-    })
+    }),
+    .OffLevel = GPIO_PIN_RESET,
   }),
   .TickInterval = 10,
   .ResetDelayMs = 500,
@@ -315,7 +317,8 @@ PushableWheel* pushableWheel_def = &((PushableWheel){
       .PinB = &((GPIO_Pin){
         .GPIOx = ENC_1_B_GPIO_Port,
         .GPIO_Pin = ENC_1_B_Pin,
-      })
+      }),
+      .OffLevel = GPIO_PIN_RESET,
     }),
     .TickInterval = 5,
     .ResetDelayMs = 500,
@@ -329,7 +332,8 @@ PushableWheel* pushableWheel_def = &((PushableWheel){
       .PinB = &((GPIO_Pin){
         .GPIOx = ENC_1_B_GPIO_Port,
         .GPIO_Pin = ENC_1_B_Pin,
-      })
+      }),
+      .OffLevel = GPIO_PIN_RESET,
     }),
     .TickInterval = 2,
     .ResetDelayMs = 500,

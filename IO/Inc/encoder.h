@@ -30,6 +30,7 @@ typedef struct Encoder {
   void (*UserData);                   // User data
   GPIO_Pin* PinA;                     // GPIO Pin A
   GPIO_Pin* PinB;                     // GPIO Pin B
+  GPIO_PinState OffLevel;             // GPIO pin level for ON state of encoder pin
 #if ENCODER_DEDOUNCE_MS > 0
   uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
@@ -48,9 +49,6 @@ typedef struct Encoder {
   */
   void (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
 } Encoder;
-
-// GPIO pin level for ON state of encoder pin
-#define ENCODER_ON  GPIO_PIN_SET
 
 /**
  * @brief Initialize an encoder
