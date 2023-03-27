@@ -29,6 +29,7 @@
 #include "keymat.h"
 #include "encoder.h"
 #include "wheel.h"
+#include "pushable_wheel.h"
 
 /* USER CODE END Includes */
 
@@ -105,8 +106,8 @@ void OnMatKeyStateChanged(MatKey* sender, BinaryKeyState state) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
     // Consumer Control
-    ctrlState = ctrlState | CTRL_PLAY_PAUSE;
-    USBD_HID_SendCtrlReport_FS(ctrlState);
+    // ctrlState = ctrlState | CTRL_PLAY_PAUSE;
+    // USBD_HID_SendCtrlReport_FS(ctrlState);
 
     // Dial
     // dialBtn = 1;
@@ -116,8 +117,8 @@ void OnMatKeyStateChanged(MatKey* sender, BinaryKeyState state) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
 
     // Consumer Control
-    ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
-    USBD_HID_SendCtrlReport_FS(ctrlState);
+    // ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
+    // USBD_HID_SendCtrlReport_FS(ctrlState);
 
     // Dial
     // dialBtn = 0;
@@ -155,6 +156,22 @@ void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge) {
 }
 
 void OnWheelTicked(Wheel* sender, int8_t direction) {
+  // if (direction > 0) {
+  //   // Consumer Control
+  //   ctrlState = ctrlState | CTRL_NEXT;
+  //   while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  //   ctrlState = ctrlState & ~CTRL_NEXT;
+  //   while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  // } else {
+  //   // Consumer Control
+  //   ctrlState = ctrlState | CTRL_PREVIOUS;
+  //   while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  //   ctrlState = ctrlState & ~CTRL_PREVIOUS;
+  //   while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  // }
+}
+
+void OnReleasedWheelTicked(PushableWheel* sender, int8_t direction) {
   if (direction > 0) {
     // Consumer Control
     ctrlState = ctrlState | CTRL_NEXT;
@@ -166,6 +183,31 @@ void OnWheelTicked(Wheel* sender, int8_t direction) {
     ctrlState = ctrlState | CTRL_PREVIOUS;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
     ctrlState = ctrlState & ~CTRL_PREVIOUS;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  }
+}
+
+void OnPressedWheelTicked(PushableWheel* sender, int8_t direction) {
+  if (direction > 0) {
+    // Consumer Control
+    ctrlState = ctrlState | CTRL_VOLUME_INCREMENT;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+    ctrlState = ctrlState & ~CTRL_VOLUME_INCREMENT;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  } else {
+    // Consumer Control
+    ctrlState = ctrlState | CTRL_VOLUME_DECREMENT;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+    ctrlState = ctrlState & ~CTRL_VOLUME_DECREMENT;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+  }
+}
+
+void OnPWKeyStateChanged(PushableWheel* sender, BinaryKeyState state, uint8_t isWheelTicked) {
+  if (state == Released && !isWheelTicked) {
+    ctrlState = ctrlState | CTRL_PLAY_PAUSE;
+    while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
+    ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
 }
@@ -263,6 +305,50 @@ Wheel* wheel_def = &((Wheel){
   .OnTicked = OnWheelTicked,
 });
 
+PushableWheel* pushableWheel_def = &((PushableWheel){
+  .ReleasedWheel = &((Wheel){
+    .Encoder = &((Encoder){
+      .PinA = &((GPIO_Pin){
+        .GPIOx = ENC_1_A_GPIO_Port,
+        .GPIO_Pin = ENC_1_A_Pin,
+      }),
+      .PinB = &((GPIO_Pin){
+        .GPIOx = ENC_1_B_GPIO_Port,
+        .GPIO_Pin = ENC_1_B_Pin,
+      })
+    }),
+    .TickInterval = 5,
+    .ResetDelayMs = 500,
+  }),
+  .PressedWheel = &((Wheel){
+    .Encoder = &((Encoder){
+      .PinA = &((GPIO_Pin){
+        .GPIOx = ENC_1_A_GPIO_Port,
+        .GPIO_Pin = ENC_1_A_Pin,
+      }),
+      .PinB = &((GPIO_Pin){
+        .GPIOx = ENC_1_B_GPIO_Port,
+        .GPIO_Pin = ENC_1_B_Pin,
+      })
+    }),
+    .TickInterval = 2,
+    .ResetDelayMs = 500,
+  }),
+  .PushKey = &((GPIOKey){
+    .Key = &((Key){
+      
+    }),
+    .Pin = &((GPIO_Pin){
+      .GPIOx = COL_0_GPIO_Port,
+      .GPIO_Pin = COL_0_Pin,
+    }),
+    .ReleasedLevel = GPIO_PIN_RESET
+  }),
+  .OnReleasedWheelTicked = OnReleasedWheelTicked,
+  .OnPressedWheelTicked = OnPressedWheelTicked,
+  .OnPushKeyStateChanged = OnPWKeyStateChanged,
+});
+
 /* USER CODE END 0 */
 
 /**
@@ -302,6 +388,7 @@ int main(void)
   Keymat_Init(keyMat_def);
   Encoder_Init(encoder_def);
   Wheel_Init(wheel_def);
+  PushableWheel_Init(pushableWheel_def);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -330,6 +417,10 @@ int main(void)
     Encoder_Scan(encoder_def);
     // wheel test
     Wheel_Scan(wheel_def);
+    // pushable wheel test
+    HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
+    PushableWheel_Scan(pushableWheel_def);
+    HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
   }
   /* USER CODE END 3 */
 }
