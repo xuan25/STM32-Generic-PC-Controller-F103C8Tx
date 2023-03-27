@@ -1,30 +1,30 @@
 #include "key.h"
 
-void GPIOKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
+void BinaryPushKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
 
-void GPIOKey_Init(GPIOKey* gpioKey) {
-  gpioKey->Key->UserData = gpioKey;
+void BinaryPushKey_Init(BinaryPushKey* binaryPushKey) {
+  binaryPushKey->Key->UserData = binaryPushKey;
 
-  gpioKey->Key->OnStateChanged = GPIOKey_OnKeyStateChanged;
+  binaryPushKey->Key->OnStateChanged = BinaryPushKey_OnKeyStateChanged;
 
-  uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->Pin->GPIOx, gpioKey->Pin->GPIO_Pin);
-  Key_Init(gpioKey->Key, keyLevel);
+  uint8_t keyLevel = HAL_GPIO_ReadPin(binaryPushKey->Pin->GPIOx, binaryPushKey->Pin->GPIO_Pin);
+  Key_Init(binaryPushKey->Key, keyLevel);
 }
 
-void GPIOKey_Scan(GPIOKey* gpioKey) {
-  uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->Pin->GPIOx, gpioKey->Pin->GPIO_Pin);
-  Key_Update(gpioKey->Key, keyLevel);
+void BinaryPushKey_Scan(BinaryPushKey* binaryPushKey) {
+  uint8_t keyLevel = HAL_GPIO_ReadPin(binaryPushKey->Pin->GPIOx, binaryPushKey->Pin->GPIO_Pin);
+  Key_Update(binaryPushKey->Key, keyLevel);
 }
 
-void GPIOKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
-  GPIOKey* gpioKey = (GPIOKey*)sender->UserData;
-  BinaryKeyState state;
-  if (newState == gpioKey->ReleasedLevel) {
-    state = Released;
+void BinaryPushKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
+  BinaryPushKey* binaryPushKey = (BinaryPushKey*)sender->UserData;
+  BinaryPushKeyState state;
+  if (newState == binaryPushKey->ReleasedLevel) {
+    state = PushKeyReleased;
   } else {
-    state = Pressed;
+    state = PushKeyPressed;
   }
-  gpioKey->OnStateChanged(gpioKey, state);
+  binaryPushKey->OnStateChanged(binaryPushKey, state);
 }
 
 void Key_Init(Key* key, uint8_t level) {

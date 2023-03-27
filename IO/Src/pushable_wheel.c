@@ -2,7 +2,7 @@
 
 void PushableWheel_OnReleasedWheelTicked(Wheel *sender, int8_t direction);
 void PushableWheel_OnPressedWheelTicked(Wheel *sender, int8_t direction);
-void PushableWheel_OnPushKeyStateChanged(GPIOKey *sender, BinaryKeyState state);
+void PushableWheel_OnPushKeyStateChanged(BinaryPushKey *sender, BinaryPushKeyState state);
 
 void PushableWheel_Init(PushableWheel* pushableWheel) {
   if(pushableWheel->ReleasedWheel != NULL) {
@@ -19,13 +19,13 @@ void PushableWheel_Init(PushableWheel* pushableWheel) {
 
   pushableWheel->PushKey->UserData = pushableWheel;
   pushableWheel->PushKey->OnStateChanged = PushableWheel_OnPushKeyStateChanged;
-  GPIOKey_Init(pushableWheel->PushKey);
+  BinaryPushKey_Init(pushableWheel->PushKey);
 }
 
 void PushableWheel_Scan(PushableWheel* pushableWheel) {
   Wheel_Scan(pushableWheel->PressedWheel);
   Wheel_Scan(pushableWheel->ReleasedWheel);
-  GPIOKey_Scan(pushableWheel->PushKey);
+  BinaryPushKey_Scan(pushableWheel->PushKey);
 }
 
 void PushableWheel_OnReleasedWheelTicked(Wheel *sender, int8_t direction) {
@@ -44,7 +44,7 @@ void PushableWheel_OnPressedWheelTicked(Wheel *sender, int8_t direction){
   }
 }
 
-void PushableWheel_OnPushKeyStateChanged(GPIOKey *sender, BinaryKeyState state) {
+void PushableWheel_OnPushKeyStateChanged(BinaryPushKey *sender, BinaryPushKeyState state) {
   PushableWheel* pushableWheel = (PushableWheel*)sender->UserData;
   PushableWheelLastUpdatedItem lastUpdatedItem = pushableWheel->LastUpdatedItem;
   pushableWheel->LastUpdatedItem = PushKey;

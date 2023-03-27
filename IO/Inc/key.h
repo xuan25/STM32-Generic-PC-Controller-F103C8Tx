@@ -15,7 +15,7 @@ extern "C" {
  * @brief Key Structure definition
  * 
  * @note If a key hardware need to be managed, 
- * please use GPIOKey or MatKey instead and specify the OnStateChanged callback here.
+ * please use BinaryPushKey or MatKey instead and specify the OnStateChanged callback here.
 */
 typedef struct Key {
   void (*UserData);                 // User data
@@ -36,18 +36,18 @@ typedef struct Key {
   void (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
 } Key;
 
-typedef enum BinaryKeyState {
-  Released = 0,
-  Pressed = 1,
-} BinaryKeyState;
+typedef enum BinaryPushKeyState {
+  PushKeyReleased = 0,
+  PushKeyPressed = 1,
+} BinaryPushKeyState;
 
 /**
- * @brief GPIOKey Structure definition
+ * @brief BinaryPushKey Structure definition
  * 
  * @note Used to managed a key hardware that directed connect to a GPIO.
  * Please specify the GPIO of the key and the Key struct.
 */
-typedef struct GPIOKey {
+typedef struct BinaryPushKey {
   void (*UserData);               // User data
   Key (*Key);                     // Key structure
   GPIO_Pin* Pin;                  // GPIO Pin
@@ -60,25 +60,25 @@ typedef struct GPIOKey {
    * @param state state.
    * @retval None
   */
-  void (*OnStateChanged)(struct GPIOKey* sender, BinaryKeyState state);
-} GPIOKey;
+  void (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
+} BinaryPushKey;
 
 /**
- * @brief Initialize a GPIOKey
+ * @brief Initialize a BinaryPushKey
  * 
- * @param gpioKey The GPIOKey to be initialized
+ * @param gpioKey The BinaryPushKey to be initialized
  * @retval None
 */
-void GPIOKey_Init(GPIOKey* gpioKey);
+void BinaryPushKey_Init(BinaryPushKey* gpioKey);
 
 /**
- * @brief Scan an GPIOKey hardware to update its state and potentially 
+ * @brief Scan an BinaryPushKey hardware to update its state and potentially 
  * trigger a callback.
  * 
- * @param gpioKey The GPIOKey to be scanned
+ * @param gpioKey The BinaryPushKey to be scanned
  * @retval None
 */
-void GPIOKey_Scan(GPIOKey* gpioKey);
+void BinaryPushKey_Scan(BinaryPushKey* gpioKey);
 
 /**
  * @brief Update a Key with a new voltage level

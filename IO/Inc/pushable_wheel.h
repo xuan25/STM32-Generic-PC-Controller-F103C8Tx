@@ -25,7 +25,7 @@ typedef struct PushableWheel {
   void (*UserData);               // User data
   Wheel* ReleasedWheel;                 // 
   Wheel* PressedWheel;                 // 
-  GPIOKey* PushKey;               // 
+  BinaryPushKey* PushKey;               // 
   PushableWheelLastUpdatedItem LastUpdatedItem;
   
   // /**
@@ -37,7 +37,7 @@ typedef struct PushableWheel {
   // */
   void (*OnReleasedWheelTicked)(struct PushableWheel* sender, int8_t direction);
   void (*OnPressedWheelTicked)(struct PushableWheel* sender, int8_t direction);
-  void (*OnPushKeyStateChanged)(struct PushableWheel* sender, BinaryKeyState state, uint8_t isWheelTicked);
+  void (*OnPushKeyStateChanged)(struct PushableWheel* sender, BinaryPushKeyState state, uint8_t isWheelTicked);
 } PushableWheel;
 
 /**

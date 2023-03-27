@@ -77,11 +77,11 @@ void MatKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
   MatKey* matKey = (MatKey*)sender->UserData;
   KeyMat* keyMat = (KeyMat*)matKey->UserData;
 
-  BinaryKeyState state;
+  BinaryPushKeyState state;
   if (newState == keyMat->ReleasedLevel) {
-    state = Released;
+    state = PushKeyReleased;
   } else {
-    state = Pressed;
+    state = PushKeyPressed;
   }
   matKey->OnStateChanged(matKey, state);
 }

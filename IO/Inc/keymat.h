@@ -27,7 +27,7 @@ typedef struct MatKey {
    * @param state state.
    * @retval None
   */
-  void (*OnStateChanged)(struct MatKey* sender, BinaryKeyState state);
+  void (*OnStateChanged)(struct MatKey* sender, BinaryPushKeyState state);
 } MatKey;
 
 /**

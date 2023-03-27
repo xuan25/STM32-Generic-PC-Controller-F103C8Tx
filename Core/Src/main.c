@@ -75,8 +75,8 @@ static void MX_TIM2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void OnGPIOKeyStateChanged(GPIOKey* sender, BinaryKeyState state) {
-  if (state == Pressed) {
+void OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
+  if (state == PushKeyPressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
     // Consumer Control
@@ -101,8 +101,8 @@ void OnGPIOKeyStateChanged(GPIOKey* sender, BinaryKeyState state) {
   }
 }
 
-void OnMatKeyStateChanged(MatKey* sender, BinaryKeyState state) {
-  if (state == Pressed) {
+void OnMatKeyStateChanged(MatKey* sender, BinaryPushKeyState state) {
+  if (state == PushKeyPressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
     // Consumer Control
@@ -203,8 +203,8 @@ void OnPressedWheelTicked(PushableWheel* sender, int8_t direction) {
   }
 }
 
-void OnPWKeyStateChanged(PushableWheel* sender, BinaryKeyState state, uint8_t isWheelTicked) {
-  if (state == Released && !isWheelTicked) {
+void OnPWKeyStateChanged(PushableWheel* sender, BinaryPushKeyState state, uint8_t isWheelTicked) {
+  if (state == PushKeyReleased && !isWheelTicked) {
     ctrlState = ctrlState | CTRL_PLAY_PAUSE;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
     ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
@@ -265,7 +265,7 @@ KeyMat* keyMat_def = &((KeyMat){
   .ReleasedLevel = GPIO_PIN_RESET
 });
 
-GPIOKey* gpio_key_def = &((GPIOKey){
+BinaryPushKey* binaryPushKey_def = &((BinaryPushKey){
   .Key = &((Key){
     
   }),
@@ -334,7 +334,7 @@ PushableWheel* pushableWheel_def = &((PushableWheel){
     .TickInterval = 2,
     .ResetDelayMs = 500,
   }),
-  .PushKey = &((GPIOKey){
+  .PushKey = &((BinaryPushKey){
     .Key = &((Key){
       
     }),
@@ -384,7 +384,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  GPIOKey_Init(gpio_key_def);
+  BinaryPushKey_Init(binaryPushKey_def);
   Keymat_Init(keyMat_def);
   Encoder_Init(encoder_def);
   Wheel_Init(wheel_def);
@@ -412,7 +412,7 @@ int main(void)
     // key matrix test
     Keymat_Scan(keyMat_def);
     // single key test
-    GPIOKey_Scan(gpio_key_def);
+    BinaryPushKey_Scan(binaryPushKey_def);
     // encoder test
     Encoder_Scan(encoder_def);
     // wheel test
