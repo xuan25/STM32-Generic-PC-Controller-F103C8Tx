@@ -1,10 +1,13 @@
 #include "keymat.h"
 #include <stdlib.h>
 
+void MatKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
+
 void Keymat_Init(KeyMat* keyMat) {
 
   uint16_t numItemsMax = keyMat->NumRows * keyMat->NumCols;
 
+  // Init lookup
   keyMat->Keys = (Key**) malloc(numItemsMax * sizeof(Key*));
   keyMat->EnabledFlags = (uint8_t*) malloc(numItemsMax * sizeof(uint8_t));
   for (int i = 0; i < numItemsMax; i++) {
@@ -12,15 +15,19 @@ void Keymat_Init(KeyMat* keyMat) {
     keyMat->EnabledFlags[i] = 0;
   }
 
-  // Init keys
+  // Init relations
   for (int i = 0; i < keyMat->NumMatKeys; i++) {
     MatKey* matKey = keyMat->MatKeys[i];
+    matKey->UserData = keyMat;
+    matKey->Key->UserData = matKey;
+    matKey->Key->OnStateChanged = MatKey_OnKeyStateChanged;
+
     uint8_t idx = matKey->Y * keyMat->NumCols + matKey->X;
     keyMat->Keys[idx] = matKey->Key;
     keyMat->EnabledFlags[idx] = 1;
   }
   
-  // Init states
+  // Init state
   uint32_t tickMs = HAL_GetTick();
   for (int x = 0; x < keyMat->NumRows; x++) {
     GPIO_Pin* row = keyMat->Rows[x];
@@ -64,4 +71,17 @@ void Keymat_Scan(KeyMat* keyMat) {
     }
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, GPIO_PIN_RESET);
   }
+}
+
+void MatKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
+  MatKey* matKey = (MatKey*)sender->UserData;
+  KeyMat* keyMat = (KeyMat*)matKey->UserData;
+
+  BinaryKeyState state;
+  if (newState == keyMat->ReleasedLevel) {
+    state = Released;
+  } else {
+    state = Pressed;
+  }
+  matKey->OnStateChanged(matKey, state);
 }

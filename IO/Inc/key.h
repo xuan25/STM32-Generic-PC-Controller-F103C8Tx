@@ -36,6 +36,11 @@ typedef struct Key {
   void (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
 } Key;
 
+typedef enum BinaryKeyState {
+  Released = 0,
+  Pressed = 1,
+} BinaryKeyState;
+
 /**
  * @brief GPIOKey Structure definition
  * 
@@ -43,9 +48,19 @@ typedef struct Key {
  * Please specify the GPIO of the key and the Key struct.
 */
 typedef struct GPIOKey {
-  void (*UserData);         // User data
-  Key (*Key);               // Key structure
-  GPIO_Pin* Pin;            // GPIO Pin
+  void (*UserData);               // User data
+  Key (*Key);                     // Key structure
+  GPIO_Pin* Pin;                  // GPIO Pin
+  GPIO_PinState ReleasedLevel;    // GPIO state when key released
+
+  /**
+   * @brief State changed callback of the key
+   * 
+   * @param sender Key that trigger the callback.
+   * @param state state.
+   * @retval None
+  */
+  void (*OnStateChanged)(struct GPIOKey* sender, BinaryKeyState state);
 } GPIOKey;
 
 /**

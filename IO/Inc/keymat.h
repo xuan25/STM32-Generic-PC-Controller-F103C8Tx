@@ -19,6 +19,15 @@ typedef struct MatKey {
   Key (*Key);         // Key structure
   uint16_t X;         // X coordinate of the key
   uint16_t Y;         // Y coordinate of the key
+
+  /**
+   * @brief State changed callback of the MatKey
+   * 
+   * @param sender MatKey that trigger the callback.
+   * @param state state.
+   * @retval None
+  */
+  void (*OnStateChanged)(struct MatKey* sender, BinaryKeyState state);
 } MatKey;
 
 /**
@@ -28,15 +37,16 @@ typedef struct MatKey {
  * Please specify NumMatKeys, MatKeys, NumRows, Rows, NumCols and Cols.
 */
 typedef struct KeyMat {
-  void (*UserData);       // User data
-  uint16_t NumMatKeys;    // Number of defined MatKey
-  MatKey* (*MatKeys);     // A array of defined MatKey
-  uint16_t NumRows;       // Number of row pins
-  GPIO_Pin* (*Rows);      // A array of row pins
-  uint16_t NumCols;       // Number of column pins
-  GPIO_Pin* (*Cols);      // A array of column pins
-  Key* (* Keys);          // Keys for matrix coordinates
-  uint8_t* EnabledFlags;  // Enabled flags for matrix coordinates
+  void (*UserData);             // User data
+  uint16_t NumMatKeys;          // Number of defined MatKey
+  MatKey* (*MatKeys);           // A array of defined MatKey
+  uint16_t NumRows;             // Number of row pins
+  GPIO_Pin* (*Rows);            // A array of row pins
+  uint16_t NumCols;             // Number of column pins
+  GPIO_Pin* (*Cols);            // A array of column pins
+  GPIO_PinState ReleasedLevel;  // GPIO state when key released
+  Key* (* Keys);                // Keys for matrix coordinates
+  uint8_t* EnabledFlags;        // Enabled flags for matrix coordinates
 } KeyMat;
 
 /**

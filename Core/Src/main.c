@@ -56,9 +56,6 @@ DMA_HandleTypeDef hdma_tim2_ch2_ch4;
 
 /* USER CODE BEGIN PV */
 
-GPIOKey* gpio_key_def;
-Encoder* encoder_def;
-
 uint16_t ctrlState = 0x0000;
 uint8_t midiState = 0xff;
 uint8_t dialBtn = 0x0;
@@ -72,16 +69,39 @@ static void MX_DMA_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
-void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState);
-void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge);
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void OnKeyStateChanged(Key* sender, uint8_t oldState, uint8_t newState) {
-  if (newState == KEY_PRESSED) {
+void OnGPIOKeyStateChanged(GPIOKey* sender, BinaryKeyState state) {
+  if (state == Pressed) {
+    HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+
+    // Consumer Control
+    // ctrlState = ctrlState | CTRL_PLAY_PAUSE;
+    // USBD_HID_SendCtrlReport_FS(ctrlState);
+
+    // Dial
+    // dialBtn = 1;
+    // USBD_HID_SendRadialReport_FS(dialBtn, 0, 0, 0, 0);
+
+  } else {
+    HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+
+    // Consumer Control
+    // ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
+    // USBD_HID_SendCtrlReport_FS(ctrlState);
+
+    // Dial
+    // dialBtn = 0;
+    // USBD_HID_SendRadialReport_FS(dialBtn, 0, 0, 0, 0);
+    
+  }
+}
+
+void OnMatKeyStateChanged(MatKey* sender, BinaryKeyState state) {
+  if (state == Pressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
     // Consumer Control
@@ -155,10 +175,11 @@ KeyMat* keyMat_def = &((KeyMat){
   .MatKeys = ((MatKey*[]){
     &((MatKey){
       .Key = &((Key){
-        .OnStateChanged = OnKeyStateChanged,
+        
       }),
       .X = 0,
       .Y = 0,
+      .OnStateChanged = OnMatKeyStateChanged,
     }),
   }),
   .NumRows = 4,
@@ -199,16 +220,19 @@ KeyMat* keyMat_def = &((KeyMat){
       .GPIO_Pin = COL_3_Pin,
     })
   }),
+  .ReleasedLevel = GPIO_PIN_RESET
 });
 
 GPIOKey* gpio_key_def = &((GPIOKey){
   .Key = &((Key){
-    .OnStateChanged = OnKeyStateChanged,
+    
   }),
   .Pin = &((GPIO_Pin){
     .GPIOx = ENC_2_P_GPIO_Port,
     .GPIO_Pin = ENC_2_P_Pin,
-  })
+  }),
+  .OnStateChanged = OnGPIOKeyStateChanged,
+  .ReleasedLevel = GPIO_PIN_RESET
 });
 
 Encoder* encoder_def = &((Encoder){

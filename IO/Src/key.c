@@ -1,17 +1,38 @@
 #include "key.h"
 
+void GPIOKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
+
 void GPIOKey_Init(GPIOKey* gpioKey) {
+  gpioKey->Key->UserData = gpioKey;
+
+  gpioKey->Key->OnStateChanged = GPIOKey_OnKeyStateChanged;
+
   uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->Pin->GPIOx, gpioKey->Pin->GPIO_Pin);
-  gpioKey->Key->LastChangedLevel = keyLevel;
-#if KEY_DEBOUNCE_MS > 0
-  uint32_t tickMs = HAL_GetTick();
-  gpioKey->Key->LastLevelChangedMs = tickMs;
-#endif
+  Key_Init(gpioKey->Key, keyLevel);
 }
 
 void GPIOKey_Scan(GPIOKey* gpioKey) {
   uint8_t keyLevel = HAL_GPIO_ReadPin(gpioKey->Pin->GPIOx, gpioKey->Pin->GPIO_Pin);
   Key_Update(gpioKey->Key, keyLevel);
+}
+
+void GPIOKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
+  GPIOKey* gpioKey = (GPIOKey*)sender->UserData;
+  BinaryKeyState state;
+  if (newState == gpioKey->ReleasedLevel) {
+    state = Released;
+  } else {
+    state = Pressed;
+  }
+  gpioKey->OnStateChanged(gpioKey, state);
+}
+
+void Key_Init(Key* key, uint8_t level) {
+  key->LastChangedLevel = level;
+  #if KEY_DEBOUNCE_MS > 0
+    uint32_t tickMs = HAL_GetTick();
+    key->LastLevelChangedMs = tickMs;
+  #endif
 }
 
 void Key_Update(Key* key, uint8_t level) {
