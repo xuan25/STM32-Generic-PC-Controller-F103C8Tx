@@ -65,6 +65,14 @@ typedef struct KeyMat {
 void Keymat_Init(KeyMat* keyMat);
 
 /**
+ * @brief De-initialize the Key matrix
+ * 
+ * @param keyMat The KeyMat to be de-initialize
+ * @retval None
+*/
+void Keymat_DeInit(KeyMat* keyMat);
+
+/**
  * @brief Scan an Key matrix hardware to update its state and potentially 
  * trigger callbacks.
  * 

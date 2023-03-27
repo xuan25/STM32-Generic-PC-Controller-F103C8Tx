@@ -53,6 +53,11 @@ void Keymat_Init(KeyMat* keyMat) {
   }
 }
 
+void Keymat_DeInit(KeyMat* keyMat) {
+  free(keyMat->Internal.Keys);
+  free(keyMat->Internal.EnabledFlags);
+}
+
 void Keymat_Scan(KeyMat* keyMat) {
   for (int x = 0; x < keyMat->NumRows; x++) {
     GPIO_Pin* row = keyMat->Rows[x];
