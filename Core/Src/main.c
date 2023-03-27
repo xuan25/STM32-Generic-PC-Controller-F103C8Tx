@@ -28,8 +28,8 @@
 #include "binary_push_key.h"
 #include "keymat.h"
 #include "encoder.h"
-#include "wheel.h"
-#include "pushable_wheel.h"
+#include "dial.h"
+#include "pushable_dial.h"
 
 /* USER CODE END Includes */
 
@@ -155,7 +155,7 @@ void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge) {
   }
 }
 
-void OnWheelTicked(Wheel* sender, int8_t direction) {
+void OnDialTicked(Dial* sender, int8_t direction) {
   // if (direction > 0) {
   //   // Consumer Control
   //   ctrlState = ctrlState | CTRL_NEXT;
@@ -171,7 +171,7 @@ void OnWheelTicked(Wheel* sender, int8_t direction) {
   // }
 }
 
-void OnReleasedWheelTicked(PushableWheel* sender, int8_t direction) {
+void OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
   if (direction > 0) {
     // Consumer Control
     ctrlState = ctrlState | CTRL_NEXT;
@@ -187,7 +187,7 @@ void OnReleasedWheelTicked(PushableWheel* sender, int8_t direction) {
   }
 }
 
-void OnPressedWheelTicked(PushableWheel* sender, int8_t direction) {
+void OnPressedDialTicked(PushableDial* sender, int8_t direction) {
   if (direction > 0) {
     // Consumer Control
     ctrlState = ctrlState | CTRL_VOLUME_INCREMENT;
@@ -203,8 +203,8 @@ void OnPressedWheelTicked(PushableWheel* sender, int8_t direction) {
   }
 }
 
-void OnPWKeyStateChanged(PushableWheel* sender, BinaryPushKeyState state, uint8_t isWheelTicked) {
-  if (state == PushKeyReleased && !isWheelTicked) {
+void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
+  if (state == PushKeyReleased && !isDialTicked) {
     ctrlState = ctrlState | CTRL_PLAY_PAUSE;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
     ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
@@ -290,7 +290,7 @@ Encoder* encoder_def = &((Encoder){
   .OnTicked = OnEncoderTicked,
 });
 
-Wheel* wheel_def = &((Wheel){
+Dial* dial_def = &((Dial){
   .Encoder = &((Encoder){
     .PinA = &((GPIO_Pin){
       .GPIOx = ENC_1_A_GPIO_Port,
@@ -304,11 +304,11 @@ Wheel* wheel_def = &((Wheel){
   }),
   .TickInterval = 10,
   .ResetDelayMs = 500,
-  .OnTicked = OnWheelTicked,
+  .OnTicked = OnDialTicked,
 });
 
-PushableWheel* pushableWheel_def = &((PushableWheel){
-  .ReleasedWheel = &((Wheel){
+PushableDial* pushableDial_def = &((PushableDial){
+  .ReleasedDial = &((Dial){
     .Encoder = &((Encoder){
       .PinA = &((GPIO_Pin){
         .GPIOx = ENC_1_A_GPIO_Port,
@@ -323,7 +323,7 @@ PushableWheel* pushableWheel_def = &((PushableWheel){
     .TickInterval = 5,
     .ResetDelayMs = 500,
   }),
-  .PressedWheel = &((Wheel){
+  .PressedDial = &((Dial){
     .Encoder = &((Encoder){
       .PinA = &((GPIO_Pin){
         .GPIOx = ENC_1_A_GPIO_Port,
@@ -348,8 +348,8 @@ PushableWheel* pushableWheel_def = &((PushableWheel){
     }),
     .ReleasedLevel = GPIO_PIN_RESET
   }),
-  .OnReleasedWheelTicked = OnReleasedWheelTicked,
-  .OnPressedWheelTicked = OnPressedWheelTicked,
+  .OnReleasedDialTicked = OnReleasedDialTicked,
+  .OnPressedDialTicked = OnPressedDialTicked,
   .OnPushKeyStateChanged = OnPWKeyStateChanged,
 });
 
@@ -391,8 +391,8 @@ int main(void)
   BinaryPushKey_Init(binaryPushKey_def);
   Keymat_Init(keyMat_def);
   Encoder_Init(encoder_def);
-  Wheel_Init(wheel_def);
-  PushableWheel_Init(pushableWheel_def);
+  Dial_Init(dial_def);
+  PushableDial_Init(pushableDial_def);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -419,11 +419,11 @@ int main(void)
     BinaryPushKey_Scan(binaryPushKey_def);
     // encoder test
     Encoder_Scan(encoder_def);
-    // wheel test
-    Wheel_Scan(wheel_def);
-    // pushable wheel test
+    // dial test
+    Dial_Scan(dial_def);
+    // pushable dial test
     HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
-    PushableWheel_Scan(pushableWheel_def);
+    PushableDial_Scan(pushableDial_def);
     HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
   }
   /* USER CODE END 3 */
