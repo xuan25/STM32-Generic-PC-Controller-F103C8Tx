@@ -3,15 +3,15 @@
 void Encoder_Init(Encoder* encoder) {
   uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
   uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
-  encoder->LastStateA = levelA;
-  encoder->LastStateB = levelB;
+  encoder->Internal.LastStateA = levelA;
+  encoder->Internal.LastStateB = levelB;
 
 #if ENCODER_DEBOUNCE_MS > 0
   uint32_t tickMs = HAL_GetTick();
 
-  encoder->LastLevelChangedMs = tickMs;
-  encoder->LastChangedLevelA = levelA;
-  encoder->LastChangedLevelB = levelB;
+  encoder->Internal.LastLevelChangedMs = tickMs;
+  encoder->Internal.LastChangedLevelA = levelA;
+  encoder->Internal.LastChangedLevelB = levelB;
 #endif
 }
 
@@ -23,22 +23,22 @@ void Encoder_Scan(Encoder* encoder) {
   uint32_t tickMs = HAL_GetTick();
 
   // Level update
-  if(encoder->LastChangedLevelA != levelA) {
-    encoder->LastChangedLevelA = levelA;
-    encoder->LastLevelChangedMs = tickMs;
+  if(encoder->Internal.LastChangedLevelA != levelA) {
+    encoder->Internal.LastChangedLevelA = levelA;
+    encoder->Internal.LastLevelChangedMs = tickMs;
   }
-  if(encoder->LastChangedLevelB != levelB) {
-    encoder->LastChangedLevelB = levelB;
-    encoder->LastLevelChangedMs = tickMs;
+  if(encoder->Internal.LastChangedLevelB != levelB) {
+    encoder->Internal.LastChangedLevelB = levelB;
+    encoder->Internal.LastLevelChangedMs = tickMs;
   }
 
   // State update
-  uint8_t stateA = encoder->LastStateA;
-  uint8_t stateB = encoder->LastStateB;
-  if(encoder->LastStateA != levelA && tickMs - encoder->LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
+  uint8_t stateA = encoder->Internal.LastStateA;
+  uint8_t stateB = encoder->Internal.LastStateB;
+  if(encoder->Internal.LastStateA != levelA && tickMs - encoder->Internal.LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
     stateA = levelA;
   }
-  if(encoder->LastStateB != levelB && tickMs - encoder->LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
+  if(encoder->Internal.LastStateB != levelB && tickMs - encoder->Internal.LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
     stateB = levelB;
   }
 #else
@@ -48,7 +48,7 @@ void Encoder_Scan(Encoder* encoder) {
 
   // Tick check
   int8_t dir = 0, edge = 0;
-  if (stateA != encoder->LastStateA) {
+  if (stateA != encoder->Internal.LastStateA) {
     edge = ENCODER_EDGE_A;
     if (stateA != encoder->OffLevel) {
       if (stateB != encoder->OffLevel) {
@@ -67,7 +67,7 @@ void Encoder_Scan(Encoder* encoder) {
       }
     }
   }
-  else if (stateB != encoder->LastStateB) {
+  else if (stateB != encoder->Internal.LastStateB) {
     edge = ENCODER_EDGE_B;
     if (stateB != encoder->OffLevel) {
       if (stateA != encoder->OffLevel) {
@@ -88,8 +88,8 @@ void Encoder_Scan(Encoder* encoder) {
   }
   
   // Struct update
-  encoder->LastStateA = stateA;
-  encoder->LastStateB = stateB;
+  encoder->Internal.LastStateA = stateA;
+  encoder->Internal.LastStateB = stateB;
   
   // callback
   if (dir != 0) {

@@ -20,17 +20,8 @@ typedef enum Encoder_Edge
   ENCODER_EDGE_B = 1 << 1,
 }Encoder_Edge;
 
-/**
- * @brief Encoder Structure definition
- * 
- * @note Used to manage a encoder hardware.
- * Please specify the GPIO of Pin A and Pin B of the encoder and the OnTicked callback. 
-*/
-typedef struct Encoder {
-  void (*UserData);                   // User data
-  GPIO_Pin* PinA;                     // GPIO Pin A
-  GPIO_Pin* PinB;                     // GPIO Pin B
-  GPIO_PinState OffLevel;             // GPIO pin level for ON state of encoder pin
+typedef struct Encoder_Internal {
+  void (*Parent);                   // Parent
 #if ENCODER_DEDOUNCE_MS > 0
   uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
@@ -38,6 +29,18 @@ typedef struct Encoder {
 #endif
   uint8_t LastStateA;                 // Last pin state of Pin A
   uint8_t LastStateB;                 // Last pin state of Pin B
+} Encoder_Internal;
+
+/**
+ * @brief Encoder Structure definition
+ * 
+ * @note Used to manage a encoder hardware.
+*/
+typedef struct Encoder {
+  Encoder_Internal Internal;          // For internal usage
+  GPIO_Pin* PinA;                     // GPIO Pin A
+  GPIO_Pin* PinB;                     // GPIO Pin B
+  GPIO_PinState OffLevel;             // GPIO pin level for ON state of encoder pin
 
   /**
    * @brief Tick callback of the encoder

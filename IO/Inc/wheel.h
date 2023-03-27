@@ -8,17 +8,20 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "encoder.h"
 
+typedef struct Wheel_Internal {
+  void (*Parent);                 // Parent
+  uint32_t LastInputTickMs;       // Time of the last hardware tick
+  int16_t InputState;             // Internal wheel state tracing
+} Wheel_Internal;
+
 /**
  * @brief Wheel Structure definition
  * 
  * @note Used to managed a encoder hardware that act like a wheel.
- * Please specify the Encoder struct, TickInterval, ResetDelayMs, IgnoreInputEdge and OnTicked callback.
 */
 typedef struct Wheel {
-  void (*UserData);               // User data
+  Wheel_Internal Internal;        // For internal usage
   Encoder* Encoder;               // Encoder struct
-  uint32_t LastInputTickMs;       // Time of the last hardware tick
-  int16_t InputState;             // Internal wheel state tracing
   uint16_t TickInterval;          // Specify the ratio between hardware ticks and a wheel tick
   uint16_t ResetDelayMs;          // Specify the time for reset delay that auto align the wheel to a wheel tick
   Encoder_Edge IgnoreInputEdge;   // Specify the pin to ignore its rising/falling edges

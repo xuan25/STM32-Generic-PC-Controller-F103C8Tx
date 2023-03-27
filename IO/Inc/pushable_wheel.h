@@ -15,18 +15,21 @@ typedef enum PushableWheelLastUpdatedItem {
   PushKey = 3,
 } PushableWheelLastUpdatedItem;
 
+typedef struct PushableWheel_Internal {
+  void (*Parent);                                 // Parent
+  PushableWheelLastUpdatedItem LastUpdatedItem;   // Last updated item 
+} PushableWheel_Internal;
+
 /**
  * @brief PushableWheel Structure definition
  * 
  * @note Used to managed a pushable wheel.
- * Please specify the ReleasedWheel, PressedWheel, PushKey and callbacks.
 */
 typedef struct PushableWheel {
-  void (*UserData);                               // User data
+  PushableWheel_Internal Internal;                // For internal usage
   Wheel* ReleasedWheel;                           // Wheel for released mode
   Wheel* PressedWheel;                            // Wheel for pressed mode
   BinaryPushKey* PushKey;                         // PushKey to press/release
-  PushableWheelLastUpdatedItem LastUpdatedItem;   // Last updated item 
   
   /**
    * @brief Tick callback of the wheel for released mode

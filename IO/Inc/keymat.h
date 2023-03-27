@@ -9,13 +9,17 @@ extern "C" {
 #include "gpio_pin.h"
 #include "binary_push_key.h"
 
+typedef struct MatKey_Internal {
+  void (*Parent);     // Parent
+} MatKey_Internal;
+
 /**
  * @brief MatKey Structure definition
  * 
  * @note Used to managed a key hardware in a key matrix.
 */
 typedef struct MatKey {
-  void (*UserData);   // User data
+  MatKey_Internal Internal;
   Key (*Key);         // Key structure
   uint16_t X;         // X coordinate of the key
   uint16_t Y;         // Y coordinate of the key
@@ -30,14 +34,19 @@ typedef struct MatKey {
   void (*OnStateChanged)(struct MatKey* sender, BinaryPushKeyState state);
 } MatKey;
 
+typedef struct KeyMat_Internal {
+  void (*Parent);               // Parent
+  Key* (* Keys);                // Keys for matrix coordinates
+  uint8_t* EnabledFlags;        // Enabled flags for matrix coordinates
+} KeyMat_Internal;
+
 /**
  * @brief KeyMat Structure definition
  * 
  * @note Used to managed a key matrix.
- * Please specify NumMatKeys, MatKeys, NumRows, Rows, NumCols and Cols.
 */
 typedef struct KeyMat {
-  void (*UserData);             // User data
+  KeyMat_Internal Internal;     // For internal usage
   uint16_t NumMatKeys;          // Number of defined MatKey
   MatKey* (*MatKeys);           // A array of defined MatKey
   uint16_t NumRows;             // Number of row pins
@@ -45,8 +54,6 @@ typedef struct KeyMat {
   uint16_t NumCols;             // Number of column pins
   GPIO_Pin* (*Cols);            // A array of column pins
   GPIO_PinState ReleasedLevel;  // GPIO state when key released
-  Key* (* Keys);                // Keys for matrix coordinates
-  uint8_t* EnabledFlags;        // Enabled flags for matrix coordinates
 } KeyMat;
 
 /**

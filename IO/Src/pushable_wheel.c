@@ -6,18 +6,18 @@ void PushableWheel_OnPushKeyStateChanged(BinaryPushKey *sender, BinaryPushKeySta
 
 void PushableWheel_Init(PushableWheel* pushableWheel) {
   if(pushableWheel->ReleasedWheel != NULL) {
-    pushableWheel->ReleasedWheel->UserData = pushableWheel;
+    pushableWheel->ReleasedWheel->Internal.Parent = pushableWheel;
     pushableWheel->ReleasedWheel->OnTicked = PushableWheel_OnReleasedWheelTicked;
     Wheel_Init(pushableWheel->ReleasedWheel);
   }
   
   if(pushableWheel->ReleasedWheel != NULL) {
-    pushableWheel->PressedWheel->UserData = pushableWheel;
+    pushableWheel->PressedWheel->Internal.Parent = pushableWheel;
     pushableWheel->PressedWheel->OnTicked = PushableWheel_OnPressedWheelTicked;
     Wheel_Init(pushableWheel->PressedWheel);
   }
 
-  pushableWheel->PushKey->UserData = pushableWheel;
+  pushableWheel->PushKey->Internal.Parent = pushableWheel;
   pushableWheel->PushKey->OnStateChanged = PushableWheel_OnPushKeyStateChanged;
   BinaryPushKey_Init(pushableWheel->PushKey);
 }
@@ -29,24 +29,24 @@ void PushableWheel_Scan(PushableWheel* pushableWheel) {
 }
 
 void PushableWheel_OnReleasedWheelTicked(Wheel *sender, int8_t direction) {
-  PushableWheel* pushableWheel = (PushableWheel*)sender->UserData;
-  if(pushableWheel->PushKey->Key->State == pushableWheel->PushKey->ReleasedLevel) {
-    pushableWheel->LastUpdatedItem = ReleasedWheel;
+  PushableWheel* pushableWheel = (PushableWheel*)sender->Internal.Parent;
+  if(pushableWheel->PushKey->Key->Internal.State == pushableWheel->PushKey->ReleasedLevel) {
+    pushableWheel->Internal.LastUpdatedItem = ReleasedWheel;
     pushableWheel->OnReleasedWheelTicked(pushableWheel, direction);
   }
 }
 
 void PushableWheel_OnPressedWheelTicked(Wheel *sender, int8_t direction){
-  PushableWheel* pushableWheel = (PushableWheel*)sender->UserData;
-  if(pushableWheel->PushKey->Key->State != pushableWheel->PushKey->ReleasedLevel) {
-    pushableWheel->LastUpdatedItem = PressedWheel;
+  PushableWheel* pushableWheel = (PushableWheel*)sender->Internal.Parent;
+  if(pushableWheel->PushKey->Key->Internal.State != pushableWheel->PushKey->ReleasedLevel) {
+    pushableWheel->Internal.LastUpdatedItem = PressedWheel;
     pushableWheel->OnPressedWheelTicked(pushableWheel, direction);
   }
 }
 
 void PushableWheel_OnPushKeyStateChanged(BinaryPushKey *sender, BinaryPushKeyState state) {
-  PushableWheel* pushableWheel = (PushableWheel*)sender->UserData;
-  PushableWheelLastUpdatedItem lastUpdatedItem = pushableWheel->LastUpdatedItem;
-  pushableWheel->LastUpdatedItem = PushKey;
+  PushableWheel* pushableWheel = (PushableWheel*)sender->Internal.Parent;
+  PushableWheelLastUpdatedItem lastUpdatedItem = pushableWheel->Internal.LastUpdatedItem;
+  pushableWheel->Internal.LastUpdatedItem = PushKey;
   pushableWheel->OnPushKeyStateChanged(pushableWheel, state, lastUpdatedItem != PushKey);
 }

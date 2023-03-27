@@ -11,19 +11,22 @@ extern "C" {
 // Debounce time for key pins.
 #define KEY_DEBOUNCE_MS 10u
 
-/**
- * @brief Key Structure definition
- * 
- * @note If a key hardware need to be managed, 
- * please use BinaryPushKey or MatKey instead and specify the OnStateChanged callback here.
-*/
-typedef struct Key {
-  void (*UserData);                 // User data
+typedef struct Key_Internal {
+  void (*Parent);                   // Parent
   uint8_t State;                    // State for the key
 #if KEY_DEBOUNCE_MS > 0
   uint32_t LastLevelChangedMs;      // Time of the last level change
   uint8_t LastChangedLevel;         // Last voltage level
 #endif
+} Key_Internal;
+
+/**
+ * @brief Key Structure definition
+ * 
+ * @note Used to manage a key (any type) hardware.
+*/
+typedef struct Key {
+  Key_Internal Internal;            // For internal usage
 
   /**
    * @brief State changed callback of the key

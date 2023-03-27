@@ -13,17 +13,20 @@ typedef enum BinaryPushKeyState {
   PushKeyPressed = 1,
 } BinaryPushKeyState;
 
+typedef struct BinaryPushKey_Internal {
+  void (*Parent);                 // Parent
+} BinaryPushKey_Internal;
+
 /**
  * @brief BinaryPushKey Structure definition
  * 
  * @note Used to managed a key hardware that directed connect to a GPIO.
- * Please specify the GPIO of the key and the Key struct.
 */
 typedef struct BinaryPushKey {
-  void (*UserData);               // User data
-  Key (*Key);                     // Key structure
-  GPIO_Pin* Pin;                  // GPIO Pin
-  GPIO_PinState ReleasedLevel;    // GPIO state when key released
+  BinaryPushKey_Internal Internal;  // For internal usage
+  Key (*Key);                       // Key structure
+  GPIO_Pin* Pin;                    // GPIO Pin
+  GPIO_PinState ReleasedLevel;      // GPIO state when key released
 
   /**
    * @brief State changed callback of the key
