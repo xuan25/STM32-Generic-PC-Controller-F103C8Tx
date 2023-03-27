@@ -9,7 +9,7 @@ extern "C" {
 #include "gpio_pin.h"
 
 // Debounce time for encoder pins.
-#define ENCODER_DEDOUNCE_MS 0u
+#define ENCODER_DEBOUNCE_MS 0u
 
 /**
  * @brief Pin which rising/falling edge occurred.
@@ -22,7 +22,7 @@ typedef enum Encoder_Edge
 
 typedef struct Encoder_Internal {
   void (*Parent);                   // Parent
-#if ENCODER_DEDOUNCE_MS > 0
+#if ENCODER_DEBOUNCE_MS > 0
   uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
   uint8_t LastChangedLevelB;          // Last voltage level of Pin B
@@ -40,7 +40,7 @@ typedef struct Encoder {
   Encoder_Internal Internal;          // For internal usage
   GPIO_Pin* PinA;                     // GPIO Pin A
   GPIO_Pin* PinB;                     // GPIO Pin B
-  GPIO_PinState OffLevel;             // GPIO pin level for ON state of encoder pin
+  GPIO_PinState OffLevel;             // GPIO pin level for OFF state of encoder pin
 
   /**
    * @brief Tick callback of the encoder
