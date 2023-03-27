@@ -1,5 +1,5 @@
-#ifndef __KEYMAT_H
-#define __KEYMAT_H
+#ifndef __KEY_MATRIX_H
+#define __KEY_MATRIX_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,25 +14,25 @@ typedef struct MatKey_Internal {
 } MatKey_Internal;
 
 /**
- * @brief MatKey Structure definition
+ * @brief MatrixKey Structure definition
  * 
  * @note Used to managed a key hardware in a key matrix.
 */
-typedef struct MatKey {
+typedef struct MatrixKey {
   MatKey_Internal Internal;
   Key (*Key);         // Key structure
   uint16_t X;         // X coordinate of the key
   uint16_t Y;         // Y coordinate of the key
 
   /**
-   * @brief State changed callback of the MatKey
+   * @brief State changed callback of the MatrixKey
    * 
-   * @param sender MatKey that trigger the callback.
+   * @param sender MatrixKey that trigger the callback.
    * @param state state.
    * @retval None
   */
-  void (*OnStateChanged)(struct MatKey* sender, BinaryPushKeyState state);
-} MatKey;
+  void (*OnStateChanged)(struct MatrixKey* sender, BinaryPushKeyState state);
+} MatrixKey;
 
 typedef struct KeyMat_Internal {
   void (*Parent);               // Parent
@@ -41,48 +41,48 @@ typedef struct KeyMat_Internal {
 } KeyMat_Internal;
 
 /**
- * @brief KeyMat Structure definition
+ * @brief KeyMatrix Structure definition
  * 
  * @note Used to managed a key matrix.
 */
-typedef struct KeyMat {
+typedef struct KeyMatrix {
   KeyMat_Internal Internal;     // For internal usage
-  uint16_t NumMatKeys;          // Number of defined MatKey
-  MatKey* (*MatKeys);           // A array of defined MatKey
+  uint16_t NumMatrixKeys;       // Number of defined MatrixKey
+  MatrixKey* (*MatrixKeys);     // A array of defined MatrixKey
   uint16_t NumRows;             // Number of row pins
   GPIO_Pin* (*Rows);            // A array of row pins
   uint16_t NumCols;             // Number of column pins
   GPIO_Pin* (*Cols);            // A array of column pins
   GPIO_PinState ReleasedLevel;  // GPIO state when key released
-} KeyMat;
+} KeyMatrix;
 
 /**
  * @brief Initialize the Key matrix
  * 
- * @param keyMat The KeyMat to be initialized
+ * @param keyMatrix The KeyMatrix to be initialized
  * @retval None
 */
-void Keymat_Init(KeyMat* keyMat);
+void KeyMatrix_Init(KeyMatrix* keyMatrix);
 
 /**
  * @brief De-initialize the Key matrix
  * 
- * @param keyMat The KeyMat to be de-initialize
+ * @param keyMatrix The KeyMatrix to be de-initialize
  * @retval None
 */
-void Keymat_DeInit(KeyMat* keyMat);
+void KeyMatrix_DeInit(KeyMatrix* keyMatrix);
 
 /**
  * @brief Scan an Key matrix hardware to update its state and potentially 
  * trigger callbacks.
  * 
- * @param keyMat The KeyMat to be scanned
+ * @param keyMatrix The KeyMatrix to be scanned
  * @retval None
 */
-void Keymat_Scan(KeyMat* keyMat);
+void KeyMatrix_Scan(KeyMatrix* keyMatrix);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __KEYMAT_H */
+#endif /* __KEY_MATRIX_H */

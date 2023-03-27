@@ -26,7 +26,7 @@
 #include "usbd_hid_if.h"
 #include "usbd_midi_if.h"
 #include "binary_push_key.h"
-#include "keymat.h"
+#include "key_matrix.h"
 #include "encoder.h"
 #include "dial.h"
 #include "pushable_dial.h"
@@ -101,7 +101,7 @@ void OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
   }
 }
 
-void OnMatKeyStateChanged(MatKey* sender, BinaryPushKeyState state) {
+void OnMatKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
   if (state == PushKeyPressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
@@ -212,10 +212,10 @@ void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t
   }
 }
 
-KeyMat* keyMat_def = &((KeyMat){
-  .NumMatKeys = 1,
-  .MatKeys = ((MatKey*[]){
-    &((MatKey){
+KeyMatrix* keyMatrix_def = &((KeyMatrix){
+  .NumMatrixKeys = 1,
+  .MatrixKeys = ((MatrixKey*[]){
+    &((MatrixKey){
       .Key = &((Key){
         
       }),
@@ -389,7 +389,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   BinaryPushKey_Init(binaryPushKey_def);
-  Keymat_Init(keyMat_def);
+  KeyMatrix_Init(keyMatrix_def);
   Encoder_Init(encoder_def);
   Dial_Init(dial_def);
   PushableDial_Init(pushableDial_def);
@@ -414,7 +414,7 @@ int main(void)
     // HAL_Delay(500);
 
     // key matrix test
-    Keymat_Scan(keyMat_def);
+    KeyMatrix_Scan(keyMatrix_def);
     // single key test
     BinaryPushKey_Scan(binaryPushKey_def);
     // encoder test
