@@ -31,11 +31,11 @@ void Keymat_Init(KeyMat* keyMat) {
   uint32_t tickMs = HAL_GetTick();
   for (int x = 0; x < keyMat->NumRows; x++) {
     GPIO_Pin* row = keyMat->Rows[x];
-    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, keyMat->ReleasedLevel);
   }
   for (int x = 0; x < keyMat->NumRows; x++) {
     GPIO_Pin* row = keyMat->Rows[x];
-    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMat->ReleasedLevel & 0b1);
     for (int y = 0; y < keyMat->NumCols; y++) {
       uint8_t idx = x * keyMat->NumCols + y;
       if (!keyMat->EnabledFlags[idx]) {
@@ -49,14 +49,14 @@ void Keymat_Init(KeyMat* keyMat) {
       key->LastChangedLevel = level;
       key->LastLevelChangedMs = tickMs;
     }
-    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, keyMat->ReleasedLevel);
   }
 }
 
 void Keymat_Scan(KeyMat* keyMat) {
   for (int x = 0; x < keyMat->NumRows; x++) {
     GPIO_Pin* row = keyMat->Rows[x];
-    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMat->ReleasedLevel & 0b1);
     for (int y = 0; y < keyMat->NumCols; y++) {
       uint8_t idx = x * keyMat->NumCols + y;
       if (!keyMat->EnabledFlags[idx]) {
@@ -69,7 +69,7 @@ void Keymat_Scan(KeyMat* keyMat) {
 
       Key_Update(key, level);
     }
-    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, keyMat->ReleasedLevel);
   }
 }
 
