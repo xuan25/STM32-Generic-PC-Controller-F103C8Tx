@@ -213,7 +213,6 @@ void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t
 }
 
 KeyMatrix* keyMatrix_def = &((KeyMatrix){
-  .NumMatrixKeys = 1,
   .MatrixKeys = ((MatrixKey*[]){
     &((MatrixKey){
       .Key = &((Key){
@@ -223,8 +222,8 @@ KeyMatrix* keyMatrix_def = &((KeyMatrix){
       .Y = 0,
       .OnStateChanged = OnMatKeyStateChanged,
     }),
+    NULL
   }),
-  .NumRows = 4,
   .Rows = ((GPIO_Pin*[]){
     &((GPIO_Pin){
       .GPIOx = ROW_0_GPIO_Port,
@@ -241,9 +240,9 @@ KeyMatrix* keyMatrix_def = &((KeyMatrix){
     &((GPIO_Pin){
       .GPIOx = ROW_3_GPIO_Port,
       .GPIO_Pin = ROW_3_Pin,
-    })
+    }),
+    NULL
   }),
-  .NumCols = 4,
   .Cols = ((GPIO_Pin*[]){
     &((GPIO_Pin){
       .GPIOx = COL_0_GPIO_Port,
@@ -260,7 +259,8 @@ KeyMatrix* keyMatrix_def = &((KeyMatrix){
     &((GPIO_Pin){
       .GPIOx = COL_3_GPIO_Port,
       .GPIO_Pin = COL_3_Pin,
-    })
+    }),
+    NULL
   }),
   .ReleasedLevel = GPIO_PIN_RESET
 });

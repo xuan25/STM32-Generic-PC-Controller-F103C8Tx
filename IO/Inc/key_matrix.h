@@ -36,6 +36,7 @@ typedef struct MatrixKey {
 
 typedef struct KeyMat_Internal {
   void (*Parent);               // Parent
+  uint16_t Stride;              // Lookup stride
   Key* (* Keys);                // Keys for matrix coordinates
   uint8_t* EnabledFlags;        // Enabled flags for matrix coordinates
 } KeyMat_Internal;
@@ -47,12 +48,9 @@ typedef struct KeyMat_Internal {
 */
 typedef struct KeyMatrix {
   KeyMat_Internal Internal;     // For internal usage
-  uint16_t NumMatrixKeys;       // Number of defined MatrixKey
-  MatrixKey* (*MatrixKeys);     // A array of defined MatrixKey
-  uint16_t NumRows;             // Number of row pins
-  GPIO_Pin* (*Rows);            // A array of row pins
-  uint16_t NumCols;             // Number of column pins
-  GPIO_Pin* (*Cols);            // A array of column pins
+  MatrixKey* (*MatrixKeys);     // A null-terminated array of defined MatrixKeys
+  GPIO_Pin* (*Rows);            // A null-terminated array of row pins
+  GPIO_Pin* (*Cols);            // A null-terminated array of column pins
   GPIO_PinState ReleasedLevel;  // GPIO state when key released
 } KeyMatrix;
 
