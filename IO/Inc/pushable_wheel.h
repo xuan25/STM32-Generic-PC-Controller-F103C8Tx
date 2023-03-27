@@ -18,40 +18,57 @@ typedef enum PushableWheelLastUpdatedItem {
 /**
  * @brief PushableWheel Structure definition
  * 
- * @note Used to managed a encoder hardware that act like a wheel.
- * Please specify the Encoder struct, TickInterval, ResetDelayMs, IgnoreInputEdge and OnTicked callback.
+ * @note Used to managed a pushable wheel.
+ * Please specify the ReleasedWheel, PressedWheel, PushKey and callbacks.
 */
 typedef struct PushableWheel {
-  void (*UserData);               // User data
-  Wheel* ReleasedWheel;                 // 
-  Wheel* PressedWheel;                 // 
-  BinaryPushKey* PushKey;               // 
-  PushableWheelLastUpdatedItem LastUpdatedItem;
+  void (*UserData);                               // User data
+  Wheel* ReleasedWheel;                           // Wheel for released mode
+  Wheel* PressedWheel;                            // Wheel for pressed mode
+  BinaryPushKey* PushKey;                         // PushKey to press/release
+  PushableWheelLastUpdatedItem LastUpdatedItem;   // Last updated item 
   
-  // /**
-  //  * @brief Tick callback of the wheel
-  //  * 
-  //  * @param sender Wheel that trigger the callback.
-  //  * @param direction Tick direction. Positive for CW. Negative for CCW.
-  //  * @retval None
-  // */
+  /**
+   * @brief Tick callback of the wheel for released mode
+   * 
+   * @param sender PushableWheel that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @retval None
+  */
   void (*OnReleasedWheelTicked)(struct PushableWheel* sender, int8_t direction);
+  
+  /**
+   * @brief Tick callback of the wheel for pressed mode
+   * 
+   * @param sender PushableWheel that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @retval None
+  */
   void (*OnPressedWheelTicked)(struct PushableWheel* sender, int8_t direction);
+
+  /**
+   * @brief State changed callback of the key
+   * 
+   * @param sender PushableWheel that trigger the callback.
+   * @param state state
+   * @param isWheelTicked Whether the wheel has ticked after the last key state change.
+   * @retval None
+  */
   void (*OnPushKeyStateChanged)(struct PushableWheel* sender, BinaryPushKeyState state, uint8_t isWheelTicked);
 } PushableWheel;
 
 /**
- * @brief Initialize an wheel
+ * @brief Initialize an PushableWheel
  * 
- * @param wheel The wheel to be initialized
+ * @param pushableWheel The wheel to be initialized
  * @retval None
 */
 void PushableWheel_Init(PushableWheel* pushableWheel);
 
 /**
- * @brief Scan an wheel to update its state and potentially trigger a callback.
+ * @brief Scan an PushableWheel to update its state and potentially trigger a callback.
  * 
- * @param wheel The wheel to be scanned
+ * @param pushableWheel The wheel to be scanned
  * @retval None
 */
 void PushableWheel_Scan(PushableWheel* pushableWheel);
