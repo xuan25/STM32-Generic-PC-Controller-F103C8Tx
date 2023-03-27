@@ -7,7 +7,7 @@ extern "C" {
 
 #include "stm32f1xx_hal.h"
 #include "gpio_pin.h"
-#include "key.h"
+#include "binary_push_key.h"
 
 /**
  * @brief MatKey Structure definition

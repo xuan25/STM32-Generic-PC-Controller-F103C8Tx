@@ -36,49 +36,14 @@ typedef struct Key {
   void (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
 } Key;
 
-typedef enum BinaryPushKeyState {
-  PushKeyReleased = 0,
-  PushKeyPressed = 1,
-} BinaryPushKeyState;
-
-/**
- * @brief BinaryPushKey Structure definition
- * 
- * @note Used to managed a key hardware that directed connect to a GPIO.
- * Please specify the GPIO of the key and the Key struct.
-*/
-typedef struct BinaryPushKey {
-  void (*UserData);               // User data
-  Key (*Key);                     // Key structure
-  GPIO_Pin* Pin;                  // GPIO Pin
-  GPIO_PinState ReleasedLevel;    // GPIO state when key released
-
-  /**
-   * @brief State changed callback of the key
-   * 
-   * @param sender Key that trigger the callback.
-   * @param state state.
-   * @retval None
-  */
-  void (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
-} BinaryPushKey;
-
 /**
  * @brief Initialize a BinaryPushKey
  * 
- * @param gpioKey The BinaryPushKey to be initialized
+ * @param key: The key to be initialize
+ * @param level: Level of the key
  * @retval None
 */
-void BinaryPushKey_Init(BinaryPushKey* gpioKey);
-
-/**
- * @brief Scan an BinaryPushKey hardware to update its state and potentially 
- * trigger a callback.
- * 
- * @param gpioKey The BinaryPushKey to be scanned
- * @retval None
-*/
-void BinaryPushKey_Scan(BinaryPushKey* gpioKey);
+void Key_Init(Key* key, uint8_t level);
 
 /**
  * @brief Update a Key with a new voltage level

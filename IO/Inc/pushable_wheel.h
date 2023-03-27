@@ -7,7 +7,7 @@ extern "C" {
 
 #include "stm32f1xx_hal.h"
 #include "wheel.h"
-#include "key.h"
+#include "binary_push_key.h"
 
 typedef enum PushableWheelLastUpdatedItem {
   ReleasedWheel = 1,

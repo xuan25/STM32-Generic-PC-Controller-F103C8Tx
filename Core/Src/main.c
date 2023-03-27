@@ -25,7 +25,7 @@
 
 #include "usbd_hid_if.h"
 #include "usbd_midi_if.h"
-#include "key.h"
+#include "binary_push_key.h"
 #include "keymat.h"
 #include "encoder.h"
 #include "wheel.h"
