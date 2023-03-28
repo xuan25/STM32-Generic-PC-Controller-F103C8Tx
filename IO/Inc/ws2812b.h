@@ -10,13 +10,25 @@ extern "C" {
 #include <string.h>
 
 #define WS2812B_RESET_CYCLES 2u
-#define WS2812B_CODE_ONE_DUTY	  2/3.0
-#define WS2812B_CODE_ZERO_DUTY	1/3.0
+#define WS2812B_DUTY_BASE	      3
+#define WS2812B_DUTY_ONE	      2
+#define WS2812B_DUTY_ZERO	      1
 
 #define WS2812B_BYTES_PER_UNIT 3
 
 #define WS2812B_DMA_BUFFER_LENGTH   2 * WS2812B_BYTES_PER_UNIT * 8
 
+
+/**
+ * @brief RGB Structure definition
+ * 
+ * @note Used to manage a set of RGB value.
+*/
+typedef struct RGB {
+  uint8_t R;
+  uint8_t G;
+  uint8_t B;
+} RGB;
 
 typedef struct WS2812B_Internal {
   void (*Parent);     // Parent
@@ -29,9 +41,7 @@ typedef struct WS2812B_Internal {
 */
 typedef struct WS2812B {
   WS2812B_Internal Internal;  // For internal usage
-  uint8_t R;                  // Red Channel
-  uint8_t G;                  // Green Channel
-  uint8_t B;                  // Blue Channel
+  Color* Value;          // Color of the WS2812B
 } WS2812B;
 
 typedef struct WS2812BSeries_Internal {
@@ -54,18 +64,6 @@ typedef struct WS2812BSeries {
   TIM_HandleTypeDef* TIM;             // Timer handle
   uint32_t TIMChannel;                // Timer channel
 } WS2812BSeries;
-
-
-/**
- * @brief Set color of a WS2812B unit with HSV
- * 
- * @param unit The WS2812B unit to be configure
- * @param h H
- * @param s S
- * @param v V
- * @retval None
-*/
-void WS2812B_SetHSV(WS2812B* unit, double h, double s, double v);
 
 /**
  * @brief Initialize the WS2812BSeries
@@ -108,6 +106,15 @@ void WS2812BSeries_OnHT(WS2812BSeries* series);
 */
 void WS2812BSeries_OnTC(WS2812BSeries* series);
 
+/**
+ * @brief Convert HSV to RGB
+ * 
+ * @param h H
+ * @param s S
+ * @param v V
+ * @retval RGB value
+*/
+RGB HSVToRGB(double h, double s, double v);
 
 #ifdef __cplusplus
 }

@@ -460,11 +460,15 @@ int main(void)
     HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
     PushableDial_Scan(pushableDial_def);
     HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
+
     // lighting test
     uint32_t tickMs = HAL_GetTick();
-    WS2812B_SetHSV(ws2812bSeries->Series[0], fmod((0.3 + (tickMs / 1000.0)) * 360, 360), 1, 0.01);
-    WS2812B_SetHSV(ws2812bSeries->Series[1], fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 0.01);
-    WS2812B_SetHSV(ws2812bSeries->Series[2], fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 0.01);
+    // rotating color
+    *ws2812bSeries->Series[0]->Value->Value = HSVToRGB(fmod((0.3 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    *ws2812bSeries->Series[1]->Value->Value = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    *ws2812bSeries->Series[2]->Value->Value = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    
+    // push lighting update
     WS2812BSeries_PushUpdate(ws2812bSeries);
   }
   /* USER CODE END 3 */

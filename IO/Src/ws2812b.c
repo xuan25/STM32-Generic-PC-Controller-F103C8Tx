@@ -1,6 +1,18 @@
 #include "ws2812b.h"
 #include <math.h>
 
+
+RGB Color_EvaluateRGB(Color* color){
+  RGB rgb = *color->Value;
+  Filter* filter = color->Filter;
+  while (filter != NULL)
+  {
+    rgb = filter->Function(filter, rgb);
+    filter = filter->Next;
+  }
+  return rgb;
+}
+
 void WS2812BSeries_Init(WS2812BSeries* series) {
   series->Internal.CurrentCycle = 0;
   series->Internal.IsUpdating = 0;
@@ -32,15 +44,20 @@ void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId) {
     // fill buffer with a WS2812B unit
     uint16_t unitIdx = series->Internal.CurrentCycle;
     uint32_t arr = series->TIM->Instance->ARR + 1;
-    uint32_t pulseHigh = (uint32_t)(arr * WS2812B_CODE_ONE_DUTY);
-    uint32_t pulseLow = (uint32_t)(arr * WS2812B_CODE_ZERO_DUTY);
-
+    uint32_t pulseHigh = arr * WS2812B_DUTY_ONE / WS2812B_DUTY_BASE;
+    uint32_t pulseLow = arr * WS2812B_DUTY_ZERO / WS2812B_DUTY_BASE;
+    
     WS2812B* unit = series->Series[unitIdx];
     uint16_t* buffer = &(series->Internal.DMABuffer[bufferId * (WS2812B_DMA_BUFFER_LENGTH / 2)]);
+    RGB color = Color_EvaluateRGB(unit->Value);
+
+    uint8_t r = color.R;
+    uint8_t g = color.G;
+    uint8_t b = color.B;
     for (size_t i = 0; i < 8; i++) {
-      buffer[i] =        (unit->G >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
-      buffer[8 + i] =    (unit->R >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
-      buffer[16 + i] =   (unit->B >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
+      buffer[i] =        (r >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
+      buffer[8 + i] =    (g >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
+      buffer[16 + i] =   (b >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
     }
   } else if (series->Internal.CurrentCycle < (series->Internal.NumUnits + WS2812B_RESET_CYCLES)) {
     // fill reset
@@ -76,7 +93,7 @@ void WS2812BSeries_OnTC(WS2812BSeries* series) {
   }
 }
 
-void WS2812B_SetHSV(WS2812B* unit, double h, double s, double v) {
+RGB HSVToRGB(double h, double s, double v) {
 	double r = 0, g = 0, b = 0;
 
 	if (s == 0)
@@ -143,7 +160,11 @@ void WS2812B_SetHSV(WS2812B* unit, double h, double s, double v) {
 
 	}
 
-  unit->R = (uint8_t)(r * 255);
-  unit->G = (uint8_t)(g * 255);
-  unit->B = (uint8_t)(b * 255);
+  RGB result = {
+    .R = r * 0xff,
+    .G = g * 0xff,
+    .B = b * 0xff,
+  };
+  return result;
+
 }
