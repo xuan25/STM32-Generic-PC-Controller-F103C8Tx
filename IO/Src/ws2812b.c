@@ -168,3 +168,54 @@ RGB HSVToRGB(double h, double s, double v) {
   return result;
 
 }
+
+RGB AlphaFilter(Filter* filter, RGB rgb) {
+  AlphaFilterParams* params = (AlphaFilterParams*)filter->Params;
+  RGB result = {
+    .R = rgb.R * params->Alpha / ALPHA_RESOLUTION,
+    .G = rgb.G * params->Alpha / ALPHA_RESOLUTION,
+    .B = rgb.B * params->Alpha / ALPHA_RESOLUTION,
+  };
+  return result;
+}
+
+RGB EasingFilter(Filter* filter, RGB rgb){
+  EasingFilterParams* params = (EasingFilterParams*)filter->Params;
+
+  // bypass
+  if (params->IsCompleted) {
+    return rgb;
+  }
+
+  RGB easingFrom = Color_EvaluateRGB(params->EasingFrom);
+  
+  uint32_t currentTime = HAL_GetTick();
+  uint32_t deltaTime = currentTime - params->BeginTime;
+
+  // 0-100
+  uint32_t easeRatio = (deltaTime * EASING_RESOLUTION) / params->Duration;
+
+  // update IsCompleted flag and clamping easeRatio
+  params->IsCompleted = easeRatio >= EASING_RESOLUTION;
+  if(params->IsCompleted) {
+    easeRatio = EASING_RESOLUTION;
+  }
+  if(easeRatio < 0) {
+    easeRatio = 0;
+  }
+
+  // easing function
+  if(params->EasingFunction != NULL) {
+    easeRatio = params->EasingFunction(easeRatio);
+  }
+  
+  // mix RGB
+  uint32_t easeRatioFlip = EASING_RESOLUTION - easeRatio;
+  RGB result = {
+    .R = (easeRatio * rgb.R + easeRatioFlip * easingFrom.R) / EASING_RESOLUTION,
+    .G = (easeRatio * rgb.G + easeRatioFlip * easingFrom.G) / EASING_RESOLUTION,
+    .B = (easeRatio * rgb.B + easeRatioFlip * easingFrom.B) / EASING_RESOLUTION,
+  };
+
+  return result;
+}

@@ -358,19 +358,97 @@ PushableDial* pushableDial_def = &((PushableDial){
 WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
   .Series = (WS2812B*[]){
     &(WS2812B) {
-      .R = 0,
-      .G = 0,
-      .B = 0,
+      .Value = &(Color) {
+        .Value = &(RGB){
+          .R = 0xff,
+          .G = 0xff,
+          .B = 0xff
+        },
+        .Filter = &(Filter){
+          .Function = AlphaFilter,
+          .Params = &(AlphaFilterParams) {
+            .Alpha = ALPHA_MAX
+          },
+          .Next = &(Filter){
+            .Function = EasingFilter,
+            .Params = &(EasingFilterParams) {
+              .BeginTime = 0,
+              .Duration = 1200,
+              .EasingFrom = &(Color) {
+                // .Value = parentColor->Value,
+                .Filter = &(Filter){
+                  .Function = AlphaFilter,
+                  .Params = &(AlphaFilterParams) {
+                    .Alpha = 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     &(WS2812B) {
-      .R = 0,
-      .G = 0,
-      .B = 0,
+      .Value = &(Color) {
+        .Value = &(RGB){
+          .R = 0xff,
+          .G = 0xff,
+          .B = 0xff
+        },
+        .Filter = &(Filter){
+          .Function = AlphaFilter,
+          .Params = &(AlphaFilterParams) {
+            .Alpha = ALPHA_MAX
+          },
+          .Next = &(Filter){
+            .Function = EasingFilter,
+            .Params = &(EasingFilterParams) {
+              .BeginTime = 0,
+              .Duration = 1400,
+              .EasingFrom = &(Color) {
+                // .Value = parentColor->Value,
+                .Filter = &(Filter){
+                  .Function = AlphaFilter,
+                  .Params = &(AlphaFilterParams) {
+                    .Alpha = 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     &(WS2812B) {
-      .R = 0,
-      .G = 0,
-      .B = 0,
+      .Value = &(Color) {
+        .Value = &(RGB){
+          .R = 0xff,
+          .G = 0xff,
+          .B = 0xff
+        },
+        .Filter = &(Filter){
+          .Function = AlphaFilter,
+          .Params = &(AlphaFilterParams) {
+            .Alpha = ALPHA_MAX
+          },
+          .Next = &(Filter){
+            .Function = EasingFilter,
+            .Params = &(EasingFilterParams) {
+              .BeginTime = 0,
+              .Duration = 1600,
+              .EasingFrom = &(Color) {
+                // .Value = parentColor->Value,
+                .Filter = &(Filter){
+                  .Function = AlphaFilter,
+                  .Params = &(AlphaFilterParams) {
+                    .Alpha = 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     NULL
   },
@@ -385,7 +463,6 @@ __weak void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim) {
 __weak void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
   WS2812BSeries_OnTC(ws2812bSeries);
 }
-
 
 /* USER CODE END 0 */
 
@@ -428,6 +505,12 @@ int main(void)
   Dial_Init(dial_def);
   PushableDial_Init(pushableDial_def);
   WS2812BSeries_Init(ws2812bSeries);
+
+  // Link RGB of EaseFilters to parent
+  for (int i = 0; i < 3; i++) {
+    ((EasingFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Next->Params)->EasingFrom->Value = ws2812bSeries->Series[i]->Value->Value;
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -467,7 +550,22 @@ int main(void)
     *ws2812bSeries->Series[0]->Value->Value = HSVToRGB(fmod((0.3 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     *ws2812bSeries->Series[1]->Value->Value = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     *ws2812bSeries->Series[2]->Value->Value = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
-    
+    // easing in and out
+    for (int i = 0; i < 3; i++) {
+      EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Next->Params;
+      if (easingParams->IsCompleted) {
+        AlphaFilterParams* easeEndAlpha = (AlphaFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Params;
+        AlphaFilterParams* easeStartAlpha = (AlphaFilterParams*)easingParams->EasingFrom->Filter->Params;
+
+        // swap alpha
+        ws2812bSeries->Series[i]->Value->Filter->Params = easeStartAlpha;
+        easingParams->EasingFrom->Filter->Params = easeEndAlpha;
+
+        // start again
+        easingParams->BeginTime = tickMs;
+        easingParams->IsCompleted = 0;
+      }
+    }
     // push lighting update
     WS2812BSeries_PushUpdate(ws2812bSeries);
   }

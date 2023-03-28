@@ -18,6 +18,7 @@ extern "C" {
 
 #define WS2812B_DMA_BUFFER_LENGTH   2 * WS2812B_BYTES_PER_UNIT * 8
 
+#define WS2812B_GAMMA_CORRECTION   1
 
 /**
  * @brief RGB Structure definition
@@ -29,6 +30,35 @@ typedef struct RGB {
   uint8_t G;
   uint8_t B;
 } RGB;
+
+/**
+ * @brief Filter Structure definition
+ * 
+ * @note Used to manage a color filter.
+*/
+typedef struct Filter {
+  void (*Params);                                     // Filter parameters
+  RGB (*Function)(struct Filter* filter, RGB rgb);    // Filter function
+  struct Filter *Next;                                // Next filter in the chain
+} Filter;
+
+/**
+ * @brief Color Structure definition
+ * 
+ * @note Used to manage a Color.
+*/
+typedef struct Color {
+  RGB* Value;               // RGB value
+  Filter *Filter;          // A linked-list of filter chain
+} Color;
+
+/**
+ * @brief Evaluate the RGB value of the Color
+ * 
+ * @param series The Color to be evaluate
+ * @retval None
+*/
+RGB Color_EvaluateRGB(Color* color);
 
 typedef struct WS2812B_Internal {
   void (*Parent);     // Parent
@@ -115,6 +145,63 @@ void WS2812BSeries_OnTC(WS2812BSeries* series);
  * @retval RGB value
 */
 RGB HSVToRGB(double h, double s, double v);
+
+// Resolution on alpha
+#define ALPHA_RESOLUTION 200
+// Max value for Alpha
+#define ALPHA_MAX ALPHA_RESOLUTION
+
+/**
+ * @brief AlphaFilterParams Structure definition
+ * 
+ * @note The parameters of a AlphaFilter
+*/
+typedef struct AlphaFilterParams {
+  uint32_t Alpha;
+} AlphaFilterParams;
+
+/**
+ * @brief Alpha Filter Function
+ * 
+ * @param filter A Filter structure that contains AlphaFilterParams
+ * @param rgb Input RGB value
+ * @retval Filtered RGB value
+*/
+RGB AlphaFilter(Filter* filter, RGB rgb);
+
+// Resolution on easing timing
+#define EASING_RESOLUTION 200
+
+/**
+ * @brief EasingFilterParams Structure definition
+ * 
+ * @note The parameters of a EasingFilter
+*/
+typedef struct EasingFilterParams {
+  uint32_t BeginTime;   // Begin time of the easing
+  uint32_t Duration;    // Duration of the easing
+  uint8_t IsCompleted;  // Whether the easing is completed
+  Color* EasingFrom;    // Easing from color
+
+  /**
+   * @brief Easing function that mapping time ratio to easing ratio.
+   * Keep null for linear easing
+   * 
+   * @param ratio Time ratio
+   * @retval Easing ratio
+  */
+  uint16_t (*EasingFunction)(uint16_t ratio);
+} EasingFilterParams;
+
+/**
+ * @brief Easing Filter Function
+ * 
+ * @param filter A Filter structure that contains EasingFilterParams
+ * @param rgb Input RGB value
+ * @retval Filtered RGB value
+*/
+RGB EasingFilter(Filter* filter, RGB rgb);
+
 
 #ifdef __cplusplus
 }
