@@ -18,11 +18,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "usb_device.h"
 #include "usbd_hid_if.h"
 #include "usbd_midi_if.h"
 #include "binary_push_key.h"
@@ -584,9 +584,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USB_DEVICE_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+
+  MX_USB_DEVICE_Init();
 
   BinaryPushKey_Init(binaryPushKey_def);
   KeyMatrix_Init(keyMatrix_def);

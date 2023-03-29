@@ -55,10 +55,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern PCD_HandleTypeDef hpcd_USB_FS;
 extern DMA_HandleTypeDef hdma_tim2_ch2_ch4;
 /* USER CODE BEGIN EV */
-
+extern PCD_HandleTypeDef hpcd_USB_FS;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -213,6 +212,9 @@ void DMA1_Channel7_IRQHandler(void)
   /* USER CODE END DMA1_Channel7_IRQn 1 */
 }
 
+/* USER CODE BEGIN 1 */
+
+
 /**
   * @brief This function handles USB low priority or CAN RX0 interrupts.
   */
@@ -226,7 +228,5 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 1 */
 }
-
-/* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
