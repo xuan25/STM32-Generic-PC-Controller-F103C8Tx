@@ -5,7 +5,7 @@ void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState
 
 void KeyMatrix_Init(KeyMatrix* keyMatrix) {
 
-  uint16_t numRows, numCols;
+  uint16_t numRows = 0, numCols = 0;
   while (keyMatrix->Rows[numRows] != NULL)
   {
     numRows++;
