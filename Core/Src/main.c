@@ -59,6 +59,41 @@ DMA_HandleTypeDef hdma_tim2_ch2_ch4;
 
 /* USER CODE BEGIN PV */
 
+// lighting
+RGB pressedRGB = (RGB){
+  .R = 0xff * 0.5,
+  .G = 0xff * 0.5,
+  .B = 0xff * 0.5
+};
+
+RGB releasedRGB = (RGB){
+  .R = 0xff * 0.2,
+  .G = 0xff * 0.2,
+  .B = 0xff * 0.2
+};
+
+RGB tickedCWRGB = (RGB){
+  .R = 0xfa * 0.8,
+  .G = 0x49 * 0.8,
+  .B = 0xd6 * 0.8
+};
+
+// RGB tickedCCWRGB = (RGB){
+//   .R = 0x52 * 0.8,
+//   .G = 0xf7 * 0.8,
+//   .B = 0xf1 * 0.8
+// };
+
+RGB tickedCCWRGB = (RGB){
+  .R = 0xf7 * 0.8,
+  .G = 0xd6 * 0.8,
+  .B = 0x39 * 0.8
+};
+
+uint16_t easingDuration = 300;
+
+// inputs
+
 uint16_t ctrlState = 0x0000;
 uint8_t midiState = 0xff;
 uint8_t dialBtn = 0x0;
@@ -76,6 +111,117 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// lighting
+
+WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
+  .Series = (WS2812B*[]){
+    &(WS2812B) {
+      .Value = &(Color) {
+        .Value = &(RGB){
+          .R = 0xff * 0.2,
+          .G = 0xff * 0.2,
+          .B = 0xff * 0.2,
+        },
+        .Filter = &(Filter){
+          .Function = AlphaFilter,
+          .Params = &(AlphaFilterParams) {
+            .Alpha = ALPHA_MAX
+          },
+          .Next = &(Filter){
+            .Function = EasingFilter,
+            .Params = &(EasingFilterParams) {
+              .BeginTime = 0,
+              .Duration = 1000,
+              .EasingFrom = &(Color) {
+                .Value = &(RGB) {
+                  .R = 0x00,
+                  .G = 0x00,
+                  .B = 0x00
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    &(WS2812B) {
+      .Value = &(Color) {
+        .Value = &(RGB){
+          .R = 0xff,
+          .G = 0xff,
+          .B = 0xff
+        },
+        .Filter = &(Filter){
+          .Function = AlphaFilter,
+          .Params = &(AlphaFilterParams) {
+            .Alpha = 0.3 * ALPHA_MAX
+          },
+          .Next = &(Filter){
+            .Function = EasingFilter,
+            .Params = &(EasingFilterParams) {
+              .BeginTime = 0,
+              .Duration = 1000,
+              .EasingFrom = &(Color) {
+                // .Value = parentColor->Value,
+                .Filter = &(Filter){
+                  .Function = AlphaFilter,
+                  .Params = &(AlphaFilterParams) {
+                    .Alpha = 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    &(WS2812B) {
+      .Value = &(Color) {
+        .Value = &(RGB){
+          .R = 0xff,
+          .G = 0xff,
+          .B = 0xff
+        },
+        .Filter = &(Filter){
+          .Function = AlphaFilter,
+          .Params = &(AlphaFilterParams) {
+            .Alpha = 0.3 * ALPHA_MAX
+          },
+          .Next = &(Filter){
+            .Function = EasingFilter,
+            .Params = &(EasingFilterParams) {
+              .BeginTime = 0,
+              .Duration = 1500,
+              .EasingFrom = &(Color) {
+                // .Value = parentColor->Value,
+                .Filter = &(Filter){
+                  .Function = AlphaFilter,
+                  .Params = &(AlphaFilterParams) {
+                    .Alpha = 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    NULL
+  },
+  .TIM = &htim2,
+  .TIMChannel = TIM_CHANNEL_4
+};
+
+__weak void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim) {
+  WS2812BSeries_OnHT(ws2812bSeries);
+}
+
+__weak void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
+  WS2812BSeries_OnTC(ws2812bSeries);
+}
+
+// inputs
 
 void OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
   if (state == PushKeyPressed) {
@@ -187,6 +333,24 @@ void OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
     ctrlState = ctrlState & ~CTRL_PREVIOUS;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
+
+  Color* easingTo = ws2812bSeries->Series[0]->Value;
+  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Params;
+  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Next->Params;
+  Color* easingFrom = easingParams->EasingFrom;
+
+  *easingFrom->Value = Color_EvaluateRGB(easingTo);
+  if(direction > 0) {
+    *easingFrom->Value = tickedCWRGB;
+  } else {
+    *easingFrom->Value = tickedCCWRGB;
+  }
+
+  *easingTo->Value = releasedRGB;
+
+  easingParams->BeginTime = HAL_GetTick();
+  easingParams->IsCompleted = 0;
+  easingParams->Duration = easingDuration;
 }
 
 void OnPressedDialTicked(PushableDial* sender, int8_t direction) {
@@ -203,6 +367,24 @@ void OnPressedDialTicked(PushableDial* sender, int8_t direction) {
     ctrlState = ctrlState & ~CTRL_VOLUME_DECREMENT;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
+
+  Color* easingTo = ws2812bSeries->Series[0]->Value;
+  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Params;
+  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Next->Params;
+  Color* easingFrom = easingParams->EasingFrom;
+
+  *easingFrom->Value = Color_EvaluateRGB(easingTo);
+  if(direction > 0) {
+    *easingFrom->Value = tickedCWRGB;
+  } else {
+    *easingFrom->Value = tickedCCWRGB;
+  }
+
+  *easingTo->Value = pressedRGB;
+
+  easingParams->BeginTime = HAL_GetTick();
+  easingParams->IsCompleted = 0;
+  easingParams->Duration = easingDuration;
 }
 
 void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
@@ -212,6 +394,22 @@ void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t
     ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
+
+  Color* easingTo = ws2812bSeries->Series[0]->Value;
+  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Params;
+  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Next->Params;
+  Color* easingFrom = easingParams->EasingFrom;
+
+  *easingFrom->Value = Color_EvaluateRGB(easingTo);
+  if(state == PushKeyPressed) {
+    *easingTo->Value = pressedRGB;
+  } else {
+    *easingTo->Value = releasedRGB;
+  }
+
+  easingParams->BeginTime = HAL_GetTick();
+  easingParams->IsCompleted = 0;
+  easingParams->Duration = easingDuration;
 }
 
 KeyMatrix* keyMatrix_def = &((KeyMatrix){
@@ -355,115 +553,6 @@ PushableDial* pushableDial_def = &((PushableDial){
   .OnPushKeyStateChanged = OnPWKeyStateChanged,
 });
 
-WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
-  .Series = (WS2812B*[]){
-    &(WS2812B) {
-      .Value = &(Color) {
-        .Value = &(RGB){
-          .R = 0xff,
-          .G = 0xff,
-          .B = 0xff
-        },
-        .Filter = &(Filter){
-          .Function = AlphaFilter,
-          .Params = &(AlphaFilterParams) {
-            .Alpha = ALPHA_MAX
-          },
-          .Next = &(Filter){
-            .Function = EasingFilter,
-            .Params = &(EasingFilterParams) {
-              .BeginTime = 0,
-              .Duration = 1200,
-              .EasingFrom = &(Color) {
-                // .Value = parentColor->Value,
-                .Filter = &(Filter){
-                  .Function = AlphaFilter,
-                  .Params = &(AlphaFilterParams) {
-                    .Alpha = 0
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    &(WS2812B) {
-      .Value = &(Color) {
-        .Value = &(RGB){
-          .R = 0xff,
-          .G = 0xff,
-          .B = 0xff
-        },
-        .Filter = &(Filter){
-          .Function = AlphaFilter,
-          .Params = &(AlphaFilterParams) {
-            .Alpha = ALPHA_MAX
-          },
-          .Next = &(Filter){
-            .Function = EasingFilter,
-            .Params = &(EasingFilterParams) {
-              .BeginTime = 0,
-              .Duration = 1400,
-              .EasingFrom = &(Color) {
-                // .Value = parentColor->Value,
-                .Filter = &(Filter){
-                  .Function = AlphaFilter,
-                  .Params = &(AlphaFilterParams) {
-                    .Alpha = 0
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    &(WS2812B) {
-      .Value = &(Color) {
-        .Value = &(RGB){
-          .R = 0xff,
-          .G = 0xff,
-          .B = 0xff
-        },
-        .Filter = &(Filter){
-          .Function = AlphaFilter,
-          .Params = &(AlphaFilterParams) {
-            .Alpha = ALPHA_MAX
-          },
-          .Next = &(Filter){
-            .Function = EasingFilter,
-            .Params = &(EasingFilterParams) {
-              .BeginTime = 0,
-              .Duration = 1600,
-              .EasingFrom = &(Color) {
-                // .Value = parentColor->Value,
-                .Filter = &(Filter){
-                  .Function = AlphaFilter,
-                  .Params = &(AlphaFilterParams) {
-                    .Alpha = 0
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    NULL
-  },
-  .TIM = &htim2,
-  .TIMChannel = TIM_CHANNEL_4
-};
-
-__weak void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim) {
-  WS2812BSeries_OnHT(ws2812bSeries);
-}
-
-__weak void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
-  WS2812BSeries_OnTC(ws2812bSeries);
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -507,7 +596,7 @@ int main(void)
   WS2812BSeries_Init(ws2812bSeries);
 
   // Link RGB of EaseFilters to parent
-  for (int i = 0; i < 3; i++) {
+  for (int i = 1; i < 3; i++) {
     ((EasingFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Next->Params)->EasingFrom->Value = ws2812bSeries->Series[i]->Value->Value;
   }
 
@@ -547,11 +636,10 @@ int main(void)
     // lighting test
     uint32_t tickMs = HAL_GetTick();
     // rotating color
-    *ws2812bSeries->Series[0]->Value->Value = HSVToRGB(fmod((0.3 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     *ws2812bSeries->Series[1]->Value->Value = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     *ws2812bSeries->Series[2]->Value->Value = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     // easing in and out
-    for (int i = 0; i < 3; i++) {
+    for (int i = 1; i < 3; i++) {
       EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Next->Params;
       if (easingParams->IsCompleted) {
         AlphaFilterParams* easeEndAlpha = (AlphaFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Params;
