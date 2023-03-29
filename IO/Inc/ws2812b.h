@@ -48,7 +48,7 @@ typedef struct Filter {
  * @note Used to manage a Color.
 */
 typedef struct Color {
-  RGB* Value;               // RGB value
+  RGB* RGB;                // RGB value
   Filter *Filter;          // A linked-list of filter chain
 } Color;
 
@@ -71,7 +71,7 @@ typedef struct WS2812B_Internal {
 */
 typedef struct WS2812B {
   WS2812B_Internal Internal;  // For internal usage
-  Color* Value;          // Color of the WS2812B
+  Color* Color;               // Color of the WS2812B
 } WS2812B;
 
 typedef struct WS2812BSeries_Internal {

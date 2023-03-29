@@ -23,7 +23,7 @@ const uint8_t gamma8[] = {
 #endif
 
 RGB Color_EvaluateRGB(Color* color){
-  RGB rgb = *color->Value;
+  RGB rgb = *color->RGB;
   Filter* filter = color->Filter;
   while (filter != NULL)
   {
@@ -69,7 +69,7 @@ void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId) {
     
     WS2812B* unit = series->Series[unitIdx];
     uint16_t* buffer = &(series->Internal.DMABuffer[bufferId * (WS2812B_DMA_BUFFER_LENGTH / 2)]);
-    RGB color = Color_EvaluateRGB(unit->Value);
+    RGB color = Color_EvaluateRGB(unit->Color);
 
     uint8_t r = color.R;
     uint8_t g = color.G;

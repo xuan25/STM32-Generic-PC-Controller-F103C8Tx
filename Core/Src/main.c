@@ -117,8 +117,8 @@ static void MX_TIM2_Init(void);
 WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
   .Series = (WS2812B*[]){
     &(WS2812B) {
-      .Value = &(Color) {
-        .Value = &(RGB){
+      .Color = &(Color) {
+        .RGB = &(RGB){
           .R = 0xff * 0.2,
           .G = 0xff * 0.2,
           .B = 0xff * 0.2,
@@ -134,7 +134,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1000,
               .EasingFrom = &(Color) {
-                .Value = &(RGB) {
+                .RGB = &(RGB) {
                   .R = 0x00,
                   .G = 0x00,
                   .B = 0x00
@@ -146,8 +146,8 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
       }
     },
     &(WS2812B) {
-      .Value = &(Color) {
-        .Value = &(RGB){
+      .Color = &(Color) {
+        .RGB = &(RGB){
           .R = 0xff,
           .G = 0xff,
           .B = 0xff
@@ -177,8 +177,8 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
       }
     },
     &(WS2812B) {
-      .Value = &(Color) {
-        .Value = &(RGB){
+      .Color = &(Color) {
+        .RGB = &(RGB){
           .R = 0xff,
           .G = 0xff,
           .B = 0xff
@@ -334,19 +334,19 @@ void OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
 
-  Color* easingTo = ws2812bSeries->Series[0]->Value;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Next->Params;
+  Color* easingTo = ws2812bSeries->Series[0]->Color;
+  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Params;
+  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  *easingFrom->Value = Color_EvaluateRGB(easingTo);
+  *easingFrom->RGB = Color_EvaluateRGB(easingTo);
   if(direction > 0) {
-    *easingFrom->Value = tickedCWRGB;
+    *easingFrom->RGB = tickedCWRGB;
   } else {
-    *easingFrom->Value = tickedCCWRGB;
+    *easingFrom->RGB = tickedCCWRGB;
   }
 
-  *easingTo->Value = releasedRGB;
+  *easingTo->RGB = releasedRGB;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -368,19 +368,19 @@ void OnPressedDialTicked(PushableDial* sender, int8_t direction) {
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
 
-  Color* easingTo = ws2812bSeries->Series[0]->Value;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Next->Params;
+  Color* easingTo = ws2812bSeries->Series[0]->Color;
+  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Params;
+  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  *easingFrom->Value = Color_EvaluateRGB(easingTo);
+  *easingFrom->RGB = Color_EvaluateRGB(easingTo);
   if(direction > 0) {
-    *easingFrom->Value = tickedCWRGB;
+    *easingFrom->RGB = tickedCWRGB;
   } else {
-    *easingFrom->Value = tickedCCWRGB;
+    *easingFrom->RGB = tickedCCWRGB;
   }
 
-  *easingTo->Value = pressedRGB;
+  *easingTo->RGB = pressedRGB;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -395,16 +395,16 @@ void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
 
-  Color* easingTo = ws2812bSeries->Series[0]->Value;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Value->Filter->Next->Params;
+  Color* easingTo = ws2812bSeries->Series[0]->Color;
+  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Params;
+  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  *easingFrom->Value = Color_EvaluateRGB(easingTo);
+  *easingFrom->RGB = Color_EvaluateRGB(easingTo);
   if(state == PushKeyPressed) {
-    *easingTo->Value = pressedRGB;
+    *easingTo->RGB = pressedRGB;
   } else {
-    *easingTo->Value = releasedRGB;
+    *easingTo->RGB = releasedRGB;
   }
 
   easingParams->BeginTime = HAL_GetTick();
@@ -597,7 +597,7 @@ int main(void)
 
   // Link RGB of EaseFilters to parent
   for (int i = 1; i < 3; i++) {
-    ((EasingFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Next->Params)->EasingFrom->Value = ws2812bSeries->Series[i]->Value->Value;
+    ((EasingFilterParams*)ws2812bSeries->Series[i]->Color->Filter->Next->Params)->EasingFrom->RGB = ws2812bSeries->Series[i]->Color->RGB;
   }
 
   /* USER CODE END 2 */
@@ -636,17 +636,17 @@ int main(void)
     // lighting test
     uint32_t tickMs = HAL_GetTick();
     // rotating color
-    *ws2812bSeries->Series[1]->Value->Value = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
-    *ws2812bSeries->Series[2]->Value->Value = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    *ws2812bSeries->Series[1]->Color->RGB = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    *ws2812bSeries->Series[2]->Color->RGB = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     // easing in and out
     for (int i = 1; i < 3; i++) {
-      EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Next->Params;
+      EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[i]->Color->Filter->Next->Params;
       if (easingParams->IsCompleted) {
-        AlphaFilterParams* easeEndAlpha = (AlphaFilterParams*)ws2812bSeries->Series[i]->Value->Filter->Params;
+        AlphaFilterParams* easeEndAlpha = (AlphaFilterParams*)ws2812bSeries->Series[i]->Color->Filter->Params;
         AlphaFilterParams* easeStartAlpha = (AlphaFilterParams*)easingParams->EasingFrom->Filter->Params;
 
         // swap alpha
-        ws2812bSeries->Series[i]->Value->Filter->Params = easeStartAlpha;
+        ws2812bSeries->Series[i]->Color->Filter->Params = easeStartAlpha;
         easingParams->EasingFrom->Filter->Params = easeEndAlpha;
 
         // start again
