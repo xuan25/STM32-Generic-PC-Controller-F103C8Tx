@@ -8,6 +8,9 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "gpio_pin.h"
 
+struct Key_Internal;
+struct Key;
+
 // Debounce time for key pins.
 #define KEY_DEBOUNCE_MS 10u
 
@@ -18,6 +21,16 @@ typedef struct Key_Internal {
   uint32_t LastLevelChangedMs;      // Time of the last level change
   uint8_t LastChangedLevel;         // Last voltage level
 #endif
+
+  /**
+   * @brief State changed callback of the key (parent)
+   * 
+   * @param sender Key that trigger the callback.
+   * @param oldState Old state.
+   * @param newState New state.
+   * @retval None
+  */
+  void (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
 } Key_Internal;
 
 /**
@@ -34,9 +47,10 @@ typedef struct Key {
    * @param sender Key that trigger the callback.
    * @param oldState Old state.
    * @param newState New state.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
+  uint8_t (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
 } Key;
 
 /**

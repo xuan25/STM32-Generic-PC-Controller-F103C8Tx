@@ -93,6 +93,11 @@ void Encoder_Scan(Encoder* encoder) {
   
   // callback
   if (dir != 0) {
-    (*encoder->OnTicked)(encoder, dir, edge);
+    if(encoder->OnTicked == NULL || !encoder->OnTicked(encoder, dir, edge)) {
+      if(encoder->Internal.OnTicked != NULL) {
+        encoder->Internal.OnTicked(encoder, dir, edge);
+      }
+    }
+    
   }
 }

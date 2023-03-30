@@ -31,7 +31,7 @@ void KeyMatrix_Init(KeyMatrix* keyMatrix) {
     MatrixKey* matrixKey = keyMatrix->MatrixKeys[i];
     matrixKey->Internal.Parent = keyMatrix;
     matrixKey->Key->Internal.Parent = matrixKey;
-    matrixKey->Key->OnStateChanged = MatrixKey_OnKeyStateChanged;
+    matrixKey->Key->Internal.OnStateChanged = MatrixKey_OnKeyStateChanged;
 
     uint8_t idx = matrixKey->Y * keyMatrix->Internal.Stride + matrixKey->X;
     keyMatrix->Internal.Keys[idx] = matrixKey->Key;
@@ -99,5 +99,9 @@ void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState
   } else {
     state = PushKeyPressed;
   }
-  matrixKey->OnStateChanged(matrixKey, state);
+  if (matrixKey->OnStateChanged == NULL || !matrixKey->OnStateChanged(matrixKey, state)) {
+    if(matrixKey->Internal.OnStateChanged != NULL) {
+      matrixKey->Internal.OnStateChanged(matrixKey, state);
+    }
+  }
 }

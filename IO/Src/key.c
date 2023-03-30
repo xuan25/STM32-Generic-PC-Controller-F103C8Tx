@@ -20,14 +20,22 @@ void Key_Update(Key* key, uint8_t level) {
   if(key->Internal.State != level && tickMs - key->Internal.LastLevelChangedMs > KEY_DEBOUNCE_MS) {
     uint8_t oldState = key->Internal.State;
     key->Internal.State = level;
-    (*key->OnStateChanged)(key, oldState, level);
+    if(key->OnStateChanged == NULL || !key->OnStateChanged(key, oldState, level)) {
+      if(key->Internal.OnStateChanged != NULL) {
+        key->Internal.OnStateChanged(key, oldState, level);
+      }
+    }
   }
 #else
   // State update
   if(key->State != level) {
     uint8_t oldState = key->State;
     key->State = level;
-    (*key->OnStateChanged)(key, oldState, level);
+    if(key->OnStateChanged == NULL || !key->OnStateChanged(key, oldState, level)) {
+      if(key->Internal.OnStateChanged != NULL) {
+        key->Internal.OnStateChanged(key, oldState, level);
+      }
+    }
   }
 #endif
 }

@@ -9,9 +9,23 @@ extern "C" {
 #include "gpio_pin.h"
 #include "binary_push_key.h"
 
-typedef struct MatKey_Internal {
+struct MatrixKey_Internal;
+struct MatrixKey;
+struct KeyMatrix_Internal;
+struct KeyMatrix;
+
+typedef struct MatrixKey_Internal {
   void (*Parent);     // Parent
-} MatKey_Internal;
+
+  /**
+   * @brief State changed callback of the MatrixKey (parent)
+   * 
+   * @param sender MatrixKey that trigger the callback.
+   * @param state state.
+   * @retval None
+  */
+  void (*OnStateChanged)(struct MatrixKey* sender, BinaryPushKeyState state);
+} MatrixKey_Internal;
 
 /**
  * @brief MatrixKey Structure definition
@@ -19,7 +33,7 @@ typedef struct MatKey_Internal {
  * @note Used to managed a key hardware in a key matrix.
 */
 typedef struct MatrixKey {
-  MatKey_Internal Internal;
+  MatrixKey_Internal Internal;
   Key (*Key);         // Key structure
   uint16_t X;         // X coordinate of the key
   uint16_t Y;         // Y coordinate of the key
@@ -29,17 +43,18 @@ typedef struct MatrixKey {
    * 
    * @param sender MatrixKey that trigger the callback.
    * @param state state.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnStateChanged)(struct MatrixKey* sender, BinaryPushKeyState state);
+  uint8_t (*OnStateChanged)(struct MatrixKey* sender, BinaryPushKeyState state);
 } MatrixKey;
 
-typedef struct KeyMat_Internal {
+typedef struct KeyMatrix_Internal {
   void (*Parent);               // Parent
   uint16_t Stride;              // Lookup stride
   Key* (* Keys);                // Keys for matrix coordinates
   uint8_t* EnabledFlags;        // Enabled flags for matrix coordinates
-} KeyMat_Internal;
+} KeyMatrix_Internal;
 
 /**
  * @brief KeyMatrix Structure definition
@@ -47,7 +62,7 @@ typedef struct KeyMat_Internal {
  * @note Used to managed a key matrix.
 */
 typedef struct KeyMatrix {
-  KeyMat_Internal Internal;     // For internal usage
+  KeyMatrix_Internal Internal;     // For internal usage
   MatrixKey* (*MatrixKeys);     // A null-terminated array of defined MatrixKeys
   GPIO_Pin* (*Rows);            // A null-terminated array of row pins
   GPIO_Pin* (*Cols);            // A null-terminated array of column pins

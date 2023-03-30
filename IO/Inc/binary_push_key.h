@@ -8,6 +8,10 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "key.h"
 
+enum BinaryPushKeyState;
+struct BinaryPushKey_Internal;
+struct BinaryPushKey;
+
 typedef enum BinaryPushKeyState {
   PushKeyReleased = 0,
   PushKeyPressed = 1,
@@ -15,6 +19,15 @@ typedef enum BinaryPushKeyState {
 
 typedef struct BinaryPushKey_Internal {
   void (*Parent);                 // Parent
+
+  /**
+   * @brief State changed callback of the key (parent)
+   * 
+   * @param sender Key that trigger the callback.
+   * @param state state.
+   * @retval None
+  */
+  void (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
 } BinaryPushKey_Internal;
 
 /**
@@ -33,9 +46,10 @@ typedef struct BinaryPushKey {
    * 
    * @param sender Key that trigger the callback.
    * @param state state.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
+  uint8_t (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
 } BinaryPushKey;
 
 /**

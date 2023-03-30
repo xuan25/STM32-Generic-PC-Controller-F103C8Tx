@@ -8,7 +8,7 @@ void Dial_Init(Dial* dial) {
   dial->Internal.LastInputTickMs = tickMs;
   dial->Internal.InputState = 0;
   dial->Encoder->Internal.Parent = dial;
-  dial->Encoder->OnTicked = Dial_OnEncoderTick;
+  dial->Encoder->Internal.OnTicked = Dial_OnEncoderTick;
   Encoder_Init(dial->Encoder);
 }
 
@@ -35,7 +35,11 @@ void Dial_InputTick(Dial* dial, int8_t direction, Encoder_Edge edge) {
   }
   dial->Internal.InputState += direction;
   if (dial->Internal.InputState > dial->TickInterval || dial->Internal.InputState < -dial->TickInterval) {
-    dial->OnTicked(dial, dial->Internal.InputState);
+    if(dial->OnTicked == NULL || !dial->OnTicked(dial, dial->Internal.InputState)) {
+      if(dial->Internal.OnTicked != NULL) {
+        dial->Internal.OnTicked(dial, dial->Internal.InputState);
+      }
+    }
     dial->Internal.InputState = 0;
   }
 }

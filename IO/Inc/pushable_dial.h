@@ -9,6 +9,10 @@ extern "C" {
 #include "dial.h"
 #include "binary_push_key.h"
 
+enum PushableDialLastUpdatedItem;
+struct PushableDial_Internal;
+struct PushableDial;
+
 typedef enum PushableDialLastUpdatedItem {
   ReleasedDial = 1,
   PressedDial = 2,
@@ -17,7 +21,35 @@ typedef enum PushableDialLastUpdatedItem {
 
 typedef struct PushableDial_Internal {
   void (*Parent);                                 // Parent
-  PushableDialLastUpdatedItem LastUpdatedItem;    // Last updated item 
+  PushableDialLastUpdatedItem LastUpdatedItem;    // Last updated item
+
+  /**
+   * @brief Tick callback of the dial for released mode (parent)
+   * 
+   * @param sender PushableDial that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @retval None
+  */
+  void (*OnReleasedDialTicked)(struct PushableDial* sender, int8_t direction);
+  
+  /**
+   * @brief Tick callback of the dial for pressed mode (parent)
+   * 
+   * @param sender PushableDial that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @retval None
+  */
+  void (*OnPressedDialTicked)(struct PushableDial* sender, int8_t direction);
+
+  /**
+   * @brief State changed callback of the key (parent)
+   * 
+   * @param sender PushableDial that trigger the callback.
+   * @param state state
+   * @param isDialTicked Whether the dial has ticked after the last key state change.
+   * @retval None
+  */
+  void (*OnPushKeyStateChanged)(struct PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked);
 } PushableDial_Internal;
 
 /**
@@ -36,18 +68,20 @@ typedef struct PushableDial {
    * 
    * @param sender PushableDial that trigger the callback.
    * @param direction Tick direction. Positive for CW. Negative for CCW.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnReleasedDialTicked)(struct PushableDial* sender, int8_t direction);
+  uint8_t (*OnReleasedDialTicked)(struct PushableDial* sender, int8_t direction);
   
   /**
    * @brief Tick callback of the dial for pressed mode
    * 
    * @param sender PushableDial that trigger the callback.
    * @param direction Tick direction. Positive for CW. Negative for CCW.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnPressedDialTicked)(struct PushableDial* sender, int8_t direction);
+  uint8_t (*OnPressedDialTicked)(struct PushableDial* sender, int8_t direction);
 
   /**
    * @brief State changed callback of the key
@@ -55,9 +89,10 @@ typedef struct PushableDial {
    * @param sender PushableDial that trigger the callback.
    * @param state state
    * @param isDialTicked Whether the dial has ticked after the last key state change.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnPushKeyStateChanged)(struct PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked);
+  uint8_t (*OnPushKeyStateChanged)(struct PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked);
 } PushableDial;
 
 /**

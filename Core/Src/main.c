@@ -221,7 +221,7 @@ __weak void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
 
 // inputs
 
-void OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
+uint8_t OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
   if (state == PushKeyPressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
@@ -245,9 +245,11 @@ void OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
     // USBD_HID_SendRadialReport_FS(dialBtn, 0, 0, 0, 0);
     
   }
+
+  return 0;
 }
 
-void OnMatKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
+uint8_t OnMatKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
   if (state == PushKeyPressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
@@ -271,9 +273,11 @@ void OnMatKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
     // USBD_HID_SendRadialReport_FS(dialBtn, 0, 0, 0, 0);
     
   }
+
+  return 0;
 }
 
-void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge) {
+uint8_t OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge) {
   if (direction > 0) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
@@ -299,9 +303,11 @@ void OnEncoderTicked(Encoder* sender, int8_t direction, Encoder_Edge edge) {
     // USBD_HID_SendRadialReport_FS(dialBtn, -10, 0, 0, 0);
     
   }
+
+  return 0;
 }
 
-void OnDialTicked(Dial* sender, int8_t direction) {
+uint8_t OnDialTicked(Dial* sender, int8_t direction) {
   // if (direction > 0) {
   //   // Consumer Control
   //   ctrlState = ctrlState | CTRL_NEXT;
@@ -315,9 +321,11 @@ void OnDialTicked(Dial* sender, int8_t direction) {
   //   ctrlState = ctrlState & ~CTRL_PREVIOUS;
   //   while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   // }
+  
+  return 0;
 }
 
-void OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
+uint8_t OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
   if (direction > 0) {
     // Consumer Control
     ctrlState = ctrlState | CTRL_NEXT;
@@ -349,9 +357,11 @@ void OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
   easingParams->Duration = easingDuration;
+
+  return 0;
 }
 
-void OnPressedDialTicked(PushableDial* sender, int8_t direction) {
+uint8_t OnPressedDialTicked(PushableDial* sender, int8_t direction) {
   if (direction > 0) {
     // Consumer Control
     ctrlState = ctrlState | CTRL_VOLUME_INCREMENT;
@@ -383,9 +393,11 @@ void OnPressedDialTicked(PushableDial* sender, int8_t direction) {
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
   easingParams->Duration = easingDuration;
+
+  return 0;
 }
 
-void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
+uint8_t OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
   if (state == PushKeyReleased && !isDialTicked) {
     ctrlState = ctrlState | CTRL_PLAY_PAUSE;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
@@ -408,6 +420,8 @@ void OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
   easingParams->Duration = easingDuration;
+
+  return 0;
 }
 
 KeyMatrix* keyMatrix_def = &((KeyMatrix){

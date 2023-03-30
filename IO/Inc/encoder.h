@@ -8,6 +8,10 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "gpio_pin.h"
 
+enum Encoder_Edge;
+struct Encoder_Internal;
+struct Encoder;
+
 // Debounce time for encoder pins.
 #define ENCODER_DEBOUNCE_MS 0u
 
@@ -29,6 +33,16 @@ typedef struct Encoder_Internal {
 #endif
   uint8_t LastStateA;                 // Last pin state of Pin A
   uint8_t LastStateB;                 // Last pin state of Pin B
+
+  /**
+   * @brief Tick callback of the encoder (parent)
+   * 
+   * @param sender Encoder that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @param edge Pin which rising/falling edge occurred.
+   * @retval None
+  */
+  void (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
 } Encoder_Internal;
 
 /**
@@ -48,9 +62,10 @@ typedef struct Encoder {
    * @param sender Encoder that trigger the callback.
    * @param direction Tick direction. Positive for CW. Negative for CCW.
    * @param edge Pin which rising/falling edge occurred.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
+  uint8_t (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
 } Encoder;
 
 /**

@@ -8,10 +8,22 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "encoder.h"
 
+struct Dial_Internal;
+struct Dial;
+
 typedef struct Dial_Internal {
   void (*Parent);                 // Parent
   uint32_t LastInputTickMs;       // Time of the last hardware tick
   int16_t InputState;             // Internal dial state tracing
+
+  /**
+   * @brief Tick callback of the dial (parent)
+   * 
+   * @param sender Dial that trigger the callback.
+   * @param direction Tick direction. Positive for CW. Negative for CCW.
+   * @retval None
+  */
+  void (*OnTicked)(struct Dial* sender, int8_t direction);
 } Dial_Internal;
 
 /**
@@ -31,9 +43,10 @@ typedef struct Dial {
    * 
    * @param sender Dial that trigger the callback.
    * @param direction Tick direction. Positive for CW. Negative for CCW.
-   * @retval None
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
   */
-  void (*OnTicked)(struct Dial* sender, int8_t direction);
+  uint8_t (*OnTicked)(struct Dial* sender, int8_t direction);
 } Dial;
 
 /**
