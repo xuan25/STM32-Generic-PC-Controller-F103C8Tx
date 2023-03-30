@@ -249,7 +249,7 @@ uint8_t OnGPIOKeyStateChanged(BinaryPushKey* sender, BinaryPushKeyState state) {
   return 0;
 }
 
-uint8_t OnMatKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
+uint8_t OnMatrixKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
   if (state == PushKeyPressed) {
     HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
 
@@ -274,6 +274,11 @@ uint8_t OnMatKeyStateChanged(MatrixKey* sender, BinaryPushKeyState state) {
     
   }
 
+  return 1;
+}
+
+uint8_t OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, BinaryPushKeyState state) {
+  printf("Unhandled MatrixKey event");
   return 0;
 }
 
@@ -432,7 +437,7 @@ KeyMatrix* keyMatrix_def = &((KeyMatrix){
       }),
       .X = 0,
       .Y = 0,
-      .OnStateChanged = OnMatKeyStateChanged,
+      .OnStateChanged = OnMatrixKeyStateChanged,
     }),
     NULL
   }),
@@ -474,7 +479,8 @@ KeyMatrix* keyMatrix_def = &((KeyMatrix){
     }),
     NULL
   }),
-  .ReleasedLevel = GPIO_PIN_RESET
+  .ReleasedLevel = GPIO_PIN_RESET,
+  .OnStateChanged = OnKeyMatrixStateChanged,
 });
 
 BinaryPushKey* binaryPushKey_def = &((BinaryPushKey){
