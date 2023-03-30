@@ -54,6 +54,16 @@ typedef struct KeyMatrix_Internal {
   uint16_t Stride;              // Lookup stride
   Key* (* Keys);                // Keys for matrix coordinates
   uint8_t* EnabledFlags;        // Enabled flags for matrix coordinates
+
+  /**
+   * @brief State changed callback of the KeyMatrix (parent)
+   * 
+   * @param sender KeyMatrix that trigger the callback.
+   * @param matrixKey MatrixKey which state has been changed.
+   * @param state state.
+   * @retval None
+  */
+  void (*OnStateChanged)(struct KeyMatrix* sender, struct MatrixKey* matrixKey, BinaryPushKeyState state);
 } KeyMatrix_Internal;
 
 /**
@@ -62,11 +72,22 @@ typedef struct KeyMatrix_Internal {
  * @note Used to managed a key matrix.
 */
 typedef struct KeyMatrix {
-  KeyMatrix_Internal Internal;     // For internal usage
+  KeyMatrix_Internal Internal;   // For internal usage
   MatrixKey* (*MatrixKeys);     // A null-terminated array of defined MatrixKeys
   GPIO_Pin* (*Rows);            // A null-terminated array of row pins
   GPIO_Pin* (*Cols);            // A null-terminated array of column pins
   GPIO_PinState ReleasedLevel;  // GPIO state when key released
+
+  /**
+   * @brief State changed callback of the KeyMatrix
+   * 
+   * @param sender KeyMatrix that trigger the callback.
+   * @param matrixKey MatrixKey which state has been changed.
+   * @param state state.
+   * @retval Whether the event has been handled. 
+   * Once the event has been handled, it will not been sent to its parent.
+  */
+  uint8_t (*OnStateChanged)(struct KeyMatrix* sender, struct MatrixKey* matrixKey, BinaryPushKeyState state);
 } KeyMatrix;
 
 /**

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
+void KeyMatrix_OnMatrixKeyStateChanged(MatrixKey *sender, BinaryPushKeyState state);
 
 void KeyMatrix_Init(KeyMatrix* keyMatrix) {
 
@@ -29,9 +30,10 @@ void KeyMatrix_Init(KeyMatrix* keyMatrix) {
   // Init relations
   for (uint16_t i = 0; keyMatrix->MatrixKeys[i] != NULL; i++) {
     MatrixKey* matrixKey = keyMatrix->MatrixKeys[i];
-    matrixKey->Internal.Parent = keyMatrix;
     matrixKey->Key->Internal.Parent = matrixKey;
     matrixKey->Key->Internal.OnStateChanged = MatrixKey_OnKeyStateChanged;
+    matrixKey->Internal.Parent = keyMatrix;
+    matrixKey->Internal.OnStateChanged = KeyMatrix_OnMatrixKeyStateChanged;
 
     uint8_t idx = matrixKey->Y * keyMatrix->Internal.Stride + matrixKey->X;
     keyMatrix->Internal.Keys[idx] = matrixKey->Key;
@@ -102,6 +104,15 @@ void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState
   if (matrixKey->OnStateChanged == NULL || !matrixKey->OnStateChanged(matrixKey, state)) {
     if(matrixKey->Internal.OnStateChanged != NULL) {
       matrixKey->Internal.OnStateChanged(matrixKey, state);
+    }
+  }
+}
+
+void KeyMatrix_OnMatrixKeyStateChanged(MatrixKey *sender, BinaryPushKeyState state) {
+  KeyMatrix* keyMatrix = (KeyMatrix*)sender->Internal.Parent;
+  if (keyMatrix->OnStateChanged == NULL || !keyMatrix->OnStateChanged(keyMatrix, sender, state)) {
+    if(keyMatrix->Internal.OnStateChanged != NULL) {
+      keyMatrix->Internal.OnStateChanged(keyMatrix, sender, state);
     }
   }
 }
