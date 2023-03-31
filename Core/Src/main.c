@@ -79,11 +79,11 @@ RGB rgbTickedCW = (RGB){
   .B = 0xd6 * 0.8
 };
 
-// RGB rgbTickedCCW = (RGB){
-//   .R = 0x52 * 0.8,
-//   .G = 0xf7 * 0.8,
-//   .B = 0xf1 * 0.8
-// };
+RGB rgbClicked = (RGB){
+  .R = 0x52 * 0.8,
+  .G = 0xf7 * 0.8,
+  .B = 0xf1 * 0.8
+};
 
 RGB rgbTickedCCW = (RGB){
   .R = 0xf7 * 0.8,
@@ -409,18 +409,25 @@ uint8_t OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint
     ctrlState = ctrlState & ~CTRL_PLAY_PAUSE;
     while(USBD_HID_SendCtrlReport_FS(ctrlState) != USBD_OK);
   }
-
+  
   Color* easingTo = ws2812bSeries->Series[0]->Color;
   AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Params;
   EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  easingFrom->RGB = &rgb1Temp;
-  rgb1Temp = Color_EvaluateRGB(easingTo);
   if(state == PushKeyPressed) {
+    easingFrom->RGB = &rgb1Temp;
+    rgb1Temp = Color_EvaluateRGB(easingTo);
     easingTo->RGB = &rgbPressed;
   } else {
-    easingTo->RGB = &rgbReleased;
+    if (!isDialTicked) {
+      easingFrom->RGB = &rgbClicked;
+      easingTo->RGB = &rgbReleased;
+    } else {
+      easingFrom->RGB = &rgb1Temp;
+      rgb1Temp = Color_EvaluateRGB(easingTo);
+      easingTo->RGB = &rgbReleased;
+    }
   }
 
   easingParams->BeginTime = HAL_GetTick();
