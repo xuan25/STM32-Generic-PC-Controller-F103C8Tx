@@ -35,6 +35,7 @@
 #include "pushable_dial.h"
 #include "ws2812b.h"
 #include <math.h>
+#include "rgb.h"
 
 /* USER CODE END Includes */
 
@@ -59,55 +60,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-// lighting
-RGB rgbPressed = (RGB){
-  .R = 0xff * 0.5,
-  .G = 0xff * 0.5,
-  .B = 0xff * 0.5
-};
-
-RGB rgbReleased = (RGB){
-  .R = 0xff * 0.2,
-  .G = 0xff * 0.2,
-  .B = 0xff * 0.2
-};
-
-RGB rgbTickedCW = (RGB){
-  .R = 0xfa * 0.8,
-  .G = 0x49 * 0.8,
-  .B = 0xd6 * 0.8
-};
-
-RGB rgbClicked = (RGB){
-  .R = 0x52 * 0.8,
-  .G = 0xf7 * 0.8,
-  .B = 0xf1 * 0.8
-};
-
-RGB rgbTickedCCW = (RGB){
-  .R = 0xf7 * 0.8,
-  .G = 0xd6 * 0.8,
-  .B = 0x39 * 0.8
-};
-
-RGB rgb1Temp = (RGB){
-  .R = 0x00,
-  .G = 0x00,
-  .B = 0x00
-};
-
-RGB rgb2A = (RGB){
-  .R = 0xff,
-  .G = 0xff,
-  .B = 0xff
-};
-
-RGB rgb3A = (RGB){
-  .R = 0xff,
-  .G = 0xff,
-  .B = 0xff
-};
 
 uint16_t easingDuration = 300;
 
@@ -134,7 +86,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
   .Series = (WS2812B*[]){
     &(WS2812B) {
       .Color = &(Color) {
-        .RGB = &rgbReleased,
+        .RGB = RGB_RELEASED,
         .Filter = &(Filter){
           .Function = AlphaFilter,
           .Params = &(AlphaFilterParams) {
@@ -146,7 +98,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1000,
               .EasingFrom = &(Color) {
-                .RGB = &rgb1Temp
+                .RGB = RGB_1_TEMP
               }
             }
           }
@@ -155,7 +107,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
     },
     &(WS2812B) {
       .Color = &(Color) {
-        .RGB = &rgb2A,
+        .RGB = RGB_2_A,
         .Filter = &(Filter){
           .Function = AlphaFilter,
           .Params = &(AlphaFilterParams) {
@@ -167,7 +119,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1000,
               .EasingFrom = &(Color) {
-                .RGB = &rgb2A,
+                .RGB = RGB_2_A,
                 .Filter = &(Filter){
                   .Function = AlphaFilter,
                   .Params = &(AlphaFilterParams) {
@@ -182,7 +134,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
     },
     &(WS2812B) {
       .Color = &(Color) {
-        .RGB = &rgb3A,
+        .RGB = RGB_3_A,
         .Filter = &(Filter){
           .Function = AlphaFilter,
           .Params = &(AlphaFilterParams) {
@@ -194,7 +146,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1500,
               .EasingFrom = &(Color) {
-                .RGB = &rgb3A,
+                .RGB = RGB_3_A,
                 .Filter = &(Filter){
                   .Function = AlphaFilter,
                   .Params = &(AlphaFilterParams) {
@@ -353,12 +305,12 @@ uint8_t OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
   Color* easingFrom = easingParams->EasingFrom;
 
   if(direction > 0) {
-    easingFrom->RGB = &rgbTickedCW;
+    easingFrom->RGB = RGB_TICKED_CW;
   } else {
-    easingFrom->RGB = &rgbTickedCCW;
+    easingFrom->RGB = RGB_TICKED_CCW;
   }
 
-  easingTo->RGB = &rgbReleased;
+  easingTo->RGB = RGB_RELEASED;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -388,12 +340,12 @@ uint8_t OnPressedDialTicked(PushableDial* sender, int8_t direction) {
   Color* easingFrom = easingParams->EasingFrom;
 
   if(direction > 0) {
-    easingFrom->RGB = &rgbTickedCW;
+    easingFrom->RGB = RGB_TICKED_CW;
   } else {
-    easingFrom->RGB = &rgbTickedCCW;
+    easingFrom->RGB = RGB_TICKED_CCW;
   }
 
-  easingTo->RGB = &rgbPressed;
+  easingTo->RGB = RGB_PRESSED;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -416,17 +368,17 @@ uint8_t OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint
   Color* easingFrom = easingParams->EasingFrom;
 
   if(state == PushKeyPressed) {
-    easingFrom->RGB = &rgb1Temp;
-    rgb1Temp = Color_EvaluateRGB(easingTo);
-    easingTo->RGB = &rgbPressed;
+    easingFrom->RGB = RGB_1_TEMP;
+    *RGB_1_TEMP = Color_EvaluateRGB(easingTo);
+    easingTo->RGB = RGB_PRESSED;
   } else {
     if (!isDialTicked) {
-      easingFrom->RGB = &rgbClicked;
-      easingTo->RGB = &rgbReleased;
+      easingFrom->RGB = RGB_CLICKED;
+      easingTo->RGB = RGB_RELEASED;
     } else {
-      easingFrom->RGB = &rgb1Temp;
-      rgb1Temp = Color_EvaluateRGB(easingTo);
-      easingTo->RGB = &rgbReleased;
+      easingFrom->RGB = RGB_1_TEMP;
+      *RGB_1_TEMP = Color_EvaluateRGB(easingTo);
+      easingTo->RGB = RGB_RELEASED;
     }
   }
 
@@ -658,8 +610,8 @@ int main(void)
     // lighting test
     uint32_t tickMs = HAL_GetTick();
     // rotating color
-    rgb2A = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
-    rgb3A = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    *RGB_2_A = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    *RGB_3_A = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     // easing in and out
     for (int i = 1; i < 3; i++) {
       EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[i]->Color->Filter->Next->Params;

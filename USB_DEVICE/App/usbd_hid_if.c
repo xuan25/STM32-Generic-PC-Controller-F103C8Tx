@@ -23,6 +23,8 @@
 
 /* USER CODE BEGIN INCLUDE */
 
+#include "rgb.h"
+
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -661,6 +663,11 @@ static int8_t HID_OutEvent_FS(uint8_t* buffer)
       uint8_t g = buffer[0x20 + i];
       uint8_t b = buffer[0x2f + i];
       // TODO: update state buffer
+      
+      rgbIndex[id].R = r;
+      rgbIndex[id].G = g;
+      rgbIndex[id].B = b;
+      
     }
     if (updateFlag == 1) {
       // TODO: push updates
