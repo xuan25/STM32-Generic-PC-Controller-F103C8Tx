@@ -83,8 +83,8 @@ void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId) {
 
     // fill buffer
     for (size_t i = 0; i < 8; i++) {
-      buffer[i] =        (r >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
-      buffer[8 + i] =    (g >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
+      buffer[i] =        (g >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
+      buffer[8 + i] =    (r >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
       buffer[16 + i] =   (b >> (7 - i) & 0b1) ? pulseHigh : pulseLow;
     }
   } else if (series->Internal.CurrentCycle < (series->Internal.NumUnits + WS2812B_RESET_CYCLES)) {
