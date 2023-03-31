@@ -61,34 +61,52 @@
 /* USER CODE BEGIN PV */
 
 // lighting
-RGB pressedRGB = (RGB){
+RGB rgbPressed = (RGB){
   .R = 0xff * 0.5,
   .G = 0xff * 0.5,
   .B = 0xff * 0.5
 };
 
-RGB releasedRGB = (RGB){
+RGB rgbReleased = (RGB){
   .R = 0xff * 0.2,
   .G = 0xff * 0.2,
   .B = 0xff * 0.2
 };
 
-RGB tickedCWRGB = (RGB){
+RGB rgbTickedCW = (RGB){
   .R = 0xfa * 0.8,
   .G = 0x49 * 0.8,
   .B = 0xd6 * 0.8
 };
 
-// RGB tickedCCWRGB = (RGB){
+// RGB rgbTickedCCW = (RGB){
 //   .R = 0x52 * 0.8,
 //   .G = 0xf7 * 0.8,
 //   .B = 0xf1 * 0.8
 // };
 
-RGB tickedCCWRGB = (RGB){
+RGB rgbTickedCCW = (RGB){
   .R = 0xf7 * 0.8,
   .G = 0xd6 * 0.8,
   .B = 0x39 * 0.8
+};
+
+RGB rgb1Temp = (RGB){
+  .R = 0x00,
+  .G = 0x00,
+  .B = 0x00
+};
+
+RGB rgb2A = (RGB){
+  .R = 0xff,
+  .G = 0xff,
+  .B = 0xff
+};
+
+RGB rgb3A = (RGB){
+  .R = 0xff,
+  .G = 0xff,
+  .B = 0xff
 };
 
 uint16_t easingDuration = 300;
@@ -116,11 +134,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
   .Series = (WS2812B*[]){
     &(WS2812B) {
       .Color = &(Color) {
-        .RGB = &(RGB){
-          .R = 0xff * 0.2,
-          .G = 0xff * 0.2,
-          .B = 0xff * 0.2,
-        },
+        .RGB = &rgbReleased,
         .Filter = &(Filter){
           .Function = AlphaFilter,
           .Params = &(AlphaFilterParams) {
@@ -132,11 +146,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1000,
               .EasingFrom = &(Color) {
-                .RGB = &(RGB) {
-                  .R = 0x00,
-                  .G = 0x00,
-                  .B = 0x00
-                }
+                .RGB = &rgb1Temp
               }
             }
           }
@@ -145,11 +155,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
     },
     &(WS2812B) {
       .Color = &(Color) {
-        .RGB = &(RGB){
-          .R = 0xff,
-          .G = 0xff,
-          .B = 0xff
-        },
+        .RGB = &rgb2A,
         .Filter = &(Filter){
           .Function = AlphaFilter,
           .Params = &(AlphaFilterParams) {
@@ -161,7 +167,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1000,
               .EasingFrom = &(Color) {
-                // .Value = parentColor->Value,
+                .RGB = &rgb2A,
                 .Filter = &(Filter){
                   .Function = AlphaFilter,
                   .Params = &(AlphaFilterParams) {
@@ -176,11 +182,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
     },
     &(WS2812B) {
       .Color = &(Color) {
-        .RGB = &(RGB){
-          .R = 0xff,
-          .G = 0xff,
-          .B = 0xff
-        },
+        .RGB = &rgb3A,
         .Filter = &(Filter){
           .Function = AlphaFilter,
           .Params = &(AlphaFilterParams) {
@@ -192,7 +194,7 @@ WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
               .BeginTime = 0,
               .Duration = 1500,
               .EasingFrom = &(Color) {
-                // .Value = parentColor->Value,
+                .RGB = &rgb3A,
                 .Filter = &(Filter){
                   .Function = AlphaFilter,
                   .Params = &(AlphaFilterParams) {
@@ -350,14 +352,13 @@ uint8_t OnReleasedDialTicked(PushableDial* sender, int8_t direction) {
   EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  *easingFrom->RGB = Color_EvaluateRGB(easingTo);
   if(direction > 0) {
-    *easingFrom->RGB = tickedCWRGB;
+    easingFrom->RGB = &rgbTickedCW;
   } else {
-    *easingFrom->RGB = tickedCCWRGB;
+    easingFrom->RGB = &rgbTickedCCW;
   }
 
-  *easingTo->RGB = releasedRGB;
+  easingTo->RGB = &rgbReleased;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -386,14 +387,13 @@ uint8_t OnPressedDialTicked(PushableDial* sender, int8_t direction) {
   EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  *easingFrom->RGB = Color_EvaluateRGB(easingTo);
   if(direction > 0) {
-    *easingFrom->RGB = tickedCWRGB;
+    easingFrom->RGB = &rgbTickedCW;
   } else {
-    *easingFrom->RGB = tickedCCWRGB;
+    easingFrom->RGB = &rgbTickedCCW;
   }
 
-  *easingTo->RGB = pressedRGB;
+  easingTo->RGB = &rgbPressed;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -415,11 +415,12 @@ uint8_t OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint
   EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[0]->Color->Filter->Next->Params;
   Color* easingFrom = easingParams->EasingFrom;
 
-  *easingFrom->RGB = Color_EvaluateRGB(easingTo);
+  easingFrom->RGB = &rgb1Temp;
+  rgb1Temp = Color_EvaluateRGB(easingTo);
   if(state == PushKeyPressed) {
-    *easingTo->RGB = pressedRGB;
+    easingTo->RGB = &rgbPressed;
   } else {
-    *easingTo->RGB = releasedRGB;
+    easingTo->RGB = &rgbReleased;
   }
 
   easingParams->BeginTime = HAL_GetTick();
@@ -614,11 +615,6 @@ int main(void)
   PushableDial_Init(pushableDial_def);
   WS2812BSeries_Init(ws2812bSeries);
 
-  // Link RGB of EaseFilters to parent
-  for (int i = 1; i < 3; i++) {
-    ((EasingFilterParams*)ws2812bSeries->Series[i]->Color->Filter->Next->Params)->EasingFrom->RGB = ws2812bSeries->Series[i]->Color->RGB;
-  }
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -655,8 +651,8 @@ int main(void)
     // lighting test
     uint32_t tickMs = HAL_GetTick();
     // rotating color
-    *ws2812bSeries->Series[1]->Color->RGB = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
-    *ws2812bSeries->Series[2]->Color->RGB = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    rgb2A = HSVToRGB(fmod((0.6 + (tickMs / 1000.0)) * 360, 360), 1, 1);
+    rgb3A = HSVToRGB(fmod((0.9 + (tickMs / 1000.0)) * 360, 360), 1, 1);
     // easing in and out
     for (int i = 1; i < 3; i++) {
       EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[i]->Color->Filter->Next->Params;
