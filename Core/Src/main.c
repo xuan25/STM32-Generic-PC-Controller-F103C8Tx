@@ -368,16 +368,20 @@ uint8_t OnPWKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint
   Color* easingFrom = easingParams->EasingFrom;
 
   if(state == PushKeyPressed) {
-    easingFrom->RGB = RGB_1_TEMP;
+    // evaluate color under current config first
     *RGB_1_TEMP = Color_EvaluateRGB(easingTo);
+    // then update config
+    easingFrom->RGB = RGB_1_TEMP;
     easingTo->RGB = RGB_PRESSED;
   } else {
     if (!isDialTicked) {
       easingFrom->RGB = RGB_CLICKED;
       easingTo->RGB = RGB_RELEASED;
     } else {
-      easingFrom->RGB = RGB_1_TEMP;
+      // evaluate color under current config first
       *RGB_1_TEMP = Color_EvaluateRGB(easingTo);
+      // then update config
+      easingFrom->RGB = RGB_1_TEMP;
       easingTo->RGB = RGB_RELEASED;
     }
   }
