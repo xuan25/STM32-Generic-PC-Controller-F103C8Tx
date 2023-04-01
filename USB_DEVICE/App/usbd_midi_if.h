@@ -105,6 +105,7 @@
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 
+void USBD_MIDI_DataInHandler(uint8_t * usb_rx_buffer, uint8_t usb_rx_buffer_length);
 uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cable_number, uint8_t channel_number, uint8_t controller_number, uint8_t new_value);
 
 /* USER CODE END EXPORTED_FUNCTIONS */

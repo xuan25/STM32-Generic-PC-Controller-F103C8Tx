@@ -13,6 +13,21 @@ uint8_t dialLightMapping[] = {
   0, 0
 };
 
+// channelID | controllerID << 8
+uint16_t lightMIDICCMappings[11] = {
+  0x0 | 80 << 8,
+  0x0 | 81 << 8,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+};
+
 RGB rgbIndex[] = {
   { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 pressed brighter white
   { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 pressed brighter white
@@ -50,6 +65,18 @@ RGB rgbIndex[] = {
   { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 08 pressed brighter white
   { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 09 pressed brighter white
   { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 10 pressed brighter white
+
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 00 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 01 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 02 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 03 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 04 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 05 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 06 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 07 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 08 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 09 Activated
+  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 10 Activated
   
   { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 00 temp black
   { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 01 temp black
@@ -329,11 +356,13 @@ void Lighting_OnKeyMatrixStateChanged(uint8_t keyID, BinaryPushKeyState state) {
   *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
   // then update config
   easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
-  if(state == PushKeyPressed) {
-    easingTo->RGB = RGB_KEY_00_PRESSED + lightId;
-  } 
-  else {
-    easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+  if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+    if(state == PushKeyPressed) {
+      easingTo->RGB = RGB_KEY_00_PRESSED + lightId;
+    } 
+    else {
+      easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+    }
   }
 
   easingParams->BeginTime = HAL_GetTick();
@@ -354,7 +383,7 @@ void Lighting_OnDialReleasedTicked(uint8_t dialID, int8_t direction) {
     easingFrom->RGB = RGB_DIAL_1_RELEASED_CCW + dialID;
   }
 
-  easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+  // easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -374,7 +403,7 @@ void Lighting_OnDialPressedTicked(uint8_t dialID, int8_t direction) {
     easingFrom->RGB = RGB_DIAL_1_PRESSED_CCW + dialID;
   }
 
-  easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
+  // easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
@@ -393,21 +422,58 @@ void Lighting_OnDialKeyStateChanged(uint8_t dialID, BinaryPushKeyState state, ui
     *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
     // then update config
     easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
-    easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
+    if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+      easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
+    }
   } else {
     if (!isDialTicked) {
       easingFrom->RGB = RGB_DIAL_1_RELEASED + dialID;
-      easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+      if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+        easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+      }
     } else {
       // evaluate color under current config first
       *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
       // then update config
       easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
-      easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+      if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+        easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+      }
     }
   }
 
   easingParams->BeginTime = HAL_GetTick();
   easingParams->IsCompleted = 0;
   easingParams->Duration = LIGHT_EASING_DURATION;
+}
+
+void Lighting_OnMIDICCChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value) {
+  uint32_t midiCCMapID = channelNumber | controllerNumber << 8;
+
+  for (uint8_t lightId = 0; lightId < sizeof(lightMIDICCMappings); lightId++) {
+    if (lightMIDICCMappings[lightId] == midiCCMapID) {
+      
+      Color* easingTo = ws2812bSeries->Series[lightId]->Color;
+      AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+      EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+      Color* easingFrom = easingParams->EasingFrom;
+
+      // evaluate color under current config first
+      *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
+      // then update config
+      easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
+      
+      if (value > 63) {
+        easingTo->RGB = RGB_KEY_00_ACTIVATED + lightId;
+      } else {
+        easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+      }
+
+      easingParams->BeginTime = HAL_GetTick();
+      easingParams->IsCompleted = 0;
+      easingParams->Duration = LIGHT_EASING_DURATION;
+
+      break;
+    }
+  }
 }

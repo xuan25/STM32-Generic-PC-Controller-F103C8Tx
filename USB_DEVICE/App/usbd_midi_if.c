@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_midi_if.h"
 #include "usbd_midi.h"
+#include "midicc_conf.h"
 
 /* USER CODE BEGIN INCLUDE */
 
@@ -114,9 +115,9 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
   * @{
   */
 
-static int8_t MIDI_Init_FS(void);
-static int8_t MIDI_DeInit_FS(void);
-static int8_t MIDI_OutEvent_FS(uint8_t event_idx, uint8_t state);
+// static int8_t MIDI_Init_FS(void);
+// static int8_t MIDI_DeInit_FS(void);
+// static int8_t MIDI_OutEvent_FS(uint8_t event_idx, uint8_t state);
 
 /**
   * @}
@@ -150,6 +151,18 @@ static int8_t USBD_MIDI_SendReport_FS(uint8_t *report, uint16_t len)
   return USBD_MIDI_SendReport(&hUsbDeviceFS, report, len);
 }
 */
+
+void USBD_MIDI_DataInHandler(uint8_t * usb_rx_buffer, uint8_t usb_rx_buffer_length)
+{
+  uint8_t code_index_number = usb_rx_buffer[0] & 0xf;
+  uint8_t cable_number = usb_rx_buffer[0] >> 4 & 0xf;
+  uint8_t channel_number = usb_rx_buffer[1] & 0xf;
+  uint8_t message_number = usb_rx_buffer[1] >> 4 & 0xf;
+  uint8_t controller_number = usb_rx_buffer[2];
+  uint8_t new_value = usb_rx_buffer[3];
+  
+  MIDICC_OnChanged(channel_number, controller_number, new_value);
+}
 
 uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cable_number, uint8_t channel_number, uint8_t controller_number, uint8_t new_value) {
   uint8_t code_index_number = 0xB;

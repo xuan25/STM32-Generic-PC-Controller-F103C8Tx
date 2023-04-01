@@ -51,17 +51,29 @@ extern RGB rgbIndex[];
 #define RGB_KEY_09_PRESSED          (rgbIndex + 32)
 #define RGB_KEY_10_PRESSED          (rgbIndex + 33)
 
-#define RGB_KEY_00_TEMP             (rgbIndex + 34)
-#define RGB_KEY_01_TEMP             (rgbIndex + 35)
-#define RGB_KEY_02_TEMP             (rgbIndex + 36)
-#define RGB_KEY_03_TEMP             (rgbIndex + 37)
-#define RGB_KEY_04_TEMP             (rgbIndex + 38)
-#define RGB_KEY_05_TEMP             (rgbIndex + 39)
-#define RGB_KEY_06_TEMP             (rgbIndex + 40)
-#define RGB_KEY_07_TEMP             (rgbIndex + 41)
-#define RGB_KEY_08_TEMP             (rgbIndex + 42)
-#define RGB_KEY_09_TEMP             (rgbIndex + 43)
-#define RGB_KEY_10_TEMP             (rgbIndex + 44)
+#define RGB_KEY_00_ACTIVATED             (rgbIndex + 34)
+#define RGB_KEY_01_ACTIVATED             (rgbIndex + 35)
+#define RGB_KEY_02_ACTIVATED             (rgbIndex + 36)
+#define RGB_KEY_03_ACTIVATED             (rgbIndex + 37)
+#define RGB_KEY_04_ACTIVATED             (rgbIndex + 38)
+#define RGB_KEY_05_ACTIVATED             (rgbIndex + 39)
+#define RGB_KEY_06_ACTIVATED             (rgbIndex + 40)
+#define RGB_KEY_07_ACTIVATED             (rgbIndex + 41)
+#define RGB_KEY_08_ACTIVATED             (rgbIndex + 42)
+#define RGB_KEY_09_ACTIVATED             (rgbIndex + 43)
+#define RGB_KEY_10_ACTIVATED             (rgbIndex + 44)
+
+#define RGB_KEY_00_TEMP        (rgbIndex + 45)
+#define RGB_KEY_01_TEMP        (rgbIndex + 46)
+#define RGB_KEY_02_TEMP        (rgbIndex + 47)
+#define RGB_KEY_03_TEMP        (rgbIndex + 48)
+#define RGB_KEY_04_TEMP        (rgbIndex + 49)
+#define RGB_KEY_05_TEMP        (rgbIndex + 50)
+#define RGB_KEY_06_TEMP        (rgbIndex + 51)
+#define RGB_KEY_07_TEMP        (rgbIndex + 52)
+#define RGB_KEY_08_TEMP        (rgbIndex + 53)
+#define RGB_KEY_09_TEMP        (rgbIndex + 54)
+#define RGB_KEY_10_TEMP        (rgbIndex + 55)
 
 void Lighting_Init();
 void Lighting_PushUpdate();
@@ -69,6 +81,7 @@ void Lighting_OnKeyMatrixStateChanged(uint8_t keyID, BinaryPushKeyState state);
 void Lighting_OnDialReleasedTicked(uint8_t dialID, int8_t direction);
 void Lighting_OnDialPressedTicked(uint8_t dialID, int8_t direction);
 void Lighting_OnDialKeyStateChanged(uint8_t dialID, BinaryPushKeyState state, uint8_t isDialTicked);
+void Lighting_OnMIDICCChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value);
 
 #ifdef __cplusplus
 }

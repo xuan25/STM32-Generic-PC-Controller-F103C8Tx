@@ -6,6 +6,7 @@
 #include "key_matrix.h"
 #include "pushable_dial.h"
 #include "delay.h"
+#include "midicc_conf.h"
 
 typedef enum ReportType {
   REPORT_NONE,
@@ -33,7 +34,7 @@ typedef struct ActionConfig {
   uint8_t Byte02;
   // REPORT_KEYBOARD: key2
   // REPORT_RADIAL: x lower byte
-  // MIDI: step (0 for toggle)
+  // MIDI: change delta (0 for toggle)
   uint8_t Byte03;
   // REPORT_KEYBOARD: key3
   // REPORT_RADIAL: x higher byte
@@ -59,15 +60,7 @@ typedef struct DialConfig {
   ActionConfig Clicked;
 } DialConfig;
 
-typedef struct MIDIBuffer {
-  uint32_t ID;
-  uint8_t Value;
-  struct MIDIBuffer* Next;
-} MIDIBuffer;
-
 uint16_t ctrlState = 0x0000;
-
-MIDIBuffer* midiBuffers = NULL;
 
 ActionConfig matrixKeyConfigs[] = {
   { REPORT_NONE },
@@ -75,10 +68,16 @@ ActionConfig matrixKeyConfigs[] = {
     .Type = REPORT_MIDI,
     .Byte00 = 0,
     .Byte01 = 0,
-    .Byte02 = 8,
+    .Byte02 = 80,
     .Byte03 = 0,
   },
-  { REPORT_NONE },
+  { 
+    .Type = REPORT_MIDI,
+    .Byte00 = 0,
+    .Byte01 = 0,
+    .Byte02 = 81,
+    .Byte03 = 0,
+  },
   { REPORT_NONE },
 
   { REPORT_NONE },
@@ -253,37 +252,7 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
     break;
   case REPORT_MIDI:
     {
-      uint32_t midiBufferID = actionConfig->Byte00 | actionConfig->Byte01 << 8 | actionConfig->Byte02 << 16;
-      MIDIBuffer* midiBuf = midiBuffers;
-      if(midiBuffers == NULL) {
-        midiBuffers = calloc(1, sizeof(MIDIBuffer));
-        midiBuf = midiBuffers;
-        midiBuf->ID = midiBufferID;
-      } else {
-        while (midiBuf->ID != midiBufferID && midiBuf->Next != NULL) {
-          midiBuf = midiBuf->Next;
-        }
-        if(midiBuf->ID != midiBufferID) {
-          midiBuf->Next = calloc(1, sizeof(MIDIBuffer));
-          midiBuf = midiBuf->Next;
-          midiBuf->ID = midiBufferID;
-        }
-      }
-
-      int16_t val = midiBuf->Value;
-      int8_t step = (int8_t)actionConfig->Byte03;
-      if(step != 0) {
-        val += step;
-      } else {
-        val = 127 - val;
-      }
-      if (val >= 128) {
-        val = 127;
-      }
-      if (val < 0) {
-        val = 0;
-      }
-      midiBuf->Value = val;
+      uint8_t val = MIDICC_OnChangeDelta(actionConfig->Byte01, actionConfig->Byte02, (int8_t)actionConfig->Byte03);
       while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, val) != USBD_OK);
     }
     break;
@@ -321,6 +290,9 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
 
 uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, BinaryPushKeyState state) {
   int8_t keyID = matrixKey->X + matrixKey->Y * sender->Internal.Stride;
+
+  Lighting_OnKeyMatrixStateChanged(keyID, state);
+
   ActionConfig* actionConfig = &matrixKeyConfigs[keyID];
   if(state == PushKeyPressed) {
     Inputs_ActionSet(actionConfig);
@@ -328,11 +300,11 @@ uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, 
   else {
     Inputs_ActionReset(actionConfig);
   }
-
-  Lighting_OnKeyMatrixStateChanged(keyID, state);
 }
 
 uint8_t Inputs_OnDial0ReleasedTicked(PushableDial* sender, int8_t direction) {
+  Lighting_OnDialReleasedTicked(0, direction);
+
   if (direction > 0) {
     Inputs_ActionSet(&dialConfigs[0].ReleasedCW);
     Inputs_ActionReset(&dialConfigs[0].ReleasedCW);
@@ -341,12 +313,12 @@ uint8_t Inputs_OnDial0ReleasedTicked(PushableDial* sender, int8_t direction) {
     Inputs_ActionReset(&dialConfigs[0].ReleasedCCW);
   }
 
-  Lighting_OnDialReleasedTicked(0, direction);
-
   return 1;
 }
 
 uint8_t Inputs_OnDial0PressedTicked(PushableDial* sender, int8_t direction) {
+  Lighting_OnDialPressedTicked(0, direction);
+
   if (direction > 0) {
     Inputs_ActionSet(&dialConfigs[0].PressedCW);
     Inputs_ActionReset(&dialConfigs[0].PressedCW);
@@ -355,23 +327,23 @@ uint8_t Inputs_OnDial0PressedTicked(PushableDial* sender, int8_t direction) {
     Inputs_ActionReset(&dialConfigs[0].PressedCCW);
   }
 
-  Lighting_OnDialPressedTicked(0, direction);
-
   return 1;
 }
 
 uint8_t Inputs_OnDial0KeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
+  Lighting_OnDialKeyStateChanged(0, state, isDialTicked);
+
   if (state == PushKeyReleased && !isDialTicked) {
     Inputs_ActionSet(&dialConfigs[0].Clicked);
     Inputs_ActionReset(&dialConfigs[0].Clicked);
   }
   
-  Lighting_OnDialKeyStateChanged(0, state, isDialTicked);
-
   return 1;
 }
 
 uint8_t Inputs_OnDial1ReleasedTicked(PushableDial* sender, int8_t direction) {
+  Lighting_OnDialReleasedTicked(1, direction);
+
   if (direction > 0) {
     Inputs_ActionSet(&dialConfigs[1].ReleasedCW);
     Inputs_ActionReset(&dialConfigs[1].ReleasedCW);
@@ -380,12 +352,12 @@ uint8_t Inputs_OnDial1ReleasedTicked(PushableDial* sender, int8_t direction) {
     Inputs_ActionReset(&dialConfigs[1].ReleasedCCW);
   }
 
-  Lighting_OnDialReleasedTicked(1, direction);
-
   return 1;
 }
 
 uint8_t Inputs_OnDial1PressedTicked(PushableDial* sender, int8_t direction) {
+  Lighting_OnDialPressedTicked(1, direction);
+
   if (direction > 0) {
     Inputs_ActionSet(&dialConfigs[1].PressedCW);
     Inputs_ActionReset(&dialConfigs[1].PressedCW);
@@ -394,19 +366,17 @@ uint8_t Inputs_OnDial1PressedTicked(PushableDial* sender, int8_t direction) {
     Inputs_ActionReset(&dialConfigs[1].PressedCCW);
   }
 
-  Lighting_OnDialPressedTicked(1, direction);
-
   return 1;
 }
 
 uint8_t Inputs_OnDial1KeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
+  Lighting_OnDialKeyStateChanged(1, state, isDialTicked);
+
   if (state == PushKeyReleased && !isDialTicked) {
     Inputs_ActionSet(&dialConfigs[1].Clicked);
     Inputs_ActionReset(&dialConfigs[1].Clicked);
   }
   
-  Lighting_OnDialKeyStateChanged(1, state, isDialTicked);
-
   return 1;
 }
 
@@ -631,6 +601,30 @@ PushableDial* pushableDial2_def = &((PushableDial){
   .OnPressedDialTicked = Inputs_OnDial1PressedTicked,
   .OnPushKeyStateChanged = Inputs_OnDial1KeyStateChanged,
 });
+
+// void Inputs_OnMIDICCStateChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value) {
+
+//   uint32_t midiBufferID = channelNumber | controllerNumber << 8;
+//   MIDIBuffer* midiBuf = midiBuffers;
+//   if(midiBuffers == NULL) {
+//     midiBuffers = calloc(1, sizeof(MIDIBuffer));
+//     midiBuf = midiBuffers;
+//     midiBuf->ID = midiBufferID;
+//   } else {
+//     while (midiBuf->ID != midiBufferID && midiBuf->Next != NULL) {
+//       midiBuf = midiBuf->Next;
+//     }
+//     if(midiBuf->ID != midiBufferID) {
+//       midiBuf->Next = calloc(1, sizeof(MIDIBuffer));
+//       midiBuf = midiBuf->Next;
+//       midiBuf->ID = midiBufferID;
+//     }
+//   }
+
+//   midiBuf->Value = value;
+
+//   Lighting_OnMIDICCStateChanged(channelNumber, controllerNumber, value);
+// }
 
 void Inputs_Init() {
   KeyMatrix_Init(keyMatrix_def);

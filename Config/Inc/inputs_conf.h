@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "stm32f1xx_hal.h"
+
 void Inputs_Init();
 void Inputs_Scan();
 
