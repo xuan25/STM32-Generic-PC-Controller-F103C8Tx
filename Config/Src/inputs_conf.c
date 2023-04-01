@@ -9,30 +9,35 @@
 #include "midicc_conf.h"
 
 typedef enum ActionType {
-  ACTION_NONE,
-  ACTION_CONSUMER,
-  ACTION_KEYBOARD,
-  ACTION_RADIAL,
-  ACTION_MIDI,
+  ACTION_NONE = 0,
+  ACTION_CTRL = 1,
+  ACTION_KEYBOARD = 2,
+  ACTION_MOUSE = 3,
+  ACTION_RADIAL = 4,
+  ACTION_MIDI = 5,
 } ActionType;
 
 typedef struct ActionConfig {
   ActionType Type;
-  // ACTION_CONSUMER: lower byte
+  // ACTION_CTRL: lower byte
   // ACTION_KEYBOARD: modifier
-  // ACTION_RADIAL: Button
+  // ACTION_MOUSE: buttons
+  // ACTION_RADIAL: button
   // ACTION_MIDI: cable number
   uint8_t Byte00;
-  // ACTION_CONSUMER: higher byte
+  // ACTION_CTRL: higher byte
   // ACTION_KEYBOARD: OEM
+  // ACTION_MOUSE: x
   // ACTION_RADIAL: dial lower byte
   // ACTION_MIDI: channel number
   uint8_t Byte01;
   // ACTION_KEYBOARD: key1
+  // ACTION_MOUSE: y
   // ACTION_RADIAL: dial higher byte
   // ACTION_MIDI: controller number
   uint8_t Byte02;
   // ACTION_KEYBOARD: key2
+  // ACTION_MOUSE: wheel
   // ACTION_RADIAL: x lower byte
   // ACTION_MIDI: change delta (0 for toggle)
   uint8_t Byte03;
@@ -64,8 +69,10 @@ uint8_t Inputs_OnPushableDialKeyStateChanged(PushableDial* sender, BinaryPushKey
 
 
 uint16_t ctrlState = 0x0000;
-uint8_t radialButtonState = 0x00;
 uint8_t keyboardModifierState = 0x00;
+uint8_t mouseButtonsState = 0x00;
+uint8_t radialButtonState = 0x00;
+
 
 uint8_t keyboardKeyState[6] = {
   0, 0, 0, 0, 0, 0
@@ -81,7 +88,7 @@ uint8_t matrixKeyConfigsMapping[] = {
 ActionConfig actionConfigs[] = {
   // Dial ReleasedCW
   {
-    .Type = ACTION_CONSUMER,
+    .Type = ACTION_CTRL,
     .Byte00 = CTRL_NEXT & 0xff,
     .Byte01 = CTRL_NEXT >> 8 & 0xff,
   },
@@ -92,7 +99,7 @@ ActionConfig actionConfigs[] = {
   },
   // Dial ReleasedCCW
   {
-    .Type = ACTION_CONSUMER,
+    .Type = ACTION_CTRL,
     .Byte00 = CTRL_PREVIOUS & 0xff,
     .Byte01 = CTRL_PREVIOUS >> 8 & 0xff,
   },
@@ -137,7 +144,7 @@ ActionConfig actionConfigs[] = {
   },
   // Dial Clicked
   {
-    .Type = ACTION_CONSUMER,
+    .Type = ACTION_CTRL,
     .Byte00 = CTRL_PLAY_PAUSE & 0xff,
     .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
   },
@@ -432,7 +439,7 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
   {
   case ACTION_NONE:
     break;
-  case ACTION_CONSUMER: 
+  case ACTION_CTRL: 
     {
       uint16_t flag = actionConfig->Byte00 | actionConfig->Byte01 << 8;
       ctrlState = ctrlState | flag;
@@ -450,6 +457,11 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
     Inputs_KeyboardStateAddKey(actionConfig->Byte07);
 
     while(USBD_HID_SendKeyboardReport_FS(keyboardModifierState, actionConfig->Byte01, keyboardKeyState[0], keyboardKeyState[1], keyboardKeyState[2], keyboardKeyState[3], keyboardKeyState[4], keyboardKeyState[5]) != USBD_OK);
+    break;
+  case ACTION_MOUSE:
+    mouseButtonsState = mouseButtonsState | actionConfig->Byte00;
+
+    while(USBD_HID_SendMouseReport_FS(mouseButtonsState, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03) != USBD_OK);
     break;
   case ACTION_RADIAL:
     if(actionConfig->Byte00) {
@@ -474,7 +486,7 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
   {
   case ACTION_NONE:
     break;
-  case ACTION_CONSUMER: 
+  case ACTION_CTRL: 
     {
       uint16_t flag = actionConfig->Byte00 | actionConfig->Byte01 << 8;
       ctrlState = ctrlState & ~flag;
@@ -492,6 +504,12 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
     Inputs_KeyboardStateRemoveKey(actionConfig->Byte07);
 
     while(USBD_HID_SendKeyboardReport_FS(keyboardModifierState, actionConfig->Byte01, keyboardKeyState[0], keyboardKeyState[1], keyboardKeyState[2], keyboardKeyState[3], keyboardKeyState[4], keyboardKeyState[5]) != USBD_OK);
+    break;
+  case ACTION_MOUSE:
+    if(actionConfig->Byte00) {
+      mouseButtonsState = mouseButtonsState & ~actionConfig->Byte00;
+      while(USBD_HID_SendMouseReport_FS(mouseButtonsState, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03) != USBD_OK);
+    }
     break;
   case ACTION_RADIAL:
     if(actionConfig->Byte00) {
