@@ -23,7 +23,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 
-#include "rgb.h"
+#include "lighting_conf.h"
 
 /* USER CODE END INCLUDE */
 
