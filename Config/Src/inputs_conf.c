@@ -63,6 +63,10 @@ typedef struct DialConfig {
 
 uint16_t ctrlState = 0x0000;
 uint8_t radialButtonState = 0x00;
+uint8_t keyboardModifierState = 0x00;
+uint8_t keyboardKeyState[6] = {
+  0, 0, 0, 0, 0, 0
+};
 
 ActionConfig matrixKeyConfigs[] = {
   { REPORT_NONE },
@@ -168,6 +172,32 @@ DialConfig dialConfigs[] = {
   }
 };
 
+uint8_t Inputs_KeyboardStateAddKey(uint8_t key) {
+  if (key == 0) {
+    return 0;
+  }
+  for (int i = 0; i < sizeof(keyboardKeyState); i++) {
+    if(keyboardKeyState[i] == 0) {
+      keyboardKeyState[i] = key;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void Inputs_KeyboardStateRemoveKey(uint8_t key) {
+  if (key == 0) {
+    return 0;
+  }
+  for (int i = 0; i < sizeof(keyboardKeyState); i++) {
+    if(keyboardKeyState[i] == key) {
+      keyboardKeyState[i] = 0;
+      return 1;
+    }
+  }
+  return 0;
+}
+
 void Inputs_ActionSet(ActionConfig* actionConfig) {
   switch (actionConfig->Type)
   {
@@ -181,7 +211,16 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
     }
     break;
   case REPORT_KEYBOARD:
-    while(USBD_HID_SendKeyboardReport_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03, actionConfig->Byte05, actionConfig->Byte05, actionConfig->Byte06, actionConfig->Byte07) != USBD_OK);
+    keyboardModifierState = keyboardModifierState | actionConfig->Byte00;
+    
+    Inputs_KeyboardStateAddKey(actionConfig->Byte02);
+    Inputs_KeyboardStateAddKey(actionConfig->Byte03);
+    Inputs_KeyboardStateAddKey(actionConfig->Byte04);
+    Inputs_KeyboardStateAddKey(actionConfig->Byte05);
+    Inputs_KeyboardStateAddKey(actionConfig->Byte06);
+    Inputs_KeyboardStateAddKey(actionConfig->Byte07);
+
+    while(USBD_HID_SendKeyboardReport_FS(keyboardModifierState, actionConfig->Byte01, keyboardKeyState[0], keyboardKeyState[1], keyboardKeyState[2], keyboardKeyState[3], keyboardKeyState[4], keyboardKeyState[5]) != USBD_OK);
     break;
   case REPORT_RADIAL:
     if(actionConfig->Byte00) {
@@ -214,11 +253,18 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
     }
     break;
   case REPORT_KEYBOARD:
-    // TODO: handle key released
-    while(USBD_HID_SendKeyboardReport_FS(0, 0, 0, 0, 0, 0, 0, 0) != USBD_OK);
+    keyboardModifierState = keyboardModifierState & ~actionConfig->Byte00;
+
+    Inputs_KeyboardStateRemoveKey(actionConfig->Byte02);
+    Inputs_KeyboardStateRemoveKey(actionConfig->Byte03);
+    Inputs_KeyboardStateRemoveKey(actionConfig->Byte04);
+    Inputs_KeyboardStateRemoveKey(actionConfig->Byte05);
+    Inputs_KeyboardStateRemoveKey(actionConfig->Byte06);
+    Inputs_KeyboardStateRemoveKey(actionConfig->Byte07);
+
+    while(USBD_HID_SendKeyboardReport_FS(keyboardModifierState, actionConfig->Byte01, keyboardKeyState[0], keyboardKeyState[1], keyboardKeyState[2], keyboardKeyState[3], keyboardKeyState[4], keyboardKeyState[5]) != USBD_OK);
     break;
   case REPORT_RADIAL:
-    // TODO: handle key released
     if(actionConfig->Byte00) {
       radialButtonState = 0;
       while(USBD_HID_SendRadialReport_FS(radialButtonState, 0, 0, 0, 0) != USBD_OK);
