@@ -1,5 +1,6 @@
 #include "key_matrix.h"
 #include <stdlib.h>
+#include "delay.h"
 
 void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
 void KeyMatrix_OnMatrixKeyStateChanged(MatrixKey *sender, BinaryPushKeyState state);
@@ -75,7 +76,7 @@ void KeyMatrix_Scan(KeyMatrix* keyMatrix) {
   for (uint16_t r = 0; keyMatrix->Rows[r] != NULL; r++) {
     GPIO_Pin* row = keyMatrix->Rows[r];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMatrix->ReleasedLevel & 0b1);
-    HAL_Delay(1);
+    Delay_Us(GPIO_GENERIC_DELAY_US);
     for (uint16_t c = 0; keyMatrix->Cols[c] != NULL; c++) {
       uint8_t idx = r * keyMatrix->Internal.Stride + c;
       if (!keyMatrix->Internal.EnabledFlags[idx]) {

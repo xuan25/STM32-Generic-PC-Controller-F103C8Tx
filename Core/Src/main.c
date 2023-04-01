@@ -38,6 +38,7 @@
 #include "lighting_conf.h"
 #include "inputs_conf.h"
 #include <stdlib.h>
+#include "delay.h"
 
 /* USER CODE END Includes */
 
@@ -103,7 +104,10 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM2_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+
+  Delay_Init();
 
   MX_USB_DEVICE_Init();
 

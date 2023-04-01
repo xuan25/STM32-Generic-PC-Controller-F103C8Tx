@@ -5,6 +5,7 @@
 #include "usbd_midi_if.h"
 #include "key_matrix.h"
 #include "pushable_dial.h"
+#include "delay.h"
 
 typedef enum ReportType {
   REPORT_NONE,
@@ -641,7 +642,7 @@ void Inputs_Scan() {
   KeyMatrix_Scan(keyMatrix_def);
 
   HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
-  HAL_Delay(1);
+  Delay_Us(GPIO_GENERIC_DELAY_US);
   PushableDial_Scan(pushableDial1_def);
   HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
 
