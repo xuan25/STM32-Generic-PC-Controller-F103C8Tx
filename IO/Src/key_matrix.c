@@ -72,17 +72,18 @@ void KeyMatrix_DeInit(KeyMatrix* keyMatrix) {
 }
 
 void KeyMatrix_Scan(KeyMatrix* keyMatrix) {
-  for (uint16_t x = 0; keyMatrix->Rows[x] != NULL; x++) {
-    GPIO_Pin* row = keyMatrix->Rows[x];
+  for (uint16_t r = 0; keyMatrix->Rows[r] != NULL; r++) {
+    GPIO_Pin* row = keyMatrix->Rows[r];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMatrix->ReleasedLevel & 0b1);
-    for (uint16_t y = 0; keyMatrix->Cols[y] != NULL; y++) {
-      uint8_t idx = x * keyMatrix->Internal.Stride + y;
+    HAL_Delay(1);
+    for (uint16_t c = 0; keyMatrix->Cols[c] != NULL; c++) {
+      uint8_t idx = r * keyMatrix->Internal.Stride + c;
       if (!keyMatrix->Internal.EnabledFlags[idx]) {
         continue;
       }
       Key* key = keyMatrix->Internal.Keys[idx];
 
-      GPIO_Pin* col = keyMatrix->Cols[y];
+      GPIO_Pin* col = keyMatrix->Cols[c];
       GPIO_PinState level = HAL_GPIO_ReadPin(col->GPIOx, col->GPIO_Pin);
 
       Key_Update(key, level);
