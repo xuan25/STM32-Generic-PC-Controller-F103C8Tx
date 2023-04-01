@@ -57,10 +57,12 @@ typedef struct DialConfig {
   ActionConfig ReleasedCCW;
   ActionConfig PressedCW;
   ActionConfig PressedCCW;
+  ActionConfig PushKey;
   ActionConfig Clicked;
 } DialConfig;
 
 uint16_t ctrlState = 0x0000;
+uint8_t radialButtonState = 0x00;
 
 ActionConfig matrixKeyConfigs[] = {
   { REPORT_NONE },
@@ -99,13 +101,23 @@ ActionConfig matrixKeyConfigs[] = {
 DialConfig dialConfigs[] = {
   {
     .ReleasedCW = {
+      .Type = REPORT_CONSUMER,
+      .Byte00 = CTRL_NEXT & 0xff,
+      .Byte01 = CTRL_NEXT >> 8 & 0xff,
+    },
+    .ReleasedCCW = {
+      .Type = REPORT_CONSUMER,
+      .Byte00 = CTRL_PREVIOUS & 0xff,
+      .Byte01 = CTRL_PREVIOUS >> 8 & 0xff,
+    },
+    .PressedCW = {
       .Type = REPORT_MIDI,
       .Byte00 = 0,
       .Byte01 = 0,
       .Byte02 = 7,
       .Byte03 = 1,
     },
-    .ReleasedCCW = {
+    .PressedCCW = {
       .Type = REPORT_MIDI,
       .Byte00 = 0,
       .Byte01 = 0,
@@ -122,114 +134,38 @@ DialConfig dialConfigs[] = {
     //   .Byte00 = CTRL_VOLUME_DECREMENT & 0xff,
     //   .Byte01 = CTRL_VOLUME_DECREMENT >> 8 & 0xff,
     // },
-    .PressedCW = {
-      .Type = REPORT_CONSUMER,
-      .Byte00 = CTRL_VOLUME_INCREMENT & 0xff,
-      .Byte01 = CTRL_VOLUME_INCREMENT >> 8 & 0xff,
-    },
-    .PressedCCW = {
-      .Type = REPORT_CONSUMER,
-      .Byte00 = CTRL_VOLUME_DECREMENT & 0xff,
-      .Byte01 = CTRL_VOLUME_DECREMENT >> 8 & 0xff,
-    },
     .Clicked = {
       .Type = REPORT_CONSUMER,
       .Byte00 = CTRL_PLAY_PAUSE & 0xff,
       .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
     }
-    // .Clicked = {
-    //   .Type = REPORT_NONE
-    // }
   },
   {
     .ReleasedCW = {
-      .Type = REPORT_MIDI,
-      .Byte00 = 0,
-      .Byte01 = 0,
-      .Byte02 = 7,
-      .Byte03 = 1,
+      .Type = REPORT_RADIAL,
+      .Byte01 = ((int16_t)100) & 0xff,
+      .Byte02 = ((int16_t)100) >> 8 & 0xff,
     },
     .ReleasedCCW = {
-      .Type = REPORT_MIDI,
-      .Byte00 = 0,
-      .Byte01 = 0,
-      .Byte02 = 7,
-      .Byte03 = -1,
+      .Type = REPORT_RADIAL,
+      .Byte01 = ((int16_t)-100) & 0xff,
+      .Byte02 = ((int16_t)-100) >> 8 & 0xff,
     },
-    // .PressedCW = {
-    //   .Type = REPORT_CONSUMER,
-    //   .Byte00 = CTRL_VOLUME_INCREMENT & 0xff,
-    //   .Byte01 = CTRL_VOLUME_INCREMENT >> 8 & 0xff,
-    // },
-    // .PressedCCW = {
-    //   .Type = REPORT_CONSUMER,
-    //   .Byte00 = CTRL_VOLUME_DECREMENT & 0xff,
-    //   .Byte01 = CTRL_VOLUME_DECREMENT >> 8 & 0xff,
-    // },
     .PressedCW = {
-      .Type = REPORT_CONSUMER,
-      .Byte00 = CTRL_VOLUME_INCREMENT & 0xff,
-      .Byte01 = CTRL_VOLUME_INCREMENT >> 8 & 0xff,
+      .Type = REPORT_RADIAL,
+      .Byte01 = ((int16_t)20) & 0xff,
+      .Byte02 = ((int16_t)20) >> 8 & 0xff,
     },
     .PressedCCW = {
-      .Type = REPORT_CONSUMER,
-      .Byte00 = CTRL_VOLUME_DECREMENT & 0xff,
-      .Byte01 = CTRL_VOLUME_DECREMENT >> 8 & 0xff,
+      .Type = REPORT_RADIAL,
+      .Byte01 = ((int16_t)-20) & 0xff,
+      .Byte02 = ((int16_t)-20) >> 8 & 0xff,
     },
-    .Clicked = {
-      .Type = REPORT_CONSUMER,
-      .Byte00 = CTRL_PLAY_PAUSE & 0xff,
-      .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
-    }
-    // .Clicked = {
-    //   .Type = REPORT_NONE
-    // }
+    .PushKey = {
+      .Type = REPORT_RADIAL,
+      .Byte00 = 1,
+    },
   }
-};
-
-DialConfig dial2Config = {
-  .ReleasedCW = {
-    .Type = REPORT_MIDI,
-    .Byte00 = 0,
-    .Byte01 = 0,
-    .Byte02 = 7,
-    .Byte03 = 1,
-  },
-  .ReleasedCCW = {
-    .Type = REPORT_MIDI,
-    .Byte00 = 0,
-    .Byte01 = 0,
-    .Byte02 = 7,
-    .Byte03 = -1,
-  },
-  // .PressedCW = {
-  //   .Type = REPORT_CONSUMER,
-  //   .Byte00 = CTRL_VOLUME_INCREMENT & 0xff,
-  //   .Byte01 = CTRL_VOLUME_INCREMENT >> 8 & 0xff,
-  // },
-  // .PressedCCW = {
-  //   .Type = REPORT_CONSUMER,
-  //   .Byte00 = CTRL_VOLUME_DECREMENT & 0xff,
-  //   .Byte01 = CTRL_VOLUME_DECREMENT >> 8 & 0xff,
-  // },
-  .PressedCW = {
-    .Type = REPORT_CONSUMER,
-    .Byte00 = CTRL_VOLUME_INCREMENT & 0xff,
-    .Byte01 = CTRL_VOLUME_INCREMENT >> 8 & 0xff,
-  },
-  .PressedCCW = {
-    .Type = REPORT_CONSUMER,
-    .Byte00 = CTRL_VOLUME_DECREMENT & 0xff,
-    .Byte01 = CTRL_VOLUME_DECREMENT >> 8 & 0xff,
-  },
-  .Clicked = {
-    .Type = REPORT_CONSUMER,
-    .Byte00 = CTRL_PLAY_PAUSE & 0xff,
-    .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
-  }
-  // .Clicked = {
-  //   .Type = REPORT_NONE
-  // }
 };
 
 void Inputs_ActionSet(ActionConfig* actionConfig) {
@@ -248,7 +184,11 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
     while(USBD_HID_SendKeyboardReport_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03, actionConfig->Byte05, actionConfig->Byte05, actionConfig->Byte06, actionConfig->Byte07) != USBD_OK);
     break;
   case REPORT_RADIAL:
-    while(USBD_HID_SendRadialReport_FS(actionConfig->Byte00, actionConfig->Byte01 | actionConfig->Byte02 << 8, actionConfig->Byte03 | actionConfig->Byte04 << 8, actionConfig->Byte05 | actionConfig->Byte08 << 8, actionConfig->Byte07 | actionConfig->Byte08 << 8) != USBD_OK);
+    if(actionConfig->Byte00) {
+      radialButtonState = 1;
+    }
+    int16_t r = actionConfig->Byte01 | actionConfig->Byte02 << 8;
+    while(USBD_HID_SendRadialReport_FS(radialButtonState, r, actionConfig->Byte03 | actionConfig->Byte04 << 8, actionConfig->Byte05 | actionConfig->Byte08 << 8, actionConfig->Byte07 | actionConfig->Byte08 << 8) != USBD_OK);
     break;
   case REPORT_MIDI:
     {
@@ -279,7 +219,10 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
     break;
   case REPORT_RADIAL:
     // TODO: handle key released
-    while(USBD_HID_SendRadialReport_FS(0, 0, 0, 0, 0) != USBD_OK);
+    if(actionConfig->Byte00) {
+      radialButtonState = 0;
+      while(USBD_HID_SendRadialReport_FS(radialButtonState, 0, 0, 0, 0) != USBD_OK);
+    }
     break;
   case REPORT_MIDI:
     break;
@@ -333,6 +276,12 @@ uint8_t Inputs_OnDial0PressedTicked(PushableDial* sender, int8_t direction) {
 uint8_t Inputs_OnDial0KeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
   Lighting_OnDialKeyStateChanged(0, state, isDialTicked);
 
+  if(state == PushKeyReleased) {
+    Inputs_ActionReset(&dialConfigs[0].PushKey);
+  } else {
+    Inputs_ActionSet(&dialConfigs[0].PushKey);
+  }
+
   if (state == PushKeyReleased && !isDialTicked) {
     Inputs_ActionSet(&dialConfigs[0].Clicked);
     Inputs_ActionReset(&dialConfigs[0].Clicked);
@@ -371,6 +320,12 @@ uint8_t Inputs_OnDial1PressedTicked(PushableDial* sender, int8_t direction) {
 
 uint8_t Inputs_OnDial1KeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
   Lighting_OnDialKeyStateChanged(1, state, isDialTicked);
+
+  if(state == PushKeyReleased) {
+    Inputs_ActionReset(&dialConfigs[1].PushKey);
+  } else {
+    Inputs_ActionSet(&dialConfigs[1].PushKey);
+  }
 
   if (state == PushKeyReleased && !isDialTicked) {
     Inputs_ActionSet(&dialConfigs[1].Clicked);
@@ -601,30 +556,6 @@ PushableDial* pushableDial2_def = &((PushableDial){
   .OnPressedDialTicked = Inputs_OnDial1PressedTicked,
   .OnPushKeyStateChanged = Inputs_OnDial1KeyStateChanged,
 });
-
-// void Inputs_OnMIDICCStateChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value) {
-
-//   uint32_t midiBufferID = channelNumber | controllerNumber << 8;
-//   MIDIBuffer* midiBuf = midiBuffers;
-//   if(midiBuffers == NULL) {
-//     midiBuffers = calloc(1, sizeof(MIDIBuffer));
-//     midiBuf = midiBuffers;
-//     midiBuf->ID = midiBufferID;
-//   } else {
-//     while (midiBuf->ID != midiBufferID && midiBuf->Next != NULL) {
-//       midiBuf = midiBuf->Next;
-//     }
-//     if(midiBuf->ID != midiBufferID) {
-//       midiBuf->Next = calloc(1, sizeof(MIDIBuffer));
-//       midiBuf = midiBuf->Next;
-//       midiBuf->ID = midiBufferID;
-//     }
-//   }
-
-//   midiBuf->Value = value;
-
-//   Lighting_OnMIDICCStateChanged(channelNumber, controllerNumber, value);
-// }
 
 void Inputs_Init() {
   KeyMatrix_Init(keyMatrix_def);
