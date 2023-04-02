@@ -24,6 +24,7 @@
 /* USER CODE BEGIN INCLUDE */
 
 #include "lighting_conf.h"
+#include "cmd_conf.h"
 
 /* USER CODE END INCLUDE */
 
@@ -644,11 +645,10 @@ static int8_t HID_OutEvent_FS(uint8_t* buffer)
   {
   case VENDER_REPORT_ID:
   {
-    // TODO: handle cmd
-    // echo test
+    uint8_t* returnBuffer = CMD_Exec(buffer + 1);
     uint8_t venderBuffer[VENDER_REPORT_LENGTH];
     venderBuffer[0] = VENDER_REPORT_ID;
-    memcpy(venderBuffer + 1, buffer + 1, VENDER_DATA_LENGTH);
+    memcpy(venderBuffer + 1, returnBuffer, VENDER_DATA_LENGTH);
     while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, VENDER_REPORT_LENGTH) == USBD_BUSY);
     return (USBD_OK);
     break;

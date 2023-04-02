@@ -39,6 +39,7 @@
 #include "inputs_conf.h"
 #include <stdlib.h>
 #include "delay.h"
+#include "flash_conf.h"
 
 /* USER CODE END Includes */
 
@@ -110,6 +111,13 @@ int main(void)
   Delay_Init();
 
   MX_USB_DEVICE_Init();
+
+  if (HAL_GPIO_ReadPin(ENC_2_P_GPIO_Port, ENC_2_P_Pin) == GPIO_PIN_SET) {
+    // skip config loading, wait for release
+    while (HAL_GPIO_ReadPin(ENC_2_P_GPIO_Port, ENC_2_P_Pin) == GPIO_PIN_SET);
+  } else {
+    FlashConfig_Load();
+  }
 
   Inputs_Init();
   Lighting_Init();

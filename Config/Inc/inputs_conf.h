@@ -32,6 +32,57 @@ extern "C" {
 #define ACTION_MatrixKey_10         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[10])
 #define ACTION_MatrixKey_11         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[11])
 
+typedef enum ActionType {
+  ACTION_NONE = 0,
+  ACTION_CTRL = 1,
+  ACTION_KEYBOARD = 2,
+  ACTION_MOUSE = 3,
+  ACTION_RADIAL = 4,
+  ACTION_MIDI = 5,
+} ActionType;
+
+typedef struct ActionConfig {
+  ActionType Type;
+  // ACTION_CTRL: lower byte
+  // ACTION_KEYBOARD: modifier
+  // ACTION_MOUSE: buttons
+  // ACTION_RADIAL: button
+  // ACTION_MIDI: cable number
+  uint8_t Byte00;
+  // ACTION_CTRL: higher byte
+  // ACTION_KEYBOARD: OEM
+  // ACTION_MOUSE: x
+  // ACTION_RADIAL: dial lower byte
+  // ACTION_MIDI: channel number
+  uint8_t Byte01;
+  // ACTION_KEYBOARD: key1
+  // ACTION_MOUSE: y
+  // ACTION_RADIAL: dial higher byte
+  // ACTION_MIDI: controller number
+  uint8_t Byte02;
+  // ACTION_KEYBOARD: key2
+  // ACTION_MOUSE: wheel
+  // ACTION_RADIAL: x lower byte
+  // ACTION_MIDI: change delta (0 for toggle)
+  uint8_t Byte03;
+  // ACTION_KEYBOARD: key3
+  // ACTION_RADIAL: x higher byte
+  uint8_t Byte04;
+  // ACTION_KEYBOARD: key4
+  // ACTION_RADIAL: y lower byte
+  uint8_t Byte05;
+  // ACTION_KEYBOARD: key5
+  // ACTION_RADIAL: y higher byte
+  uint8_t Byte06;
+  // ACTION_KEYBOARD: key6
+  // ACTION_RADIAL: width lower byte
+  uint8_t Byte07;
+  // ACTION_RADIAL: width higher byte
+  uint8_t Byte08;
+} ActionConfig;
+
+extern ActionConfig actionConfigs[28];
+
 void Inputs_Init();
 void Inputs_Scan();
 

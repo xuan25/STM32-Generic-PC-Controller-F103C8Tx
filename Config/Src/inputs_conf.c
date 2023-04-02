@@ -8,55 +8,6 @@
 #include "delay.h"
 #include "midicc_conf.h"
 
-typedef enum ActionType {
-  ACTION_NONE = 0,
-  ACTION_CTRL = 1,
-  ACTION_KEYBOARD = 2,
-  ACTION_MOUSE = 3,
-  ACTION_RADIAL = 4,
-  ACTION_MIDI = 5,
-} ActionType;
-
-typedef struct ActionConfig {
-  ActionType Type;
-  // ACTION_CTRL: lower byte
-  // ACTION_KEYBOARD: modifier
-  // ACTION_MOUSE: buttons
-  // ACTION_RADIAL: button
-  // ACTION_MIDI: cable number
-  uint8_t Byte00;
-  // ACTION_CTRL: higher byte
-  // ACTION_KEYBOARD: OEM
-  // ACTION_MOUSE: x
-  // ACTION_RADIAL: dial lower byte
-  // ACTION_MIDI: channel number
-  uint8_t Byte01;
-  // ACTION_KEYBOARD: key1
-  // ACTION_MOUSE: y
-  // ACTION_RADIAL: dial higher byte
-  // ACTION_MIDI: controller number
-  uint8_t Byte02;
-  // ACTION_KEYBOARD: key2
-  // ACTION_MOUSE: wheel
-  // ACTION_RADIAL: x lower byte
-  // ACTION_MIDI: change delta (0 for toggle)
-  uint8_t Byte03;
-  // ACTION_KEYBOARD: key3
-  // ACTION_RADIAL: x higher byte
-  uint8_t Byte04;
-  // ACTION_KEYBOARD: key4
-  // ACTION_RADIAL: y lower byte
-  uint8_t Byte05;
-  // ACTION_KEYBOARD: key5
-  // ACTION_RADIAL: y higher byte
-  uint8_t Byte06;
-  // ACTION_KEYBOARD: key6
-  // ACTION_RADIAL: width lower byte
-  uint8_t Byte07;
-  // ACTION_RADIAL: width higher byte
-  uint8_t Byte08;
-} ActionConfig;
-
 
 uint8_t Inputs_KeyboardStateAddKey(uint8_t key);
 uint8_t Inputs_KeyboardStateRemoveKey(uint8_t key);
@@ -66,7 +17,6 @@ uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, 
 uint8_t Inputs_OnPushableDialReleasedTicked(PushableDial* sender, int8_t direction);
 uint8_t Inputs_OnPushableDialPressedTicked(PushableDial* sender, int8_t direction);
 uint8_t Inputs_OnPushableDialKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked);
-
 
 uint16_t ctrlState = 0x0000;
 uint8_t keyboardModifierState = 0x00;

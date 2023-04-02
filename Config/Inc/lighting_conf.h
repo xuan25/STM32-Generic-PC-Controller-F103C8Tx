@@ -10,7 +10,7 @@ extern "C" {
 
 #define LIGHT_EASING_DURATION    200
 
-extern RGB rgbIndex[];
+extern RGB rgbIndex[56];
 
 
 
@@ -74,6 +74,8 @@ extern RGB rgbIndex[];
 #define RGB_KEY_08_TEMP        (rgbIndex + 53)
 #define RGB_KEY_09_TEMP        (rgbIndex + 54)
 #define RGB_KEY_10_TEMP        (rgbIndex + 55)
+
+extern RGB rgbIndex[];
 
 void Lighting_Init();
 void Lighting_PushUpdate();
