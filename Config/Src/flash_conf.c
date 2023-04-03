@@ -10,6 +10,9 @@
 #define ACTION_CONFIG_SIZE    sizeof(actionConfigs)
 #define RGB_CONFIG_ADDR       ACTION_CONFIG_ADDR + ACTION_CONFIG_SIZE 
 #define RGB_CONFIG_SIZE       sizeof(rgbIndex)
+#define LIGHT_MIDICC_MAPPING_CONFIG_ADDR       RGB_CONFIG_ADDR + RGB_CONFIG_SIZE 
+#define LIGHT_MIDICC_MAPPING_CONFIG_SIZE       sizeof(lightMIDICCMappings)
+
 
 uint32_t FlashConfig_Save() {
 	uint32_t pageError;
@@ -45,6 +48,13 @@ uint32_t FlashConfig_Save() {
       return HAL_FLASH_GetError();
     }
   }
+  for (uint32_t i = 0; i < LIGHT_MIDICC_MAPPING_CONFIG_SIZE; i += 4) {
+    uint32_t* pData = ((uint32_t*)lightMIDICCMappings) + (i / 4);
+    if (!HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, LIGHT_MIDICC_MAPPING_CONFIG_ADDR + i, *pData) == HAL_OK)
+    {
+      return HAL_FLASH_GetError();
+    }
+  }
   if (!HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, CONFIG_FLAG_ADDR, 1) == HAL_OK)
   {
     return HAL_FLASH_GetError();
@@ -66,6 +76,10 @@ uint32_t FlashConfig_Load() {
     for (uint32_t i = 0; i < RGB_CONFIG_SIZE; i += 4) {
       uint32_t* pData = ((uint32_t*)rgbIndex) + (i / 4);
       *pData = *(__IO uint32_t *)(RGB_CONFIG_ADDR + i);
+    }
+    for (uint32_t i = 0; i < LIGHT_MIDICC_MAPPING_CONFIG_SIZE; i += 4) {
+      uint32_t* pData = ((uint32_t*)lightMIDICCMappings) + (i / 4);
+      *pData = *(__IO uint32_t *)(LIGHT_MIDICC_MAPPING_CONFIG_ADDR + i);
     }
   }
 
