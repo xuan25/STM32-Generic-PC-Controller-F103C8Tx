@@ -102,6 +102,7 @@ ActionConfig actionConfigs[] = {
     ACTION_NONE
   },
   // MatrixKeys
+  // row 0
   { ACTION_NONE },
   { 
     .Type = ACTION_MIDI,
@@ -118,21 +119,21 @@ ActionConfig actionConfigs[] = {
     .Byte03 = 0,
   },
   { ACTION_NONE },
-
+  // row 1
   { ACTION_NONE },
   { ACTION_NONE },
   { ACTION_NONE },
   { ACTION_NONE },
-
+  // row 2
   { ACTION_NONE },
   { ACTION_NONE },
+  // row 3
   { ACTION_NONE },
-  { ACTION_NONE },
-
-  { ACTION_NONE },
-  { ACTION_NONE },
-  { ACTION_NONE },
-  { ACTION_NONE },
+  {
+    .Type = ACTION_CTRL,
+    .Byte00 = CTRL_PLAY_PAUSE & 0xff,
+    .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
+  },
 };
 
 KeyMatrix* keyMatrix = &((KeyMatrix){

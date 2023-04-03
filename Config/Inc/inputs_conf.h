@@ -81,7 +81,7 @@ typedef struct ActionConfig {
   uint8_t Byte08;
 } ActionConfig;
 
-extern ActionConfig actionConfigs[28];
+extern ActionConfig actionConfigs[24];
 
 void Inputs_Init();
 void Inputs_Scan();
