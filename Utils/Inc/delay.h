@@ -8,7 +8,7 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 #include "tim.h"
 
-#define GPIO_GENERIC_DELAY_US 300
+#define GPIO_GENERIC_DELAY_US 350
 
 void Delay_Init();
 void Delay_Us(uint16_t us);

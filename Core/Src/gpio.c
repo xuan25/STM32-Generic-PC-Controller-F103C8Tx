@@ -56,7 +56,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : PAPin PAPin PAPin */
   GPIO_InitStruct.Pin = ENC_1_B_Pin|ENC_1_A_Pin|COL_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin PBPin PBPin
@@ -64,7 +64,7 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = ENC_2_A_Pin|ENC_2_B_Pin|ENC_2_P_Pin|COL_2_Pin
                           |COL_1_Pin|COL_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
