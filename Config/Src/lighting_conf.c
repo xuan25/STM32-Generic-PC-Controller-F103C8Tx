@@ -14,7 +14,7 @@ uint8_t dialLightMapping[] = {
 };
 
 // channelID | controllerID << 8
-uint16_t lightMIDICCMappings[11] = {
+uint16_t lightMIDICCMappings[] = {
   0x0 | 80 << 8,
   0x0 | 81 << 8,
   0xff,

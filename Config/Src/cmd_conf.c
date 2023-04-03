@@ -35,7 +35,7 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         }
         break;
       default:
-        strcpy(returnBuffer, "E: Unknow command for action");
+        strcpy(returnBuffer, "E: Unknown command for action");
         break;
       }
     }
@@ -51,7 +51,7 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
           uint8_t id = cmd[2];
           RGB* dest = rgbIndex + id;
           uint8_t* src = &cmd[3];
-          memcpy(dest, src, sizeof(RGB));
+          memcpy(dest, src, sizeof(uint16_t));
           strcpy(returnBuffer, "S: OK");
         }
         break;
@@ -62,11 +62,42 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
           RGB* src = rgbIndex + id;
           strcpy(returnBuffer, "S\0");
           uint8_t* dest = &returnBuffer[2];
-          memcpy(dest, src, sizeof(RGB));
+          memcpy(dest, src, sizeof(uint16_t));
         }
         break;
       default:
-        strcpy(returnBuffer, "E: Unknow command for lighting");
+        strcpy(returnBuffer, "E: Unknown command for lighting");
+        break;
+      }
+    }
+    break;
+  case 'M':
+    {
+      // light-MIDICC mapping
+      switch (cmd[1])
+      {
+      case 'W':
+        {
+          // light-MIDICC mapping write
+          uint8_t id = cmd[2];
+          uint16_t* dest = lightMIDICCMappings + id;
+          uint8_t* src = &cmd[3];
+          memcpy(dest, src, sizeof(uint16_t));
+          strcpy(returnBuffer, "S: OK");
+        }
+        break;
+      case 'R':
+        {
+          // light-MIDICC mapping read
+          uint8_t id = cmd[2];
+          uint16_t* src = lightMIDICCMappings + id;
+          strcpy(returnBuffer, "S\0");
+          uint8_t* dest = &returnBuffer[2];
+          memcpy(dest, src, sizeof(uint16_t));
+        }
+        break;
+      default:
+        strcpy(returnBuffer, "E: Unknown command for light-MIDICC mapping");
         break;
       }
     }
@@ -84,7 +115,7 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
     }
     break;
   default:
-    strcpy(returnBuffer, "E: Unknow command");
+    strcpy(returnBuffer, "E: Unknown command");
     break;
   }
 
