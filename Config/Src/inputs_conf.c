@@ -423,8 +423,15 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
     break;
   case ACTION_MIDI:
     {
-      uint8_t val = MIDICC_OnChangeDelta(actionConfig->Byte01, actionConfig->Byte02, (int8_t)actionConfig->Byte03);
-      while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, val) != USBD_OK);
+      if(actionConfig->Byte03 >> 7) {
+        // abs value
+        MIDICC_OnChanged(actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03 & 0x7F);
+        while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03 & 0x7F) != USBD_OK);
+      } else {
+        // rel value
+        uint8_t val = MIDICC_OnChangeDelta(actionConfig->Byte01, actionConfig->Byte02, (int8_t)actionConfig->Byte03);
+        while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, val) != USBD_OK);
+      }
     }
     break;
   default:
@@ -469,6 +476,7 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
     }
     break;
   case ACTION_MIDI:
+    // ignored
     break;
   default:
     break;
