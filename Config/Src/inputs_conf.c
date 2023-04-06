@@ -573,7 +573,9 @@ void Inputs_Scan() {
   KeyMatrix_Scan(keyMatrix);
 
   HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
+#if GPIO_GENERIC_DELAY_US > 0
   Delay_Us(GPIO_GENERIC_DELAY_US);
+#endif
   PushableDial_Scan(pushableDials[0]);
   HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
 

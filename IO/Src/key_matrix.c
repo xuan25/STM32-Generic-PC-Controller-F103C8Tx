@@ -76,7 +76,9 @@ void KeyMatrix_Scan(KeyMatrix* keyMatrix) {
   for (uint16_t r = 0; keyMatrix->Rows[r] != NULL; r++) {
     GPIO_Pin* row = keyMatrix->Rows[r];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMatrix->ReleasedLevel & 0b1);
+#if GPIO_GENERIC_DELAY_US > 0
     Delay_Us(GPIO_GENERIC_DELAY_US);
+#endif
     for (uint16_t c = 0; keyMatrix->Cols[c] != NULL; c++) {
       uint8_t idx = r * keyMatrix->Internal.Stride + c;
       if (!keyMatrix->Internal.EnabledFlags[idx]) {
