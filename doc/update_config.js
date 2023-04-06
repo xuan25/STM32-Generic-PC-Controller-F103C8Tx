@@ -58,8 +58,7 @@ device.addEventListener("inputreport", event => {
     } else {
         console.log("unknown datatype");
     }
-    console.log(arr);
-    data_ext = data
+
 });
 
 
