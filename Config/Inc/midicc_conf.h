@@ -16,7 +16,6 @@ typedef struct MIDICCBuffer {
 extern MIDICCBuffer* midiBuffers;
 
 void MIDICC_OnChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value);
-
 uint8_t MIDICC_OnChangeDelta(uint8_t channelNumber, uint8_t controllerNumber, int8_t delta);
 
 #ifdef __cplusplus

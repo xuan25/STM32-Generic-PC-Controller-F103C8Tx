@@ -105,8 +105,15 @@
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 
-void USBD_MIDI_DataInHandler(uint8_t * usb_rx_buffer, uint8_t usb_rx_buffer_length);
-uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cable_number, uint8_t channel_number, uint8_t controller_number, uint8_t new_value);
+/**
+  * @brief  Handle midi event from host
+  * @param  cableNumber: Cable Number (0-15)
+  * @param  channelNumber: Channel Number (0-15)
+  * @param  controllerNumber: Controller Number (0-127)
+  * @param  value: Value (0-127)
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cableNumber, uint8_t channelNumber, uint8_t controllerNumber, uint8_t value);
 
 /* USER CODE END EXPORTED_FUNCTIONS */
 

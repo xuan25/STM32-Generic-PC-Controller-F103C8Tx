@@ -4,6 +4,8 @@
 #include "lighting_conf.h"
 #include "flash_conf.h"
 
+extern USBD_HandleTypeDef hUsbDeviceFS;
+
 uint8_t returnBuffer[VENDER_DATA_LENGTH];
 
 uint8_t* CMD_Exec(uint8_t* cmd) {
@@ -120,4 +122,50 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
   }
 
   return returnBuffer;
+}
+
+int8_t HID_OutEvent_FS(uint8_t* buffer)
+{
+  /* USER CODE BEGIN 6 */
+  uint8_t reportId = buffer[0];
+  switch (reportId)
+  {
+  case VENDER_REPORT_ID:
+  {
+    uint8_t* returnBuffer = CMD_Exec(buffer + 1);
+    uint8_t venderBuffer[VENDER_REPORT_LENGTH];
+    venderBuffer[0] = VENDER_REPORT_ID;
+    memcpy(venderBuffer + 1, returnBuffer, VENDER_DATA_LENGTH);
+    while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, VENDER_REPORT_LENGTH) == USBD_BUSY);
+    return (USBD_OK);
+    break;
+  }
+  case LIGHTING_REPORT_ID:
+  {
+    uint8_t updateFlag = buffer[1] &  0xf;
+    uint8_t updateCount = buffer[1] >> 4 & 0xf;
+    for (int i = 0; i < updateCount; i++) {
+      uint8_t id = buffer[0x02 + i];
+      uint8_t r = buffer[0x11 + i];
+      uint8_t g = buffer[0x20 + i];
+      uint8_t b = buffer[0x2f + i];
+      // TODO: update state buffer
+      
+      rgbIndex[id].R = r;
+      rgbIndex[id].G = g;
+      rgbIndex[id].B = b;
+      
+    }
+    if (updateFlag == 1) {
+      // TODO: push updates
+    }
+    return (USBD_OK);
+    break;
+  }
+  default:
+    break;
+  }
+  
+  return (USBD_OK);
+  /* USER CODE END 6 */
 }

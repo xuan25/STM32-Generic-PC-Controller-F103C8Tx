@@ -96,7 +96,7 @@ static uint8_t  *USBD_MIDI_GetDeviceQualifierDesc (uint16_t *length);
   * @{
   */ 
 
-uint8_t usb_rx_buffer[MIDI_EPOUT_SIZE] = {0};
+uint8_t usbRxBuffer[MIDI_EPOUT_SIZE] = {0};
 
 
 /* USB MIDI class type definition */
@@ -618,7 +618,7 @@ uint8_t  USBD_MIDI_Init (USBD_HandleTypeDef *pdev,
   
   USBD_LL_PrepareReceive(pdev, 
                MIDI_EPOUT_ADDR,                                      
-               usb_rx_buffer,
+               usbRxBuffer,
                MIDI_EPOUT_SIZE);    
   
   pdev->pClassData = USBD_malloc(sizeof (USBD_MIDI_HandleTypeDef));
@@ -817,23 +817,25 @@ uint8_t  USBD_MIDI_DataOut (USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   if (epnum != (MIDI_EPOUT_ADDR & 0x0F)) return USBD_FAIL;
 
-  USBD_MIDI_DataInHandler(usb_rx_buffer, MIDI_EPOUT_SIZE);
+  USBD_MIDI_DataOutHandler(usbRxBuffer, MIDI_EPOUT_SIZE);
   
-  memset(usb_rx_buffer, 0, MIDI_EPOUT_SIZE);
+  memset(usbRxBuffer, 0, MIDI_EPOUT_SIZE);
   
-  USBD_LL_PrepareReceive(pdev, MIDI_EPOUT_ADDR, usb_rx_buffer, MIDI_EPOUT_SIZE);  
+  USBD_LL_PrepareReceive(pdev, MIDI_EPOUT_ADDR, usbRxBuffer, MIDI_EPOUT_SIZE);  
   
   return USBD_OK;
 }
 
 /**
-  * @brief  USBD_MIDI_DataInHandler
-  * @param  usb_rx_buffer: midi messages buffer
-  * @param  usb_rx_buffer_length: midi messages buffer length
+  * @brief  USBD_MIDI_DataOutHandler
+  * @param  usbRxBuffer: midi messages buffer
+  * @param  usbRxBufferLength: midi messages buffer length
   */
-__weak extern void USBD_MIDI_DataInHandler(uint8_t * usb_rx_buffer, uint8_t usb_rx_buffer_length)
+__weak extern void USBD_MIDI_DataOutHandler(uint8_t * usbRxBuffer, uint8_t usbRxBufferLength)
 {
   // For user implementation.
+  UNUSED(usbRxBuffer);
+  UNUSED(usbRxBufferLength);
 }
 
 /**

@@ -8,7 +8,6 @@ extern "C" {
 #include "stm32f1xx_hal.h"
 
 uint8_t* CMD_Exec(uint8_t* cmd);
-uint32_t FlashConfig_Load();
 
 #ifdef __cplusplus
 }

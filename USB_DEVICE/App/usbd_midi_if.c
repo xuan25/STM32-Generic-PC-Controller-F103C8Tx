@@ -152,30 +152,31 @@ static int8_t USBD_MIDI_SendReport_FS(uint8_t *report, uint16_t len)
 }
 */
 
-void USBD_MIDI_DataInHandler(uint8_t * usb_rx_buffer, uint8_t usb_rx_buffer_length)
+/**
+  * @brief  Handle midi event from host
+  * @param  usbRxBuffer: The report received
+  * @param  usbRxBufferLength: The report length
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+__weak void USBD_MIDI_DataOutHandler(uint8_t * usbRxBuffer, uint8_t usbRxBufferLength)
 {
-  uint8_t code_index_number = usb_rx_buffer[0] & 0xf;
-  uint8_t cable_number = usb_rx_buffer[0] >> 4 & 0xf;
-  uint8_t channel_number = usb_rx_buffer[1] & 0xf;
-  uint8_t message_number = usb_rx_buffer[1] >> 4 & 0xf;
-  uint8_t controller_number = usb_rx_buffer[2];
-  uint8_t new_value = usb_rx_buffer[3];
-  
-  MIDICC_OnChanged(channel_number, controller_number, new_value);
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(usbRxBuffer);
+  UNUSED(usbRxBufferLength);
 }
 
-uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cable_number, uint8_t channel_number, uint8_t controller_number, uint8_t new_value) {
-  uint8_t code_index_number = 0xB;
+uint8_t USBD_MIDI_SendCCMessage_FS(uint8_t cableNumber, uint8_t channelNumber, uint8_t controllerNumber, uint8_t value) {
+  uint8_t codeIndexNumber = 0xB;
   uint8_t message_number = 0xB;
   
-  uint8_t cc_buffer[4] = {
-    cable_number << 4 | code_index_number,
-    message_number << 4 | channel_number,
-    controller_number,
-    new_value
+  uint8_t ccBuffer[4] = {
+    cableNumber << 4 | codeIndexNumber,
+    message_number << 4 | channelNumber,
+    controllerNumber,
+    value
   };
   
-  return USBD_MIDI_SendReport(&hUsbDeviceFS, cc_buffer, 4);
+  return USBD_MIDI_SendReport(&hUsbDeviceFS, ccBuffer, 4);
 }
 
 /* USER CODE END 7 */

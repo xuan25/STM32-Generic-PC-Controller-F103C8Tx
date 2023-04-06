@@ -37,6 +37,18 @@ void MIDICC_OnChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t v
   Lighting_OnMIDICCChanged(channelNumber, controllerNumber, value);
 }
 
+void USBD_MIDI_DataOutHandler(uint8_t * usbRxBuffer, uint8_t usbRxBufferLength)
+{
+  uint8_t code_index_number = usbRxBuffer[0] & 0xf;
+  uint8_t cable_number = usbRxBuffer[0] >> 4 & 0xf;
+  uint8_t channel_number = usbRxBuffer[1] & 0xf;
+  uint8_t message_number = usbRxBuffer[1] >> 4 & 0xf;
+  uint8_t controller_number = usbRxBuffer[2];
+  uint8_t new_value = usbRxBuffer[3];
+  
+  MIDICC_OnChanged(channel_number, controller_number, new_value);
+}
+
 uint8_t MIDICC_OnChangeDelta(uint8_t channelNumber, uint8_t controllerNumber, int8_t delta) {
 
   MIDICCBuffer* midiBuf = MIDI_GetBuffer(channelNumber, controllerNumber);
