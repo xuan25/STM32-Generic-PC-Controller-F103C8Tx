@@ -53,7 +53,7 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
           uint8_t id = cmd[2];
           RGB* dest = rgbIndex + id;
           uint8_t* src = &cmd[3];
-          memcpy(dest, src, sizeof(uint16_t));
+          memcpy(dest, src, sizeof(RGB));
           strcpy(returnBuffer, "S: OK");
         }
         break;
@@ -64,7 +64,7 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
           RGB* src = rgbIndex + id;
           strcpy(returnBuffer, "S\0");
           uint8_t* dest = &returnBuffer[2];
-          memcpy(dest, src, sizeof(uint16_t));
+          memcpy(dest, src, sizeof(RGB));
         }
         break;
       default:
@@ -108,12 +108,14 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
     {
       // save
       FlashConfig_Save();
+      strcpy(returnBuffer, "S: OK");
     }
     break;
   case 'R':
     {
       // reset
       FlashConfig_Reset();
+      strcpy(returnBuffer, "S: OK");
     }
     break;
   default:
