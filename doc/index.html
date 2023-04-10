@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Panel of PC-Generic-Controller</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <nav class="navbar bg-body-tertiary">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Control Panel of Generic-PC-Controller</span>
+        <span v-if="device">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-record-fill" viewBox="0 0 16 16">
+            <path fill="#00ff00" fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10z"/>
+          </svg>
+          {{ this.device.productName }} - Connected
+        </span>
+        <span v-if="!device">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-record-fill" viewBox="0 0 16 16">
+            <path fill="#ff0000" fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10z"/>
+          </svg>
+          Not connected
+        </span>
+      </div>
+    </nav>
+    <div class="container my-5">
+      <div class="d-flex align-items-start" width="10em" >
+        <div class="nav flex-column nav-pills me-3" id="tabs-main" role="tablist" aria-orientation="vertical">
+          <button class="nav-link active" id="tab-item-actions" data-bs-toggle="pill" data-bs-target="#tab-actions" type="button" role="tab" aria-controls="tab-item-actions" aria-selected="true">Actions</button>
+          <button class="nav-link" id="tab-item-lighting" data-bs-toggle="pill" data-bs-target="#tab-lighting" type="button" role="tab" aria-controls="tab-item-lighting" aria-selected="false">Lighting</button>
+          <button class="nav-link" id="tab-item-light-midi-mappings" data-bs-toggle="pill" data-bs-target="#tab-light-midi-mappings" type="button" role="tab" aria-controls="tab-item-light-midi-mappings" aria-selected="false">Light-MIDI Mappings</button>
+          <button class="nav-link" id="tab-item-system" data-bs-toggle="pill" data-bs-target="#tab-system" type="button" role="tab" aria-controls="tab-item-system" aria-selected="false">System</button>
+        </div>
+        <div class="tab-content w-75" id="tab-content-main">
+  
+          <div class="tab-pane fade show active" id="tab-actions" role="tabpanel" aria-labelledby="tab-item-actions" tabindex="0">
+            <div class="m-2">
+              <label for="action-target" class="form-label">Action Target</label>
+              <select v-model="actionTarget" class="form-select" id="action-target" aria-label="Select action target">
+                <option disabled value="">Please select an target</option>
+                <option v-for="(it, i) in actionTargetOptions" :value="i">
+                  {{ it }}
+                </option>
+              </select>
+            </div>
+            <div class="m-2">
+              <label for="action-type" class="form-label">Action Type</label>
+              <div id="action-type" class="d-flex flex-wrap">
+                <span v-for="(it, i) in actionTypeOptions" class="m-1">
+                  <input type="radio" class="btn-check" name="action-type" :id="'action-type-' + i" :value="i" v-model="actionType" />
+                  <label class="btn btn-outline-primary" :for="'action-type-' + i">{{ it }}</label>  
+                </span>
+              </div>
+            </div>
+  
+            <div v-show="actionType == 0"></div>
+            
+            <div v-show="actionType == 1">
+              <div class="m-2">
+                <label for="action-ctrl-triggers" class="form-label">Triggers</label>
+                <div id="action-ctrl-triggers" class="d-flex flex-wrap">
+                  <div v-for="(it, i) in actionCtrlTriggerOptions" class="m-1 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" :id="it" :value="i" v-model="actionCtrlTriggers">
+                    <label class="form-check-label" :for="it">{{ it }}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div v-show="actionType == 2">
+              <div class="m-2">
+                <label for="action-keyboard-modifiers" class="form-label">Modifiers</label>
+                <div id="action-keyboard-modifiers" class="d-flex flex-wrap">
+                  <div v-for="(it, i) in actionKeyboardModifierOptions" class="m-1 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" :id="it" :value="i + 1" v-model="actionKeyboardModifiers">
+                    <label class="form-check-label" :for="it">{{ it }}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="m-2">
+                <label for="action-keyboard-oem" class="form-label">OEM</label>
+                <div id="action-keyboard-oem" class="d-flex flex-wrap">
+                  <div v-for="i in 8" class="m-1 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" :id="'action-keyboard-oem-' + i" :value="i - 1" v-model="actionKeyboardOEMBits">
+                    <label class="form-check-label" :for="'action-keyboard-oem-' + i">{{ i - 1 }}</label>
+                  </div>
+                </div>
+              </div>
+              <div v-for="i in 6" class="m-2">
+                <label for="'action-keyboard-key-code-' + i" class="form-label">Key Code {{i}}</label>
+                <select class="form-select" :id="'action-keyboard-key-code-' + i" :aria-label="'Select keycode ' + i" v-model="actionKeyboardKeycodes[i - 1]">
+                  <option v-for="(it, i) in actionKeyboardKeycodeOptions" :value="i">{{ i + ' - ' + it }}</option>
+                </select>
+              </div>
+            </div>
+            
+            <div v-show="actionType == 3">
+              <div class="m-2">
+                <label for="action-mouse-buttons" class="form-label" >Buttons</label>
+                <div id="action-mouse-buttons" class="d-flex flex-wrap">
+                  <div v-for="i in 3" class="m-1 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" :id="'action-mouse-button-' + i" :value="i - 1" v-model="actionMouseButtons">
+                    <label class="form-check-label" :for="'action-mouse-button-' + i">{{ i }}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="m-2">
+                <label for="action-mouse-x" class="form-label">X</label>
+                <input class="form-control" id="action-mouse-x" v-model="actionMouseX">
+              </div>
+              <div class="m-2">
+                <label for="action-mouse-y" class="form-label">Y</label>
+                <input class="form-control" id="action-mouse-y" v-model="actionMouseY">
+              </div>
+              <div class="m-2">
+                <label for="action-mouse-wheel" class="form-label">Wheel</label>
+                <input class="form-control" id="action-mouse-wheel" v-model="actionMouseWheel">
+              </div>
+            </div>
+            
+            <div v-show="actionType == 4">
+              <div class="m-2">
+                <label for="action-radial-buttons" class="form-label">Buttons</label>
+                <div id="action-radial-buttons" class="d-flex flex-wrap">
+                  <div v-for="i in 1" class="m-1 form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" :id="'action-radial-button-' + i" :value="i - 1" v-model="actionRadialButtons">
+                    <label class="form-check-label" :for="'action-radial-button-' + i">{{ i }}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="m-2">
+                <label for="action-radial-angle" class="form-label">Angle</label>
+                <input class="form-control" id="action-radial-angle" v-model="actionRadialAngle">
+              </div>
+              <div class="m-2">
+                <label for="action-radial-x" class="form-label">X</label>
+                <input class="form-control" id="action-radial-x" v-model="actionRadialX">
+              </div>
+              <div class="m-2">
+                <label for="action-radial-y" class="form-label">Y</label>
+                <input class="form-control" id="action-radial-y" v-model="actionRadialY">
+              </div>
+              <div class="m-2">
+                <label for="action-radial-width" class="form-label">Width</label>
+                <input class="form-control" id="action-radial-width" v-model="actionRadialWidth">
+              </div>
+            </div>
+            
+            <div v-show="actionType == 5">
+              <div class="m-2">
+                <label for="action-midi-cable" class="form-label">Cable Number</label>
+                <select class="form-select" id="action-midi-cable" aria-label="'Select MIDI cable number" v-model="actionMidiCable">
+                  <option v-for="i in 16" :value="i - 1">{{ i }}</option>
+                </select>
+              </div>
+              <div class="m-2">
+                <label for="action-midi-channel" class="form-label">Channel Number</label>
+                <select class="form-select" id="action-midi-channel" aria-label="'Select MIDI channel number" v-model="actionMidiChannel">
+                  <option v-for="i in 16" :value="i - 1">{{ i }}</option>
+                </select>
+              </div>
+              <div class="m-2">
+                <label for="action-midi-controller" class="form-label">Controller Number</label>
+                <select class="form-select" id="action-midi-controller" aria-label="'Select MIDI controller number" v-model="actionMidiController">
+                  <option v-for="i in 128" :value="i - 1">{{ i - 1 }}</option>
+                </select>
+              </div>
+              <div class="m-2">
+                <label for="action-midi-value-type" class="form-label">Value Type</label>
+                <div id="action-midi-value-type" class="d-flex flex-wrap">
+                  <div class="m-1">
+                    <input type="radio" class="btn-check" name="action-midi-toggle-value" id="action-midi-manual" value="0" v-model="actionMidiToggleValue" />
+                    <label class="btn btn-outline-primary" for="action-midi-manual">Manual Value</label>  
+                  </div>
+                  <div class="m-1">
+                    <input type="radio" class="btn-check" name="action-midi-toggle-value" id="action-midi-toggle" value="1" v-model="actionMidiToggleValue" />
+                    <label class="btn btn-outline-primary" for="action-midi-toggle">Toggle Value</label>  
+                  </div>
+                </div>
+              </div>
+              <div v-show="actionMidiToggleValue == 0">
+                <div class="m-2">
+                  <label for="action-midi-changing-type" class="form-label">Changing Type</label>
+                  <div id="action-midi-changing-type" class="d-flex flex-wrap">
+                    <div class="m-1">
+                      <input type="radio" class="btn-check" name="action-midi-abs-value" id="action-midi-rel" value="0" v-model="actionMidiAbsValue" />
+                      <label class="btn btn-outline-primary" for="action-midi-rel">Relative</label>  
+                    </div>
+                    <div class="m-1">
+                      <input type="radio" class="btn-check" name="action-midi-abs-value" id="action-midi-abs" value="1" v-model="actionMidiAbsValue" />
+                      <label class="btn btn-outline-primary" for="action-midi-abs">Absolute</label>  
+                    </div>
+                  </div>
+                </div>
+                <div class="m-2">
+                  <label for="action-midi-value" class="form-label">Value</label>
+                  <select class="form-select" id="action-midi-controller" aria-label="'Select MIDI value" v-model="actionMidiValue">
+                    <option v-for="i in 128" :value="i - 1">{{ i - 1 }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="mx-3 mt-5 d-flex flex-row-reverse" >
+              <button @click="sendAction()" type="button" class="btn btn-primary">Set</button>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tab-lighting" role="tabpanel" aria-labelledby="tab-item-colors" tabindex="0">
+            <div class="m-2">
+              <label for="lighting-target" class="form-label">Lighting Target</label>
+              <select v-model="lightingTarget" class="form-select" id="lighting-target" aria-label="Select lighting target">
+                <option disabled value="">Please select an target</option>
+                <option v-for="(it, i) in lightingTargetOptions" :value="i">
+                  {{ it }}
+                </option>
+              </select>
+            </div>
+            <div class="m-2">
+              <label for="lighting-color" class="form-label">Color</label>
+              <input type="color" v-model="lightingColor" class="form-control form-control-color w-100" id="lighting-color" title="Choose a color">
+            </div>
+            <div class="mx-3 mt-5 d-flex flex-row-reverse">
+              <button @click="sendLighting()" type="button" class="btn btn-primary">Set</button>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tab-light-midi-mappings" role="tabpanel" aria-labelledby="tab-item-light-midi-mappings" tabindex="0">
+            <div class="m-2">
+              <label for="light-midi-mapping-target" class="form-label">MIDI-light Mapping Target</label>
+              <select v-model="lightMIDIMappingTarget" class="form-select" id="midi-light-mapping-target" aria-label="Select MIDI-light Mapping target">
+                <option disabled value="">Please select an target</option>
+                <option v-for="(it, i) in lightMappingTargetOptions" :value="i">
+                  {{ it }}
+                </option>
+              </select>
+            </div>
+            <div class="m-2">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="light-midi-mapping-enable" v-model="lightMIDIMappingEnable">
+                <label class="form-check-label" for="light-midi-mapping-enable">Enable</label>
+              </div>
+            </div>
+            <div v-show="lightMIDIMappingEnable">
+              <div class="m-2">
+                <label for="light-midi-mapping-channel" class="form-label">Channel Number</label>
+                <select class="form-select" id="light-midi-mapping-channel" aria-label="'Select MIDI channel number" v-model="lightMIDIMappingChannel">
+                  <option v-for="i in 16" :value="i - 1">{{ i }}</option>
+                </select>
+              </div>
+              <div class="m-2">
+                <label for="light-midi-mapping-controller" class="form-label">Controller Number</label>
+                <select class="form-select" id="light-midi-mapping-controller" aria-label="'Select MIDI controller number" v-model="lightMIDIMappingController">
+                  <option v-for="i in 128" :value="i - 1">{{ i - 1 }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="mx-3 mt-5 d-flex flex-row-reverse">
+              <button @click="sendLightMIDIMapping()" type="button" class="btn btn-primary">Set</button>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tab-system" role="tabpanel" aria-labelledby="tab-item-system" tabindex="0">
+            <div class="m-5">
+              <div class="d-flex justify-content-center">
+                <button @click="sendSaveFlash()" type="button" class="btn btn-primary m-2">Save Flash</button>
+                <button @click="sendResetFlash()" type="button" class="btn btn-danger m-2">Reset Flash</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+    crossorigin="anonymous"></script>
+
+
+  <script>
+    const { createApp } = Vue
+    
+    createApp({
+      data() {
+        return {
+          actionTarget: null,
+          actionTargetOptions: [
+            "Dial 1 Released CW",
+            "Dial 2 Released CW",
+            "Dial 1 Released CCW",
+            "Dial 2 Released CCW",
+            "Dial 1 Pressed CW",
+            "Dial 2 Pressed CW",
+            "Dial 1 Pressed CCW",
+            "Dial 2 Pressed CCW",
+            "Dial 1 Push-key",
+            "Dial 2 Push-key",
+            "Dial 1 Clicked",
+            "Dial 2 Clicked",
+            "Key Matrix 1-1",
+            "Key Matrix 1-2",
+            "Key Matrix 1-3",
+            "Key Matrix 1-4",
+            "Key Matrix 2-1",
+            "Key Matrix 2-2",
+            "Key Matrix 2-3",
+            "Key Matrix 2-4",
+            "Key Matrix 3-1",
+            "Key Matrix 3-2",
+            "Key Matrix 4-1",
+            "Key Matrix 4-2",
+          ],
+          actionType: 0,
+          actionTypeOptions: [
+            "None",
+            "Generic Control",
+            "Keyboard",
+            "Mouse",
+            "Radial",
+            "MIDI-CC",
+          ],
+          actionCtrlTriggers: [],
+          actionCtrlTriggerOptions: [
+            "Volume Increment",
+            "Volume Decrement",
+            "Mute",
+            "Play Pause",
+            "Next",
+            "Previous",
+          ],
+          actionKeyboardModifiers: [],
+          actionKeyboardModifierOptions: [
+            "Keyboard LeftControl",
+            "Keyboard LeftShift",
+            "Keyboard LeftAlt",
+            "Keyboard Left GUI",
+            "Keyboard RightControl",
+            "Keyboard RightShift",
+            "Keyboard RightAlt",
+            "Keyboard Right GUI",
+          ],
+          actionKeyboardOEMBits: [],
+          actionKeyboardKeycodes: [ 0, 0, 0, 0, 0, 0, ],
+          actionKeyboardKeycodeOptions: [
+            "Reserved (no event indicated)",
+            "Keyboard ErrorRollOver",
+            "Keyboard POSTFail",
+            "Keyboard ErrorUndefined",
+            "Keyboard a and A",
+            "Keyboard b and B",
+            "Keyboard c and C",
+            "Keyboard d and D",
+            "Keyboard e and E",
+            "Keyboard f and F",
+            "Keyboard g and G",
+            "Keyboard h and H",
+            "Keyboard i and I",
+            "Keyboard j and J",
+            "Keyboard k and K",
+            "Keyboard I and L",
+            "Keyboard m and M",
+            "Keyboard n and N",
+            "Keyboard o and O",
+            "Keyboard p and P",
+            "Keyboard q and Q",
+            "Keyboard r and R",
+            "Keyboard s and S",
+            "Keyboard t and T",
+            "Keyboard u and U",
+            "Keyboard v and V",
+            "Keyboard w and W",
+            "Keyboard x and X",
+            "Keyboard y and Y",
+            "Keyboard z and Z",
+            "Keyboard 1 and !",
+            "Keyboard 2 and @",
+            "Keyboard 3 and #",
+            "Keyboard 4 and $",
+            "Keyboard 5 and %",
+            "Keyboard 6 and ^",
+            "Keyboard 7 and &",
+            "Keyboard 8 and •",
+            "Keyboard 9 and (",
+            "Keyboard O and )",
+            "Keyboard Return (ENTER)",
+            "Keyboard ESCAPE",
+            "Keyboard DELETE (Backspace)",
+            "Keyboard Tab",
+            "Keyboard Spacebar",
+            "Keyboard - and (underscore)",
+            "Keyboard = and +",
+            "Keyboard [ and {",
+            "Keyboard ] and }",
+            "Keyboard \\ and |",
+            "Keyboard Non-US # and ~",
+            "Keyboard ; and :",
+            "Keyboard ' and \"",
+            "Keyboard Grave Accent and Tilde",
+            "Keyboard , and <",
+            "Keyboard . and >",
+            "Keyboard / and ?",
+            "Keyboard Caps Lock",
+            "Keyboard F1",
+            "Keyboard F2",
+            "Keyboard F3",
+            "Keyboard F4",
+            "Keyboard F5",
+            "Keyboard F6",
+            "Keyboard F7",
+            "Keyboard F8",
+            "Keyboard F9",
+            "Keyboard F10",
+            "Keyboard F11",
+            "Keyboard F12",
+            "Keyboard PrintScreen",
+            "Keyboard Scroll Lock",
+            "Keyboard Pause",
+            "Keyboard Insert",
+            "Keyboard Home",
+            "Keyboard PageUp",
+            "Keyboard Delete Forward",
+            "Keyboard End",
+            "Keyboard PageDown",
+            "Keyboard RightArrow",
+            "Keyboard LeftArrow",
+            "Keyboard DownArrow",
+            "Keyboard UpArrow",
+            "Keypad Num Lock and Clear",
+            "Keypad /",
+            "Keypad *",
+            "Keypad ~",
+            "Keypad +",
+            "Keypad ENTER",
+            "Keypad 1 and End",
+            "Keypad 2 and Down Arrow",
+            "Keypad 3 and PageDn",
+            "Keypad 4 and Left Arrow",
+            "Keypad 5",
+            "Keypad 6 and Right Arrow",
+            "Keypad 7 and Home",
+            "Keypad 8 and Up Arrow",
+            "Keypad 9 and PageUp",
+            "Keypad 0 and Insert",
+            "Keypad . and Delete",
+            "Keyboard Non-US \\ and |",
+            "Keyboard Application",
+            "Keyboard Power",
+            "Keypad =",
+            "Keyboard F13",
+            "Keyboard F14",
+            "Keyboard F15",
+            "Keyboard F16",
+            "Keyboard F17",
+            "Keyboard F18",
+            "Keyboard F19",
+            "Keyboard F20",
+            "Keyboard F21",
+            "Keyboard F22",
+            "Keyboard F23",
+            "Keyboard F24",
+            "Keyboard Execute",
+            "Keyboard Help",
+            "Keyboard Menu",
+            "Keyboard Select",
+            "Keyboard Stop",
+            "Keyboard Again",
+            "Keyboard Undo",
+            "Keyboard Cut",
+            "Keyboard Copy",
+            "Keyboard Paste",
+            "Keyboard Find",
+            "Keyboard Mute",
+            "Keyboard Volume Up",
+            "Keyboard Volume Down",
+            "Keyboard Locking Caps Lock",
+            "Keyboard Locking Num Lock",
+            "Keyboard Locking Scroll Lock",
+            "Keypad Comma",
+            "Keypad Equal Sign",
+            "Keyboard International1",
+            "Keyboard International2",
+            "Keyboard International3",
+            "Keyboard International4",
+            "Keyboard International5",
+            "Keyboard International6",
+            "Keyboard International7",
+            "Keyboard International8",
+            "Keyboard International9",
+            "Keyboard LANG1",
+            "Keyboard LANG2",
+            "Keyboard LANG3",
+            "Keyboard LANG4",
+            "Keyboard LANG5",
+            "Keyboard LANG6",
+            "Keyboard LANG7",
+            "Keyboard LANG8",
+            "Keyboard LANG9",
+            "Keyboard Alternate Erase",
+            "Keyboard SysReq/Attention",
+            "Keyboard Cancel",
+            "Keyboard Clear",
+            "Keyboard Prior",
+            "Keyboard Return",
+            "Keyboard Separator",
+            "Keyboard Out",
+            "Keyboard Oper",
+            "Keyboard Clear/Again",
+            "Keyboard CrSel/Props",
+            "Keyboard ExSel",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Reserved",
+            "Keypad 00",
+            "Keypad 000",
+            "Thousands Separator",
+            "Decimal Separator",
+            "Currency Unit",
+            "Currency Sub-unit",
+            "Keypad (",
+            "Keypad )",
+            "Keypad {",
+            "Keypad }",
+            "Keypad Tab",
+            "Keypad Backspace",
+            "Keypad A",
+            "Keypad B",
+            "Keypad C",
+            "Keypad D",
+            "Keypad E",
+            "Keypad F",
+            "Keypad XOR",
+            "Keypad ^",
+            "Keypad %",
+            "Keypad <",
+            "Keypad >",
+            "Keypad &",
+            "Keypad &&",
+            "Keypad |",
+            "Keypad ||",
+            "Keypad :",
+            "Keypad #",
+            "Keypad Space",
+            "Keypad @",
+            "Keypad !",
+            "Keypad Memory Store",
+            "Keypad Memory Recall",
+            "Keypad Memory Clear",
+            "Keypad Memory Add",
+            "Keypad Memory Subtract",
+            "Keypad Memory Multiply",
+            "Keypad Memory Divide",
+            "Keypad +/-",
+            "Keypad Clear",
+            "Keypad Clear Entry",
+            "Keypad Binary",
+            "Keypad Octal",
+            "Keypad Decimal",
+            "Keypad Hexadecimal",
+            "Reserved",
+            "Reserved",
+          ],
+          actionMouseButtons: [],
+          actionMouseX: 0,
+          actionMouseY: 0,
+          actionMouseWheel: 0,
+          actionRadialButtons: [],
+          actionRadialAngle: 0,
+          actionRadialX: 0,
+          actionRadialY: 0,
+          actionRadialWidth: 0,
+          actionMidiCable: 0,
+          actionMidiChannel: 0,
+          actionMidiController: 0,
+          actionMidiToggleValue: 0,
+          actionMidiAbsValue: 0,
+          actionMidiValue: 0,
+
+          lightingTarget: null,
+          lightingTargetOptions: [
+            "Dial 1 Pressed",
+            "Dial 2 Pressed",
+            "Dial 1 Pressed CW",
+            "Dial 2 Pressed CW",
+            "Dial 1 Pressed CCW",
+            "Dial 2 Pressed CCW",
+            "Dial 1 Released",
+            "Dial 2 Released",
+            "Dial 1 Released CW",
+            "Dial 2 Released CW",
+            "Dial 1 Released CCW",
+            "Dial 2 Released CCW",
+            "Key Matrix Default 1-2",
+            "Key Matrix Default 1-3",
+            "Key Matrix Default 1-4",
+            "Key Matrix Default 2-1",
+            "Key Matrix Default 2-2",
+            "Key Matrix Default 2-3",
+            "Key Matrix Default 2-4",
+            "Key Matrix Default 3-1",
+            "Key Matrix Default 3-2",
+            "Key Matrix Default 4-1",
+            "Key Matrix Default 4-2",
+            "Key Matrix Pressed 1-2",
+            "Key Matrix Pressed 1-3",
+            "Key Matrix Pressed 1-4",
+            "Key Matrix Pressed 2-1",
+            "Key Matrix Pressed 2-2",
+            "Key Matrix Pressed 2-3",
+            "Key Matrix Pressed 2-4",
+            "Key Matrix Pressed 3-1",
+            "Key Matrix Pressed 3-2",
+            "Key Matrix Pressed 4-1",
+            "Key Matrix Pressed 4-2",
+            "Key Matrix Activated 1-2",
+            "Key Matrix Activated 1-3",
+            "Key Matrix Activated 1-4",
+            "Key Matrix Activated 2-1",
+            "Key Matrix Activated 2-2",
+            "Key Matrix Activated 2-3",
+            "Key Matrix Activated 2-4",
+            "Key Matrix Activated 3-1",
+            "Key Matrix Activated 3-2",
+            "Key Matrix Activated 4-1",
+            "Key Matrix Activated 4-2",
+          ],
+          lightingColor: '#000000',
+
+          lightMIDIMappingTarget: null,
+          lightMappingTargetOptions: [
+            "Lighting 1-2",
+            "Lighting 1-3",
+            "Lighting 1-4",
+            "Lighting 2-1",
+            "Lighting 2-2",
+            "Lighting 2-3",
+            "Lighting 2-4",
+            "Lighting 3-1",
+            "Lighting 3-2",
+            "Lighting 4-1",
+            "Lighting 4-2",
+          ],
+          lightMIDIMappingEnable: false,
+          lightMIDIMappingChannel: 0,
+          lightMIDIMappingController: 0,
+
+          reportInCallback: null,
+
+          device: null,
+        }
+      },
+      created() {
+        if (!("hid" in navigator)) {
+          console.error("HID not supported")
+          return
+        }
+
+        navigator.hid.addEventListener("disconnect", (event) => {
+          if (this.device == event.device) {
+            this.device = null
+            console.log(`Device disconnected`);
+          }
+        });
+      },
+      watch: {
+        async actionTarget(newValue, oldValue) {
+          await this.onActionTargetSelected(newValue)
+        },
+        async lightingTarget(newValue, oldValue) {
+          await this.onLightingTargetSelected(newValue)
+        },
+        async lightMIDIMappingTarget(newValue, oldValue) {
+          await this.onLightMIDIMappingTargetSelected(newValue)
+        },
+      },
+      methods: {
+        async onActionTargetSelected(id) {
+          console.log("action target changed: " + id)
+          this.reportInCallback = (data) => {
+            this.showActionFromData(data)
+          }
+          await this.fetchAction(id)
+        },
+
+        async fetchAction(id) {         
+          console.log("Fetching action config...")
+          var buffer = new Uint8Array(0x40 - 1);
+          buffer[0] = ACTION;
+          buffer[1] = READ;
+          buffer[2] = id;
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, buffer);
+        },
+
+        async showActionFromData(data) {
+          var buffer = new Uint8Array(data.buffer)
+          console.log(buffer)
+          if (buffer[0] == ERROR) {
+            console.error("Failed to fetch action config")
+          }
+          if (buffer[1] != RAW) {
+            console.error("Unknown response data type")
+          }
+          this.actionType = buffer[2]
+          switch (this.actionType) {
+            case ACTION_NONE:
+              
+              break;
+            case ACTION_CTRL:
+              this.actionCtrlTriggers = []
+              for (let i = 0; i < 16; i++) {
+                if(buffer[parseInt(i / 8) + 3] >> (i % 8) & 0b1) {
+                  this.actionCtrlTriggers.push(i)
+                }
+              }
+              
+              break;
+            case ACTION_KEYBOARD:
+              this.actionKeyboardModifiers = []
+              for (let i = 0; i < 8; i++) {
+                if(buffer[3] >> i & 0b1) {
+                  this.actionKeyboardModifiers.push(i)
+                }
+              }
+              this.actionKeyboardOEMBits = []
+              for (let i = 0; i < 8; i++) {
+                if(buffer[4] >> i & 0b1) {
+                  this.actionKeyboardOEMBits.push(i)
+                }
+              }
+              for (let i = 0; i < 6; i++) {
+                this.actionKeyboardKeycodes[i] = buffer[5 + i]
+              }
+              break;
+            case ACTION_MOUSE:
+            this.actionMouseButtons = []
+              for (let i = 0; i < 3; i++) {
+                if(buffer[3] >> i & 0b1) {
+                  this.actionMouseButtons.push(i)
+                }
+              }
+              this.actionMouseX = buffer[4]
+              this.actionMouseY = buffer[5]
+              this.actionMouseWheel = buffer[6]
+              break;
+            case ACTION_RADIAL:
+              this.actionRadialButtons = []
+              for (let i = 0; i < 1; i++) {
+                if(buffer[3] >> i & 0b1) {
+                  this.actionRadialButtons.push(i)
+                }
+              }
+              this.actionRadialAngle = data.getInt16(4, true)
+              this.actionRadialX = data.getInt16(6, true)
+              this.actionRadialY = data.getInt16(8, true)
+              this.actionRadialWidth = data.getInt16(10, true)
+              break;
+            case ACTION_MIDI:
+              this.actionMidiCable = buffer[3]
+              this.actionMidiChannel = buffer[4]
+              this.actionMidiController = buffer[5]
+
+              if (buffer[6] == 0) {
+                this.actionMidiToggleValue = 1
+              } else {
+                this.actionMidiToggleValue = 0
+              }
+              if (buffer[6] >> 7 & 0b1) {
+                this.actionMidiAbsValue = 1
+              } else {
+                this.actionMidiAbsValue = 0
+              }
+              this.actionMidiValue = buffer[6] & 0b01111111
+              break;
+            default:
+              console.error("Unknown action type")
+              break;
+          }
+        },
+
+        async sendAction() {
+          console.log("Sending action...")
+          this.reportInCallback = (data) => {
+            var buffer = new Uint8Array(data.buffer)
+            if (buffer[0] != SUCCESS) {
+              if(buffer[1] == TEXT) {
+                console.error(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown error report type")
+              }
+            } else {
+              if(buffer[1] == TEXT) {
+                console.log(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown report type")
+              }
+            }
+          }
+          var data = await this.setActionToData()
+          console.log(data)
+          await device.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+        },
+
+        async setActionToData() {
+          var buffer = new Uint8Array(0x40 - 1);
+          var data = new DataView(buffer.buffer);
+          buffer[0] = ACTION
+          buffer[1] = WRITE
+          buffer[2] = this.actionTarget
+          buffer[3] = this.actionType
+          switch (this.actionType) {
+            case ACTION_NONE:
+              
+              break;
+            case ACTION_CTRL:
+              for (const i of this.actionCtrlTriggers) {
+                buffer[parseInt(i / 8) + 4] |= 1 << (i % 8)
+              }
+              
+              break;
+            case ACTION_KEYBOARD:
+              for (const i of this.actionKeyboardModifiers) {
+                buffer[4] |= 1 << i
+              }
+              for (const i of this.actionKeyboardOEMBits) {
+                buffer[5] |= 1 << i
+              }
+              for (let i = 0; i < 6; i++) {
+                buffer[6 + i] = this.actionKeyboardKeycodes[i]
+              }
+              break;
+            case ACTION_MOUSE:
+              for (const i of this.actionMouseButtons) {
+                buffer[4] |= 1 << i
+              }
+              buffer[5] = this.actionMouseX
+              buffer[6] = this.actionMouseY
+              buffer[7] = this.actionMouseWheel
+              break;
+            case ACTION_RADIAL:
+            for (const i of this.actionRadialButtons) {
+                buffer[4] |= 1 << i
+              }
+              data.setInt16(5, this.actionRadialAngle, true)
+              data.setInt16(7, this.actionRadialX, true)
+              data.setInt16(9, this.actionRadialY, true)
+              data.setInt16(11, this.actionRadialWidth, true)
+              break;
+            case ACTION_MIDI:
+              buffer[4] = this.actionMidiCable
+              buffer[5] = this.actionMidiChannel
+              buffer[6] = this.actionMidiController
+              
+              if (this.actionMidiToggleValue) {
+                buffer[7] = 0
+              } else {
+                buffer[7] = this.actionMidiValue
+                if (this.actionMidiAbsValue) {
+                  buffer[7] |= 1 << 7
+                }
+              }
+              break;
+            default:
+              console.error("Unknown action type")
+              break;
+          }
+          console.log(buffer)
+          return data
+        },
+
+        async onLightingTargetSelected(id) {
+          console.log("Lighting target changed: " + id)
+          this.reportInCallback = (data) => {
+            this.showLightingFromData(data)
+          }
+          await this.fetchLighting(id)
+        },
+        
+        async fetchLighting(id) {
+          console.log("Fetching lighting config...")
+          var buffer = new Uint8Array(0x40 - 1);
+          buffer[0] = LIGHTING;
+          buffer[1] = READ;
+          buffer[2] = id;
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, buffer);
+        },
+
+        async showLightingFromData(data) {
+          var buffer = new Uint8Array(data.buffer)
+          console.log(buffer)
+          if (buffer[0] == ERROR) {
+            console.error("Failed to fetch lighting config")
+          }
+          if (buffer[1] != RAW) {
+            console.error("Unknown response data type")
+          }
+          var r = buffer[2]
+          var g = buffer[3]
+          var b = buffer[4]
+
+          this.lightingColor = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')
+        },
+
+        async sendLighting() {
+          console.log("Sending lighting...")
+          this.reportInCallback = (data) => {
+            var buffer = new Uint8Array(data.buffer)
+            if (buffer[0] != SUCCESS) {
+              if(buffer[1] == TEXT) {
+                console.error(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown error report type")
+              }
+            } else {
+              if(buffer[1] == TEXT) {
+                console.log(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown report type")
+              }
+            }
+          }
+          var data = await this.setLightingToData()
+          console.log(data)
+          await device.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+        },
+
+        async setLightingToData() {
+          var buffer = new Uint8Array(0x40 - 1);
+          var data = new DataView(buffer.buffer);
+          buffer[0] = LIGHTING
+          buffer[1] = WRITE
+          buffer[2] = this.lightingTarget
+
+          buffer[3] = parseInt(this.lightingColor.slice(1, 3), 16);
+          buffer[4] = parseInt(this.lightingColor.slice(3, 5), 16);
+          buffer[5] = parseInt(this.lightingColor.slice(5, 7), 16);
+          
+          console.log(buffer)
+          return data
+        },
+
+        async onLightMIDIMappingTargetSelected(id) {
+          console.log("LightMIDIMapping target changed: " + id)
+          this.reportInCallback = (data) => {
+            this.showLightMIDIMappingFromData(data)
+          }
+          await this.fetchLightMIDIMapping(id)
+        },
+        
+        async fetchLightMIDIMapping(id) {
+          console.log("Fetching LightMIDIMapping config...")
+          var buffer = new Uint8Array(0x40 - 1);
+          buffer[0] = LIGHT_MIDICC_MAPPING;
+          buffer[1] = READ;
+          buffer[2] = id;
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, buffer);
+        },
+
+        async showLightMIDIMappingFromData(data) {
+          var buffer = new Uint8Array(data.buffer)
+          console.log(buffer)
+          if (buffer[0] == ERROR) {
+            console.error("Failed to fetch LightMIDIMapping config")
+          }
+          if (buffer[1] != RAW) {
+            console.error("Unknown response data type")
+          }
+          
+          console.log(buffer[2])
+          if ((buffer[2] >> 7 & 0b1) != 1) {
+            console.log(1);
+            this.lightMIDIMappingEnable = true
+            this.lightMIDIMappingChannel = buffer[2]
+            this.lightMIDIMappingController = buffer[3]
+          } else {
+            console.log(2);
+            this.lightMIDIMappingEnable = false
+          }
+        },
+
+        async sendLightMIDIMapping() {
+          console.log("Sending LightMIDIMapping...")
+          this.reportInCallback = (data) => {
+            var buffer = new Uint8Array(data.buffer)
+            if (buffer[0] != SUCCESS) {
+              if(buffer[1] == TEXT) {
+                console.error(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown error report type")
+              }
+            } else {
+              if(buffer[1] == TEXT) {
+                console.log(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown report type")
+              }
+            }
+          }
+          var data = await this.setLightMIDIMappingToData()
+          console.log(data)
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+        },
+
+        async setLightMIDIMappingToData() {
+          var buffer = new Uint8Array(0x40 - 1);
+          var data = new DataView(buffer.buffer);
+          buffer[0] = LIGHTING
+          buffer[1] = WRITE
+          buffer[2] = this.lightMIDIMappingTarget
+
+          if(this.lightMIDIMappingEnable) {
+            buffer[3] = this.lightMIDIMappingChannel
+            buffer[4] = this.lightMIDIMappingController
+          } else {
+            buffer[3] = 0xff
+          }
+          
+          console.log(buffer)
+          return data
+        },
+
+        async sendSaveFlash() {
+          console.log("Sending save...")
+          this.reportInCallback = (data) => {
+            var buffer = new Uint8Array(data.buffer)
+            if (buffer[0] != SUCCESS) {
+              if(buffer[1] == TEXT) {
+                console.error(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown error report type")
+              }
+            } else {
+              if(buffer[1] == TEXT) {
+                console.log(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown report type")
+              }
+            }
+          }
+
+          var buffer = new Uint8Array(0x40 - 1);
+          var data = new DataView(buffer.buffer);
+          buffer[0] = SAVE_FLASH
+          
+          console.log(data)
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+        },
+
+        async sendResetFlash() {
+          console.log("Sending reset...")
+          this.reportInCallback = (data) => {
+            var buffer = new Uint8Array(data.buffer)
+            if (buffer[0] != SUCCESS) {
+              if(buffer[1] == TEXT) {
+                console.error(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown error report type")
+              }
+            } else {
+              if(buffer[1] == TEXT) {
+                console.log(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown report type")
+              }
+            }
+          }
+
+          var buffer = new Uint8Array(0x40 - 1);
+          var data = new DataView(buffer.buffer);
+          buffer[0] = RESET_FLASH
+          
+          console.log(data)
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+        },
+
+        async sendReport(reportID, buffer) {
+          if(this.device == null) {
+            await this.connect()
+          }
+
+          return await device.sendReport(reportID, buffer);
+        },
+
+        async connect() {
+          console.log("Connecting to HID device...")
+
+          if (!("hid" in navigator)) {
+            console.error("HID not supported")
+            return
+          }
+          
+          [ device ] = await navigator.hid.requestDevice({ filters : [
+            {
+              vendorId: 1155,
+              productId: 22352
+            }
+          ]})
+          console.log(device)
+          console.log("Opening HID device...")
+          await device.open()
+
+          device.addEventListener("inputreport", event => {
+            const { data, device, reportId } = event
+            if (device.productId !== 22352 && reportId !== GENERIC_CONTROL_REPORT_ID) return
+            this.reportInCallback(data)
+          });
+
+          this.device = device
+          console.log("HID device connected!")
+        }
+      },
+
+    }).mount('#app')
+
+    const GENERIC_CONTROL_REPORT_ID = 0x01
+
+    const SUCCESS = 0x53
+    const ERROR = 0x45
+    const RAW = 0x00
+    const TEXT = 0x3A
+
+    const ACTION = 0x41
+    const LIGHTING = 0x4C
+    const LIGHT_MIDICC_MAPPING = 0x4D
+    const SAVE_FLASH = 0x53
+    const RESET_FLASH = 0x52
+
+    const WRITE = 0x57
+    const READ = 0x52
+
+    const ACTION_NONE = 0
+    const ACTION_CTRL = 1
+    const ACTION_KEYBOARD = 2
+    const ACTION_MOUSE = 3
+    const ACTION_RADIAL = 4
+    const ACTION_MIDI = 5
+
+  </script>
+</body>
+
+</html>
