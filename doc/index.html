@@ -22,12 +22,14 @@
             <path fill="#00ff00" fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10z"/>
           </svg>
           {{ this.device.productName }} - Connected
+          <button @click="disconnect()" type="button" class="btn btn-danger m-2">Disconnect</button>
         </span>
         <span v-if="!device">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-record-fill" viewBox="0 0 16 16">
             <path fill="#ff0000" fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10z"/>
           </svg>
           Not connected
+          <button @click="connect()" type="button" class="btn btn-secondary m-2">Connect</button>
         </span>
       </div>
     </nav>
@@ -281,8 +283,34 @@
     integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
     crossorigin="anonymous"></script>
 
-
   <script>
+    
+    const VENDER_ID = 0x0483
+    const PRODUCT_ID = 0x5750
+
+    const GENERIC_CONTROL_REPORT_ID = 0x01
+
+    const SUCCESS = 0x53
+    const ERROR = 0x45
+    const RAW = 0x00
+    const TEXT = 0x3A
+
+    const ACTION = 0x41
+    const LIGHTING = 0x4C
+    const LIGHT_MIDICC_MAPPING = 0x4D
+    const SAVE_FLASH = 0x53
+    const RESET_FLASH = 0x52
+
+    const WRITE = 0x57
+    const READ = 0x52
+
+    const ACTION_NONE = 0
+    const ACTION_CTRL = 1
+    const ACTION_KEYBOARD = 2
+    const ACTION_MOUSE = 3
+    const ACTION_RADIAL = 4
+    const ACTION_MIDI = 5
+
     const { createApp } = Vue
     
     createApp({
@@ -671,6 +699,14 @@
           if (this.device == event.device) {
             this.device = null
             console.log(`Device disconnected`);
+          }
+        });
+
+        navigator.hid.addEventListener("connect", (event) => {
+          if (event.device.vendorId == VENDER_ID && event.device.productId == PRODUCT_ID) {
+            this.device = event.device
+            this.device.open()
+            console.log(`Device connected`);
           }
         });
       },
@@ -1102,8 +1138,8 @@
           
           [ device ] = await navigator.hid.requestDevice({ filters : [
             {
-              vendorId: 1155,
-              productId: 22352
+              vendorId: VENDER_ID,
+              productId: PRODUCT_ID
             }
           ]})
           console.log(device)
@@ -1112,39 +1148,25 @@
 
           device.addEventListener("inputreport", event => {
             const { data, device, reportId } = event
-            if (device.productId !== 22352 && reportId !== GENERIC_CONTROL_REPORT_ID) return
+            if (device.productId !== PRODUCT_ID && reportId !== GENERIC_CONTROL_REPORT_ID) return
             this.reportInCallback(data)
           });
 
           this.device = device
           console.log("HID device connected!")
+        },
+
+        async disconnect() {
+          if (this.device == null) {
+            return
+          }
+          await this.device.close()
+          this.device = null
+          console.log("HID device closed")
         }
       },
 
     }).mount('#app')
-
-    const GENERIC_CONTROL_REPORT_ID = 0x01
-
-    const SUCCESS = 0x53
-    const ERROR = 0x45
-    const RAW = 0x00
-    const TEXT = 0x3A
-
-    const ACTION = 0x41
-    const LIGHTING = 0x4C
-    const LIGHT_MIDICC_MAPPING = 0x4D
-    const SAVE_FLASH = 0x53
-    const RESET_FLASH = 0x52
-
-    const WRITE = 0x57
-    const READ = 0x52
-
-    const ACTION_NONE = 0
-    const ACTION_CTRL = 1
-    const ACTION_KEYBOARD = 2
-    const ACTION_MOUSE = 3
-    const ACTION_RADIAL = 4
-    const ACTION_MIDI = 5
 
   </script>
 </body>
