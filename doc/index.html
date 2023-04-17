@@ -38,6 +38,7 @@
         <div class="nav flex-column nav-pills me-3" id="tabs-main" role="tablist" aria-orientation="vertical">
           <button class="nav-link active" id="tab-item-actions" data-bs-toggle="pill" data-bs-target="#tab-actions" type="button" role="tab" aria-controls="tab-item-actions" aria-selected="true">Actions</button>
           <button class="nav-link" id="tab-item-lighting" data-bs-toggle="pill" data-bs-target="#tab-lighting" type="button" role="tab" aria-controls="tab-item-lighting" aria-selected="false">Lighting</button>
+          <button class="nav-link" id="tab-item-dial-light-mappings" data-bs-toggle="pill" data-bs-target="#tab-dial-light-mappings" type="button" role="tab" aria-controls="tab-item-dial-light-mappings" aria-selected="false">Dial-Light Mappings</button>
           <button class="nav-link" id="tab-item-light-midi-mappings" data-bs-toggle="pill" data-bs-target="#tab-light-midi-mappings" type="button" role="tab" aria-controls="tab-item-light-midi-mappings" aria-selected="false">Light-MIDI Mappings</button>
           <button class="nav-link" id="tab-item-system" data-bs-toggle="pill" data-bs-target="#tab-system" type="button" role="tab" aria-controls="tab-item-system" aria-selected="false">System</button>
         </div>
@@ -214,6 +215,7 @@
               <button @click="sendAction()" type="button" class="btn btn-primary">Apply</button>
             </div>
           </div>
+
           <div class="tab-pane fade" id="tab-lighting" role="tabpanel" aria-labelledby="tab-item-colors" tabindex="0">
             <div class="m-2">
               <label for="lighting-target" class="form-label">Lighting Target</label>
@@ -232,10 +234,35 @@
               <button @click="sendLighting()" type="button" class="btn btn-primary">Apply</button>
             </div>
           </div>
+
+          <div class="tab-pane fade" id="tab-dial-light-mappings" role="tabpanel" aria-labelledby="tab-item-dial-light-mappings" tabindex="0">
+            <div class="m-2">
+              <label for="dial-light-mapping-target" class="form-label">Dial-Light Mapping Target</label>
+              <select v-model="dialLightMappingTarget" class="form-select" id="dial-light-mapping-target" aria-label="Select Dial-light Mapping target">
+                <option disabled value="">Please select an target</option>
+                <option v-for="(it, i) in dialMappingTargetOptions" :value="i">
+                  {{ it }}
+                </option>
+              </select>
+            </div>
+            <div class="m-2">
+              <label for="dial-light-mappings-lights" class="form-label">Lights</label>
+              <div id="dial-light-mappings-lights" class="d-flex flex-wrap">
+                <div v-for="i in 11" class="m-1 form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" :id="'dial-light-mappings-lights-' + i" :value="i - 1" v-model="dialLightMappingLightBits">
+                  <label class="form-check-label" :for="'dial-light-mappings-lights-' + i">{{ i - 1 }}</label>
+                </div>
+              </div>
+            </div>
+            <div class="mx-3 mt-5 d-flex flex-row-reverse">
+              <button @click="sendDialLightMapping()" type="button" class="btn btn-primary">Apply</button>
+            </div>
+          </div>
+
           <div class="tab-pane fade" id="tab-light-midi-mappings" role="tabpanel" aria-labelledby="tab-item-light-midi-mappings" tabindex="0">
             <div class="m-2">
               <label for="light-midi-mapping-target" class="form-label">MIDI-light Mapping Target</label>
-              <select v-model="lightMIDIMappingTarget" class="form-select" id="midi-light-mapping-target" aria-label="Select MIDI-light Mapping target">
+              <select v-model="lightMIDIMappingTarget" class="form-select" id="light-midi-mapping-target" aria-label="Select Light-MIDI Mapping target">
                 <option disabled value="">Please select an target</option>
                 <option v-for="(it, i) in lightMappingTargetOptions" :value="i">
                   {{ it }}
@@ -266,6 +293,7 @@
               <button @click="sendLightMIDIMapping()" type="button" class="btn btn-primary">Apply</button>
             </div>
           </div>
+
           <div class="tab-pane fade" id="tab-system" role="tabpanel" aria-labelledby="tab-item-system" tabindex="0">
             <div class="m-5">
               <div class="d-flex justify-content-center">
@@ -298,6 +326,7 @@
     const ACTION = 0x41
     const LIGHTING = 0x4C
     const LIGHT_MIDICC_MAPPING = 0x4D
+    const DIAL_LIGHT_MAPPING = 0x44
     const SAVE_FLASH = 0x53
     const RESET_FLASH = 0x52
 
@@ -666,6 +695,13 @@
           ],
           lightingColor: '#000000',
 
+          dialLightMappingTarget: null,
+          dialMappingTargetOptions: [
+            "Dial Small",
+            "Dial Large",
+          ],
+          dialLightMappingLightBits: [],
+
           lightMIDIMappingTarget: null,
           lightMappingTargetOptions: [
             "Lighting 1-2",
@@ -716,6 +752,9 @@
         },
         async lightingTarget(newValue, oldValue) {
           await this.onLightingTargetSelected(newValue)
+        },
+        async dialLightMappingTarget(newValue, oldValue) {
+          await this.onDialLightMappingTargetSelected(newValue)
         },
         async lightMIDIMappingTarget(newValue, oldValue) {
           await this.onLightMIDIMappingTargetSelected(newValue)
@@ -885,7 +924,7 @@
               buffer[7] = this.actionMouseWheel
               break;
             case ACTION_RADIAL:
-            for (const i of this.actionRadialButtons) {
+              for (const i of this.actionRadialButtons) {
                 buffer[4] |= 1 << i
               }
               data.setInt16(5, this.actionRadialAngle, true)
@@ -986,6 +1025,82 @@
           return data
         },
 
+        async onDialLightMappingTargetSelected(id) {
+          console.log("DialLightMapping target changed: " + id)
+          this.reportInCallback = (data) => {
+            this.showDialLightMappingFromData(data)
+          }
+          await this.fetchDialLightMapping(id)
+        },
+        
+        async fetchDialLightMapping(id) {
+          console.log("Fetching DialLightMapping config...")
+          var buffer = new Uint8Array(0x40 - 1);
+          buffer[0] = DIAL_LIGHT_MAPPING;
+          buffer[1] = READ;
+          buffer[2] = id;
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, buffer);
+        },
+
+        async showDialLightMappingFromData(data) {
+          var buffer = new Uint8Array(data.buffer)
+          console.log(buffer)
+          if (buffer[0] == ERROR) {
+            console.error("Failed to fetch DialLightMapping config")
+          }
+          if (buffer[1] != RAW) {
+            console.error("Unknown response data type")
+          }
+          
+          this.dialLightMappingLightBits = []
+          var val = data.getInt16(2, true)
+          for (let i = 0; i < 11; i++) {
+            if(val >> i & 0b1) {
+              this.dialLightMappingLightBits.push(i)
+            }
+          }
+        },
+
+        async sendDialLightMapping() {
+          console.log("Sending DialLightMapping...")
+          this.reportInCallback = (data) => {
+            var buffer = new Uint8Array(data.buffer)
+            if (buffer[0] != SUCCESS) {
+              if(buffer[1] == TEXT) {
+                console.error(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown error report type")
+              }
+            } else {
+              if(buffer[1] == TEXT) {
+                console.log(new TextDecoder().decode(buffer.slice(2)));
+              } else {
+                console.error("Unknown report type")
+              }
+            }
+          }
+          var data = await this.setDialLightMappingToData()
+          console.log(data)
+          await this.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+        },
+
+        async setDialLightMappingToData() {
+          var buffer = new Uint8Array(0x40 - 1);
+          var data = new DataView(buffer.buffer);
+          buffer[0] = DIAL_LIGHT_MAPPING
+          buffer[1] = WRITE
+          buffer[2] = this.dialLightMappingTarget
+
+          var val = 0;
+          for (const i of this.dialLightMappingLightBits) {
+            val |= 1 << i
+          }
+          data.setInt16(3, val, true)
+          
+          console.log(buffer)
+          return data
+        },
+
         async onLightMIDIMappingTargetSelected(id) {
           console.log("LightMIDIMapping target changed: " + id)
           this.reportInCallback = (data) => {
@@ -1051,7 +1166,7 @@
         async setLightMIDIMappingToData() {
           var buffer = new Uint8Array(0x40 - 1);
           var data = new DataView(buffer.buffer);
-          buffer[0] = LIGHTING
+          buffer[0] = LIGHT_MIDICC_MAPPING
           buffer[1] = WRITE
           buffer[2] = this.lightMIDIMappingTarget
 
