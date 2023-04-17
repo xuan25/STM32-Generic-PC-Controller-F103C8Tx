@@ -1,6 +1,6 @@
 #include "key.h"
 
-void Key_Init(Key* key, uint8_t level) {
+void Key_Init(Key *key, uint8_t level) {
   key->Internal.LastChangedLevel = level;
   #if KEY_DEBOUNCE_MS > 0
     uint32_t tickMs = HAL_GetTick();
@@ -8,7 +8,7 @@ void Key_Init(Key* key, uint8_t level) {
   #endif
 }
 
-void Key_Update(Key* key, uint8_t level) {
+void Key_Update(Key *key, uint8_t level) {
 #if KEY_DEBOUNCE_MS > 0
   uint32_t tickMs = HAL_GetTick();
   // Level update

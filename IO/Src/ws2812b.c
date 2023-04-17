@@ -22,9 +22,9 @@ const uint8_t gamma8[] = {
 };
 #endif
 
-RGB Color_EvaluateRGB(Color* color){
+RGB Color_EvaluateRGB(Color *color){
   RGB rgb = *color->RGB;
-  Filter* filter = color->Filter;
+  Filter *filter = color->Filter;
   while (filter != NULL)
   {
     rgb = filter->Function(filter, rgb);
@@ -33,20 +33,20 @@ RGB Color_EvaluateRGB(Color* color){
   return rgb;
 }
 
-void WS2812BSeries_Init(WS2812BSeries* series) {
+void WS2812BSeries_Init(WS2812BSeries *series) {
   series->Internal.CurrentCycle = 0;
   series->Internal.IsUpdating = 0;
   series->Internal.IsDirty = 0;
 
   uint16_t i;
   for (i = 0; series->Series[i] != NULL; i++) {
-    WS2812B* unit = series->Series[i];
+    WS2812B *unit = series->Series[i];
     unit->Internal.Parent = series;
   }
   series->Internal.NumUnits = i;
 }
 
-void WS2812BSeries_PushUpdate(WS2812BSeries* series) {
+void WS2812BSeries_PushUpdate(WS2812BSeries *series) {
   if(series->Internal.IsUpdating) {
     // If a update pushing is ongoing, set the dirty flag and return.
     series->Internal.IsDirty = 1;
@@ -59,7 +59,7 @@ void WS2812BSeries_PushUpdate(WS2812BSeries* series) {
   HAL_TIM_PWM_Start_DMA(series->TIM, series->TIMChannel, (uint32_t *)series->Internal.DMABuffer, WS2812B_DMA_BUFFER_LENGTH);
 }
 
-void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId) {
+void WS2812BSeries_FillBuffer(WS2812BSeries *series, uint8_t bufferId) {
   if (series->Internal.CurrentCycle < series->Internal.NumUnits) {
     // fill buffer with a WS2812B unit
     uint16_t unitIdx = series->Internal.CurrentCycle;
@@ -67,8 +67,8 @@ void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId) {
     uint32_t pulseHigh = arr * WS2812B_DUTY_ONE / WS2812B_DUTY_BASE;
     uint32_t pulseLow = arr * WS2812B_DUTY_ZERO / WS2812B_DUTY_BASE;
     
-    WS2812B* unit = series->Series[unitIdx];
-    uint16_t* buffer = &(series->Internal.DMABuffer[bufferId * (WS2812B_DMA_BUFFER_LENGTH / 2)]);
+    WS2812B *unit = series->Series[unitIdx];
+    uint16_t *buffer = &(series->Internal.DMABuffer[bufferId * (WS2812B_DMA_BUFFER_LENGTH / 2)]);
     RGB color = Color_EvaluateRGB(unit->Color);
 
     uint8_t r = color.R;
@@ -107,14 +107,14 @@ void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId) {
   series->Internal.CurrentCycle++;
 }
 
-void WS2812BSeries_OnHT(WS2812BSeries* series) {
+void WS2812BSeries_OnHT(WS2812BSeries *series) {
   if(series->Internal.IsUpdating) {
     // The first buffer has been transmitted, refill it.
     WS2812BSeries_FillBuffer(series, 0);
   }
 }
 
-void WS2812BSeries_OnTC(WS2812BSeries* series) {
+void WS2812BSeries_OnTC(WS2812BSeries *series) {
   if(series->Internal.IsUpdating) { 
     // The second buffer has been transmitted, refill it.
     WS2812BSeries_FillBuffer(series, 1);
@@ -197,8 +197,8 @@ RGB HSVToRGB(double h, double s, double v) {
 
 }
 
-RGB AlphaFilter(Filter* filter, RGB rgb) {
-  AlphaFilterParams* params = (AlphaFilterParams*)filter->Params;
+RGB AlphaFilter(Filter *filter, RGB rgb) {
+  AlphaFilterParams *params = (AlphaFilterParams *)filter->Params;
   RGB result = {
     .R = rgb.R * params->Alpha / ALPHA_RESOLUTION,
     .G = rgb.G * params->Alpha / ALPHA_RESOLUTION,
@@ -207,8 +207,8 @@ RGB AlphaFilter(Filter* filter, RGB rgb) {
   return result;
 }
 
-RGB EasingFilter(Filter* filter, RGB rgb){
-  EasingFilterParams* params = (EasingFilterParams*)filter->Params;
+RGB EasingFilter(Filter *filter, RGB rgb){
+  EasingFilterParams *params = (EasingFilterParams *)filter->Params;
 
   // bypass
   if (params->IsCompleted) {

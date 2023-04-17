@@ -2,7 +2,7 @@
 
 void BinaryPushKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
 
-void BinaryPushKey_Init(BinaryPushKey* binaryPushKey) {
+void BinaryPushKey_Init(BinaryPushKey *binaryPushKey) {
   binaryPushKey->Key->Internal.Parent = binaryPushKey;
   binaryPushKey->Key->Internal.OnStateChanged = BinaryPushKey_OnKeyStateChanged;
 
@@ -10,13 +10,13 @@ void BinaryPushKey_Init(BinaryPushKey* binaryPushKey) {
   Key_Init(binaryPushKey->Key, keyLevel);
 }
 
-void BinaryPushKey_Scan(BinaryPushKey* binaryPushKey) {
+void BinaryPushKey_Scan(BinaryPushKey *binaryPushKey) {
   uint8_t keyLevel = HAL_GPIO_ReadPin(binaryPushKey->Pin->GPIOx, binaryPushKey->Pin->GPIO_Pin);
   Key_Update(binaryPushKey->Key, keyLevel);
 }
 
 void BinaryPushKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
-  BinaryPushKey* binaryPushKey = (BinaryPushKey*)sender->Internal.Parent;
+  BinaryPushKey *binaryPushKey = (BinaryPushKey *)sender->Internal.Parent;
   BinaryPushKeyState state;
   if (newState == binaryPushKey->ReleasedLevel) {
     state = PushKeyReleased;

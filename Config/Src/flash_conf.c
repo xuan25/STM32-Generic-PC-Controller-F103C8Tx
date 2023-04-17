@@ -33,23 +33,21 @@ uint32_t FlashConfig_Save() {
 
   /* Program the user Flash area word by word*/
   for (uint32_t i = 0; i < ACTION_CONFIG_SIZE; i += 4) {
-    ActionConfig* a = actionConfigs;
-
-    uint32_t* pData = ((uint32_t*)actionConfigs) + (i / 4);
+    uint32_t *pData = ((uint32_t *)actionConfigs) + (i / 4);
     if (!HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, ACTION_CONFIG_ADDR + i, *pData) == HAL_OK)
     {
       return HAL_FLASH_GetError();
     }
   }
   for (uint32_t i = 0; i < RGB_CONFIG_SIZE; i += 4) {
-    uint32_t* pData = ((uint32_t*)rgbIndex) + (i / 4);
+    uint32_t *pData = ((uint32_t *)rgbIndex) + (i / 4);
     if (!HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, RGB_CONFIG_ADDR + i, *pData) == HAL_OK)
     {
       return HAL_FLASH_GetError();
     }
   }
   for (uint32_t i = 0; i < LIGHT_MIDICC_MAPPING_CONFIG_SIZE; i += 4) {
-    uint32_t* pData = ((uint32_t*)lightMIDICCMappings) + (i / 4);
+    uint32_t *pData = ((uint32_t *)lightMIDICCMappings) + (i / 4);
     if (!HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, LIGHT_MIDICC_MAPPING_CONFIG_ADDR + i, *pData) == HAL_OK)
     {
       return HAL_FLASH_GetError();
@@ -70,15 +68,15 @@ uint32_t FlashConfig_Load() {
 
   if(flag == 1) {
     for (uint32_t i = 0; i < ACTION_CONFIG_SIZE; i += 4) {
-      uint32_t* pData = ((uint32_t*)actionConfigs) + (i / 4);
+      uint32_t *pData = ((uint32_t*)actionConfigs) + (i / 4);
       *pData = *(__IO uint32_t *)(ACTION_CONFIG_ADDR + i);
     }
     for (uint32_t i = 0; i < RGB_CONFIG_SIZE; i += 4) {
-      uint32_t* pData = ((uint32_t*)rgbIndex) + (i / 4);
+      uint32_t *pData = ((uint32_t*)rgbIndex) + (i / 4);
       *pData = *(__IO uint32_t *)(RGB_CONFIG_ADDR + i);
     }
     for (uint32_t i = 0; i < LIGHT_MIDICC_MAPPING_CONFIG_SIZE; i += 4) {
-      uint32_t* pData = ((uint32_t*)lightMIDICCMappings) + (i / 4);
+      uint32_t *pData = ((uint32_t*)lightMIDICCMappings) + (i / 4);
       *pData = *(__IO uint32_t *)(LIGHT_MIDICC_MAPPING_CONFIG_ADDR + i);
     }
   }

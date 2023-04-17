@@ -8,7 +8,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 uint8_t returnBuffer[VENDER_DATA_LENGTH];
 
-uint8_t* CMD_Exec(uint8_t* cmd) {
+uint8_t *CMD_Exec(uint8_t *cmd) {
   switch (cmd[0])
   {
   case 'A':
@@ -20,8 +20,8 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         {
           // action write
           uint8_t id = cmd[2];
-          ActionConfig* dest = actionConfigs + id;
-          uint8_t* src = &cmd[3];
+          ActionConfig *dest = actionConfigs + id;
+          uint8_t *src = &cmd[3];
           memcpy(dest, src, sizeof(ActionConfig));
           strcpy(returnBuffer, "S: OK");
         }
@@ -30,9 +30,9 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         {
           // action read
           uint8_t id = cmd[2];
-          ActionConfig* src = actionConfigs + id;
+          ActionConfig *src = actionConfigs + id;
           strcpy(returnBuffer, "S\0");
-          uint8_t* dest = &returnBuffer[2];
+          uint8_t *dest = &returnBuffer[2];
           memcpy(dest, src, sizeof(ActionConfig));
         }
         break;
@@ -51,8 +51,8 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         {
           // lighting write
           uint8_t id = cmd[2];
-          RGB* dest = rgbIndex + id;
-          uint8_t* src = &cmd[3];
+          RGB *dest = rgbIndex + id;
+          uint8_t *src = &cmd[3];
           memcpy(dest, src, sizeof(RGB));
           strcpy(returnBuffer, "S: OK");
         }
@@ -61,9 +61,9 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         {
           // lighting read
           uint8_t id = cmd[2];
-          RGB* src = rgbIndex + id;
+          RGB *src = rgbIndex + id;
           strcpy(returnBuffer, "S\0");
-          uint8_t* dest = &returnBuffer[2];
+          uint8_t *dest = &returnBuffer[2];
           memcpy(dest, src, sizeof(RGB));
         }
         break;
@@ -82,8 +82,8 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         {
           // light-MIDICC mapping write
           uint8_t id = cmd[2];
-          uint16_t* dest = lightMIDICCMappings + id;
-          uint8_t* src = &cmd[3];
+          uint16_t *dest = lightMIDICCMappings + id;
+          uint8_t *src = &cmd[3];
           memcpy(dest, src, sizeof(uint16_t));
           strcpy(returnBuffer, "S: OK");
         }
@@ -92,9 +92,9 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
         {
           // light-MIDICC mapping read
           uint8_t id = cmd[2];
-          uint16_t* src = lightMIDICCMappings + id;
+          uint16_t *src = lightMIDICCMappings + id;
           strcpy(returnBuffer, "S\0");
-          uint8_t* dest = &returnBuffer[2];
+          uint8_t *dest = &returnBuffer[2];
           memcpy(dest, src, sizeof(uint16_t));
         }
         break;
@@ -126,7 +126,7 @@ uint8_t* CMD_Exec(uint8_t* cmd) {
   return returnBuffer;
 }
 
-int8_t HID_OutEvent_FS(uint8_t* buffer)
+int8_t HID_OutEvent_FS(uint8_t *buffer)
 {
   /* USER CODE BEGIN 6 */
   uint8_t reportId = buffer[0];
@@ -134,7 +134,7 @@ int8_t HID_OutEvent_FS(uint8_t* buffer)
   {
   case VENDER_REPORT_ID:
   {
-    uint8_t* returnBuffer = CMD_Exec(buffer + 1);
+    uint8_t *returnBuffer = CMD_Exec(buffer + 1);
     uint8_t venderBuffer[VENDER_REPORT_LENGTH];
     venderBuffer[0] = VENDER_REPORT_ID;
     memcpy(venderBuffer + 1, returnBuffer, VENDER_DATA_LENGTH);

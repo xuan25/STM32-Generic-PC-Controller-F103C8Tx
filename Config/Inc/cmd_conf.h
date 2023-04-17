@@ -7,7 +7,7 @@ extern "C" {
 
 #include "stm32f1xx_hal.h"
 
-uint8_t* CMD_Exec(uint8_t* cmd);
+uint8_t *CMD_Exec(uint8_t *cmd);
 
 #ifdef __cplusplus
 }

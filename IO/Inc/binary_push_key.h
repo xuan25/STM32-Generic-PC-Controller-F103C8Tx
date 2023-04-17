@@ -18,7 +18,7 @@ typedef enum BinaryPushKeyState {
 } BinaryPushKeyState;
 
 typedef struct BinaryPushKey_Internal {
-  void (*Parent);                 // Parent
+  void *Parent;                 // Parent
 
   /**
    * @brief State changed callback of the key (parent)
@@ -27,7 +27,7 @@ typedef struct BinaryPushKey_Internal {
    * @param state state.
    * @retval None
   */
-  void (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
+  void (*OnStateChanged)(struct BinaryPushKey *sender, BinaryPushKeyState state);
 } BinaryPushKey_Internal;
 
 /**
@@ -37,8 +37,8 @@ typedef struct BinaryPushKey_Internal {
 */
 typedef struct BinaryPushKey {
   BinaryPushKey_Internal Internal;  // For internal usage
-  Key (*Key);                       // Key structure
-  GPIO_Pin* Pin;                    // GPIO Pin
+  Key *Key;                         // Key structure
+  GPIO_Pin *Pin;                    // GPIO Pin
   GPIO_PinState ReleasedLevel;      // GPIO state when key released
 
   /**
@@ -49,7 +49,7 @@ typedef struct BinaryPushKey {
    * @retval Whether the event has been handled. 
    * Once the event has been handled, it will not been sent to its parent.
   */
-  uint8_t (*OnStateChanged)(struct BinaryPushKey* sender, BinaryPushKeyState state);
+  uint8_t (*OnStateChanged)(struct BinaryPushKey *sender, BinaryPushKeyState state);
 } BinaryPushKey;
 
 /**
@@ -58,7 +58,7 @@ typedef struct BinaryPushKey {
  * @param binaryPushKey The BinaryPushKey to be initialized
  * @retval None
 */
-void BinaryPushKey_Init(BinaryPushKey* binaryPushKey);
+void BinaryPushKey_Init(BinaryPushKey *binaryPushKey);
 
 /**
  * @brief Scan an BinaryPushKey hardware to update its state and potentially 
@@ -67,7 +67,7 @@ void BinaryPushKey_Init(BinaryPushKey* binaryPushKey);
  * @param binaryPushKey The BinaryPushKey to be scanned
  * @retval None
 */
-void BinaryPushKey_Scan(BinaryPushKey* binaryPushKey);
+void BinaryPushKey_Scan(BinaryPushKey *binaryPushKey);
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,7 @@ struct Dial_Internal;
 struct Dial;
 
 typedef struct Dial_Internal {
-  void (*Parent);                 // Parent
+  void *Parent;                   // Parent
   uint32_t LastInputTickMs;       // Time of the last hardware tick
   int16_t InputState;             // Internal dial state tracing
 
@@ -23,7 +23,7 @@ typedef struct Dial_Internal {
    * @param direction Tick direction. Positive for CW. Negative for CCW.
    * @retval None
   */
-  void (*OnTicked)(struct Dial* sender, int8_t direction);
+  void (*OnTicked)(struct Dial *sender, int8_t direction);
 } Dial_Internal;
 
 /**
@@ -32,8 +32,8 @@ typedef struct Dial_Internal {
  * @note Used to managed a encoder hardware that act like a dial.
 */
 typedef struct Dial {
-  Dial_Internal Internal;        // For internal usage
-  Encoder* Encoder;               // Encoder struct
+  Dial_Internal Internal;         // For internal usage
+  Encoder *Encoder;               // Encoder struct
   uint16_t TickInterval;          // Specify the ratio between hardware ticks and a dial tick
   uint16_t ResetDelayMs;          // Specify the time for reset delay that auto align the dial to a dial tick
   Encoder_Edge IgnoreInputEdge;   // Specify the pin to ignore its rising/falling edges
@@ -46,7 +46,7 @@ typedef struct Dial {
    * @retval Whether the event has been handled. 
    * Once the event has been handled, it will not been sent to its parent.
   */
-  uint8_t (*OnTicked)(struct Dial* sender, int8_t direction);
+  uint8_t (*OnTicked)(struct Dial *sender, int8_t direction);
 } Dial;
 
 /**
@@ -55,7 +55,7 @@ typedef struct Dial {
  * @param dial The dial to be initialized
  * @retval None
 */
-void Dial_Init(Dial* dial);
+void Dial_Init(Dial *dial);
 
 /**
  * @brief Scan an dial to update its state and potentially trigger a callback.
@@ -63,7 +63,7 @@ void Dial_Init(Dial* dial);
  * @param dial The dial to be scanned
  * @retval None
 */
-void Dial_Scan(Dial* dial);
+void Dial_Scan(Dial *dial);
 
 #ifdef __cplusplus
 }

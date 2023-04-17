@@ -91,8 +91,8 @@ RGB rgbIndex[] = {
   { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 10 temp black
 };
 
-WS2812BSeries* ws2812bSeries = &(WS2812BSeries) {
-  .Series = (WS2812B*[]){
+WS2812BSeries *ws2812bSeries = &(WS2812BSeries) {
+  .Series = (WS2812B *[]){
     &(WS2812B) {
       .Color = &(Color) {
         .RGB = RGB_KEY_00_DEFAULT,
@@ -348,10 +348,10 @@ void Lighting_PushUpdate() {
 
 void Lighting_OnKeyMatrixStateChanged(uint8_t keyID, BinaryPushKeyState state) {
   uint8_t lightId = matrixKeyLightMapping[keyID];
-  Color* easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color* easingFrom = easingParams->EasingFrom;
+  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+  AlphaFilterParams *alphaParams = (AlphaFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+  EasingFilterParams *easingParams = (EasingFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+  Color *easingFrom = easingParams->EasingFrom;
   // evaluate color under current config first
   *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
   // then update config
@@ -372,10 +372,10 @@ void Lighting_OnKeyMatrixStateChanged(uint8_t keyID, BinaryPushKeyState state) {
 
 void Lighting_OnDialReleasedTicked(uint8_t dialID, int8_t direction) {
   uint8_t lightId = dialLightMapping[dialID];
-  Color* easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color* easingFrom = easingParams->EasingFrom;
+  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+  AlphaFilterParams *alphaParams = (AlphaFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+  EasingFilterParams *easingParams = (EasingFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+  Color *easingFrom = easingParams->EasingFrom;
 
   if(direction > 0) {
     easingFrom->RGB = RGB_DIAL_1_RELEASED_CW + dialID;
@@ -392,10 +392,10 @@ void Lighting_OnDialReleasedTicked(uint8_t dialID, int8_t direction) {
 
 void Lighting_OnDialPressedTicked(uint8_t dialID, int8_t direction) {
   uint8_t lightId = dialLightMapping[dialID];
-  Color* easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color* easingFrom = easingParams->EasingFrom;
+  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+  AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+  EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+  Color *easingFrom = easingParams->EasingFrom;
 
   if(direction > 0) {
     easingFrom->RGB = RGB_DIAL_1_PRESSED_CW + dialID;
@@ -412,10 +412,10 @@ void Lighting_OnDialPressedTicked(uint8_t dialID, int8_t direction) {
 
 void Lighting_OnDialKeyStateChanged(uint8_t dialID, BinaryPushKeyState state, uint8_t isDialTicked) {
   uint8_t lightId = dialLightMapping[dialID];
-  Color* easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color* easingFrom = easingParams->EasingFrom;
+  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+  AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+  EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+  Color *easingFrom = easingParams->EasingFrom;
 
   if(state == PushKeyPressed) {
     // evaluate color under current config first
@@ -453,10 +453,10 @@ void Lighting_OnMIDICCChanged(uint8_t channelNumber, uint8_t controllerNumber, u
   for (uint8_t lightId = 0; lightId < sizeof(lightMIDICCMappings); lightId++) {
     if (lightMIDICCMappings[lightId] == midiCCMapID) {
       
-      Color* easingTo = ws2812bSeries->Series[lightId]->Color;
-      AlphaFilterParams* alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-      EasingFilterParams* easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-      Color* easingFrom = easingParams->EasingFrom;
+      Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+      AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+      EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+      Color *easingFrom = easingParams->EasingFrom;
 
       // evaluate color under current config first
       *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);

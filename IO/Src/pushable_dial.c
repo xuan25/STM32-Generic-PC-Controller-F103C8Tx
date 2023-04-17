@@ -4,7 +4,7 @@ void PushableDial_OnReleasedDialTicked(Dial *sender, int8_t direction);
 void PushableDial_OnPressedDialTicked(Dial *sender, int8_t direction);
 void PushableDial_OnPushKeyStateChanged(BinaryPushKey *sender, BinaryPushKeyState state);
 
-void PushableDial_Init(PushableDial* pushableDial) {
+void PushableDial_Init(PushableDial *pushableDial) {
   if(pushableDial->ReleasedDial != NULL) {
     pushableDial->ReleasedDial->Internal.Parent = pushableDial;
     pushableDial->ReleasedDial->Internal.OnTicked = PushableDial_OnReleasedDialTicked;
@@ -22,14 +22,14 @@ void PushableDial_Init(PushableDial* pushableDial) {
   BinaryPushKey_Init(pushableDial->PushKey);
 }
 
-void PushableDial_Scan(PushableDial* pushableDial) {
+void PushableDial_Scan(PushableDial *pushableDial) {
   Dial_Scan(pushableDial->PressedDial);
   Dial_Scan(pushableDial->ReleasedDial);
   BinaryPushKey_Scan(pushableDial->PushKey);
 }
 
 void PushableDial_OnReleasedDialTicked(Dial *sender, int8_t direction) {
-  PushableDial* pushableDial = (PushableDial*)sender->Internal.Parent;
+  PushableDial *pushableDial = (PushableDial *)sender->Internal.Parent;
   if(pushableDial->PushKey->Key->Internal.State == pushableDial->PushKey->ReleasedLevel) {
     pushableDial->Internal.LastUpdatedItem = ReleasedDial;
     if(pushableDial->OnReleasedDialTicked == NULL || !pushableDial->OnReleasedDialTicked(pushableDial, direction)) {
@@ -41,7 +41,7 @@ void PushableDial_OnReleasedDialTicked(Dial *sender, int8_t direction) {
 }
 
 void PushableDial_OnPressedDialTicked(Dial *sender, int8_t direction){
-  PushableDial* pushableDial = (PushableDial*)sender->Internal.Parent;
+  PushableDial *pushableDial = (PushableDial *)sender->Internal.Parent;
   if(pushableDial->PushKey->Key->Internal.State != pushableDial->PushKey->ReleasedLevel) {
     pushableDial->Internal.LastUpdatedItem = PressedDial;
     if(pushableDial->OnPressedDialTicked == NULL || !pushableDial->OnPressedDialTicked(pushableDial, direction)) {
@@ -53,7 +53,7 @@ void PushableDial_OnPressedDialTicked(Dial *sender, int8_t direction){
 }
 
 void PushableDial_OnPushKeyStateChanged(BinaryPushKey *sender, BinaryPushKeyState state) {
-  PushableDial* pushableDial = (PushableDial*)sender->Internal.Parent;
+  PushableDial *pushableDial = (PushableDial *)sender->Internal.Parent;
   PushableDialLastUpdatedItem lastUpdatedItem = pushableDial->Internal.LastUpdatedItem;
   pushableDial->Internal.LastUpdatedItem = PushKey;
   if(pushableDial->OnPushKeyStateChanged == NULL || !pushableDial->OnPushKeyStateChanged(pushableDial, state, lastUpdatedItem != PushKey)) {

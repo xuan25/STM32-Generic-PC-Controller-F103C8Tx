@@ -5,7 +5,7 @@
 void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
 void KeyMatrix_OnMatrixKeyStateChanged(MatrixKey *sender, BinaryPushKeyState state);
 
-void KeyMatrix_Init(KeyMatrix* keyMatrix) {
+void KeyMatrix_Init(KeyMatrix *keyMatrix) {
 
   uint16_t numRows = 0, numCols = 0;
   while (keyMatrix->Rows[numRows] != NULL)
@@ -21,8 +21,8 @@ void KeyMatrix_Init(KeyMatrix* keyMatrix) {
   keyMatrix->Internal.Stride = numCols;
 
   // Init lookup
-  keyMatrix->Internal.Keys = (Key**) malloc(numItemsMax * sizeof(Key*));
-  keyMatrix->Internal.EnabledFlags = (uint8_t*) malloc(numItemsMax * sizeof(uint8_t));
+  keyMatrix->Internal.Keys = (Key **)malloc(numItemsMax * sizeof(Key *));
+  keyMatrix->Internal.EnabledFlags = (uint8_t *)malloc(numItemsMax * sizeof(uint8_t));
   for (int i = 0; i < numItemsMax; i++) {
     keyMatrix->Internal.Keys[i] = NULL;
     keyMatrix->Internal.EnabledFlags[i] = 0;
@@ -30,7 +30,7 @@ void KeyMatrix_Init(KeyMatrix* keyMatrix) {
 
   // Init relations
   for (uint16_t i = 0; keyMatrix->MatrixKeys[i] != NULL; i++) {
-    MatrixKey* matrixKey = keyMatrix->MatrixKeys[i];
+    MatrixKey *matrixKey = keyMatrix->MatrixKeys[i];
     matrixKey->Key->Internal.Parent = matrixKey;
     matrixKey->Key->Internal.OnStateChanged = MatrixKey_OnKeyStateChanged;
     matrixKey->Internal.Parent = keyMatrix;
@@ -44,20 +44,20 @@ void KeyMatrix_Init(KeyMatrix* keyMatrix) {
   // Init state
   uint32_t tickMs = HAL_GetTick();
   for (uint16_t x = 0; keyMatrix->Rows[x] != NULL; x++) {
-    GPIO_Pin* row = keyMatrix->Rows[x];
+    GPIO_Pin *row = keyMatrix->Rows[x];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, keyMatrix->ReleasedLevel);
   }
   for (uint16_t x = 0; keyMatrix->Rows[x] != NULL; x++){
-    GPIO_Pin* row = keyMatrix->Rows[x];
+    GPIO_Pin *row = keyMatrix->Rows[x];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMatrix->ReleasedLevel & 0b1);
     for (uint16_t y = 0; keyMatrix->Cols[y] != NULL; y++) {
       uint8_t idx = x * keyMatrix->Internal.Stride + y;
       if (!keyMatrix->Internal.EnabledFlags[idx]) {
         continue;
       }
-      Key* key = keyMatrix->Internal.Keys[idx];
+      Key *key = keyMatrix->Internal.Keys[idx];
 
-      GPIO_Pin* col = keyMatrix->Cols[y];
+      GPIO_Pin *col = keyMatrix->Cols[y];
       GPIO_PinState level = HAL_GPIO_ReadPin(col->GPIOx, col->GPIO_Pin);
 
       key->Internal.LastChangedLevel = level;
@@ -67,14 +67,14 @@ void KeyMatrix_Init(KeyMatrix* keyMatrix) {
   }
 }
 
-void KeyMatrix_DeInit(KeyMatrix* keyMatrix) {
+void KeyMatrix_DeInit(KeyMatrix *keyMatrix) {
   free(keyMatrix->Internal.Keys);
   free(keyMatrix->Internal.EnabledFlags);
 }
 
-void KeyMatrix_Scan(KeyMatrix* keyMatrix) {
+void KeyMatrix_Scan(KeyMatrix *keyMatrix) {
   for (uint16_t r = 0; keyMatrix->Rows[r] != NULL; r++) {
-    GPIO_Pin* row = keyMatrix->Rows[r];
+    GPIO_Pin *row = keyMatrix->Rows[r];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMatrix->ReleasedLevel & 0b1);
 #if GPIO_GENERIC_DELAY_US > 0
     Delay_Us(GPIO_GENERIC_DELAY_US);
@@ -84,9 +84,9 @@ void KeyMatrix_Scan(KeyMatrix* keyMatrix) {
       if (!keyMatrix->Internal.EnabledFlags[idx]) {
         continue;
       }
-      Key* key = keyMatrix->Internal.Keys[idx];
+      Key *key = keyMatrix->Internal.Keys[idx];
 
-      GPIO_Pin* col = keyMatrix->Cols[c];
+      GPIO_Pin *col = keyMatrix->Cols[c];
       GPIO_PinState level = HAL_GPIO_ReadPin(col->GPIOx, col->GPIO_Pin);
 
       Key_Update(key, level);
@@ -96,8 +96,8 @@ void KeyMatrix_Scan(KeyMatrix* keyMatrix) {
 }
 
 void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState) {
-  MatrixKey* matrixKey = (MatrixKey*)sender->Internal.Parent;
-  KeyMatrix* keyMatrix = (KeyMatrix*)matrixKey->Internal.Parent;
+  MatrixKey *matrixKey = (MatrixKey *)sender->Internal.Parent;
+  KeyMatrix *keyMatrix = (KeyMatrix *)matrixKey->Internal.Parent;
 
   BinaryPushKeyState state;
   if (newState == keyMatrix->ReleasedLevel) {
@@ -113,7 +113,7 @@ void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState
 }
 
 void KeyMatrix_OnMatrixKeyStateChanged(MatrixKey *sender, BinaryPushKeyState state) {
-  KeyMatrix* keyMatrix = (KeyMatrix*)sender->Internal.Parent;
+  KeyMatrix *keyMatrix = (KeyMatrix *)sender->Internal.Parent;
   if (keyMatrix->OnStateChanged == NULL || !keyMatrix->OnStateChanged(keyMatrix, sender, state)) {
     if(keyMatrix->Internal.OnStateChanged != NULL) {
       keyMatrix->Internal.OnStateChanged(keyMatrix, sender, state);

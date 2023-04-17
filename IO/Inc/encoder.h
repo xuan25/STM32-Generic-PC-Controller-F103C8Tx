@@ -25,7 +25,7 @@ typedef enum Encoder_Edge
 }Encoder_Edge;
 
 typedef struct Encoder_Internal {
-  void (*Parent);                   // Parent
+  void *Parent;                       // Parent
 #if ENCODER_DEBOUNCE_MS > 0
   uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
@@ -42,7 +42,7 @@ typedef struct Encoder_Internal {
    * @param edge Pin which rising/falling edge occurred.
    * @retval None
   */
-  void (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
+  void (*OnTicked)(struct Encoder *sender, int8_t direction, Encoder_Edge edge);
 } Encoder_Internal;
 
 /**
@@ -52,8 +52,8 @@ typedef struct Encoder_Internal {
 */
 typedef struct Encoder {
   Encoder_Internal Internal;          // For internal usage
-  GPIO_Pin* PinA;                     // GPIO Pin A
-  GPIO_Pin* PinB;                     // GPIO Pin B
+  GPIO_Pin *PinA;                     // GPIO Pin A
+  GPIO_Pin *PinB;                     // GPIO Pin B
   GPIO_PinState OffLevel;             // GPIO pin level for OFF state of encoder pin
 
   /**
@@ -65,7 +65,7 @@ typedef struct Encoder {
    * @retval Whether the event has been handled. 
    * Once the event has been handled, it will not been sent to its parent.
   */
-  uint8_t (*OnTicked)(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
+  uint8_t (*OnTicked)(struct Encoder *sender, int8_t direction, Encoder_Edge edge);
 } Encoder;
 
 /**
@@ -74,7 +74,7 @@ typedef struct Encoder {
  * @param encoder The encoder to be initialized
  * @retval None
 */
-void Encoder_Init(Encoder* encoder);
+void Encoder_Init(Encoder *encoder);
 
 /**
  * @brief Scan an encoder hardware to update its state and potentially trigger a callback.
@@ -82,7 +82,7 @@ void Encoder_Init(Encoder* encoder);
  * @param encoder The encoder to be scanned
  * @retval None
 */
-void Encoder_Scan(Encoder* encoder);
+void Encoder_Scan(Encoder *encoder);
 
 #ifdef __cplusplus
 }

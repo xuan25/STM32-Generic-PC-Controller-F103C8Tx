@@ -15,7 +15,7 @@ struct Key;
 #define KEY_DEBOUNCE_MS 10u
 
 typedef struct Key_Internal {
-  void (*Parent);                   // Parent
+  void *Parent;                     // Parent
   uint8_t State;                    // State for the key
 #if KEY_DEBOUNCE_MS > 0
   uint32_t LastLevelChangedMs;      // Time of the last level change
@@ -30,7 +30,7 @@ typedef struct Key_Internal {
    * @param newState New state.
    * @retval None
   */
-  void (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
+  void (*OnStateChanged)(struct Key *sender, uint8_t oldState, uint8_t newState);
 } Key_Internal;
 
 /**
@@ -50,7 +50,7 @@ typedef struct Key {
    * @retval Whether the event has been handled. 
    * Once the event has been handled, it will not been sent to its parent.
   */
-  uint8_t (*OnStateChanged)(struct Key* sender, uint8_t oldState, uint8_t newState);
+  uint8_t (*OnStateChanged)(struct Key *sender, uint8_t oldState, uint8_t newState);
 } Key;
 
 /**
@@ -60,7 +60,7 @@ typedef struct Key {
  * @param level: Level of the key
  * @retval None
 */
-void Key_Init(Key* key, uint8_t level);
+void Key_Init(Key *key, uint8_t level);
 
 /**
  * @brief Update a Key with a new voltage level
@@ -69,7 +69,7 @@ void Key_Init(Key* key, uint8_t level);
  * @param level: Level of the key
  * @retval None
 */
-void Key_Update(Key* key, uint8_t level);
+void Key_Update(Key *key, uint8_t level);
 
 #ifdef __cplusplus
 }

@@ -37,8 +37,8 @@ typedef struct RGB {
  * @note Used to manage a color filter.
 */
 typedef struct Filter {
-  void (*Params);                                     // Filter parameters
-  RGB (*Function)(struct Filter* filter, RGB rgb);    // Filter function
+  void *Params;                                       // Filter parameters
+  RGB (*Function)(struct Filter *filter, RGB rgb);    // Filter function
   struct Filter *Next;                                // Next filter in the chain
 } Filter;
 
@@ -48,7 +48,7 @@ typedef struct Filter {
  * @note Used to manage a Color.
 */
 typedef struct Color {
-  RGB* RGB;                // RGB value
+  RGB *RGB;                // RGB value
   Filter *Filter;          // A linked-list of filter chain
 } Color;
 
@@ -58,10 +58,10 @@ typedef struct Color {
  * @param series The Color to be evaluate
  * @retval None
 */
-RGB Color_EvaluateRGB(Color* color);
+RGB Color_EvaluateRGB(Color *color);
 
 typedef struct WS2812B_Internal {
-  void (*Parent);     // Parent
+  void *Parent;       // Parent
 } WS2812B_Internal;
 
 /**
@@ -71,11 +71,11 @@ typedef struct WS2812B_Internal {
 */
 typedef struct WS2812B {
   WS2812B_Internal Internal;  // For internal usage
-  Color* Color;               // Color of the WS2812B
+  Color *Color;               // Color of the WS2812B
 } WS2812B;
 
 typedef struct WS2812BSeries_Internal {
-  void (*Parent);                                   // Parent
+  void *Parent;                                     // Parent
   uint16_t NumUnits;                                // Number of Units
   uint8_t CurrentCycle;                             // Current update pushing cycle
   uint8_t IsUpdating;                               // Whether an updating push is ongoing 
@@ -90,8 +90,8 @@ typedef struct WS2812BSeries_Internal {
 */
 typedef struct WS2812BSeries {
   WS2812BSeries_Internal Internal;    // For internal usage
-  WS2812B** Series;                   // A null-terminated array of WS2812B units
-  TIM_HandleTypeDef* TIM;             // Timer handle
+  WS2812B **Series;                   // A null-terminated array of WS2812B units
+  TIM_HandleTypeDef *TIM;             // Timer handle
   uint32_t TIMChannel;                // Timer channel
 } WS2812BSeries;
 
@@ -101,7 +101,7 @@ typedef struct WS2812BSeries {
  * @param series The WS2812BSeries to be initialized
  * @retval None
 */
-void WS2812BSeries_Init(WS2812BSeries* series);
+void WS2812BSeries_Init(WS2812BSeries *series);
 
 /**
  * @brief Push Update form WS2812BSeries structure to hardware
@@ -109,7 +109,7 @@ void WS2812BSeries_Init(WS2812BSeries* series);
  * @param series The WS2812BSeries to be pushed
  * @retval None
 */
-void WS2812BSeries_PushUpdate(WS2812BSeries* series);
+void WS2812BSeries_PushUpdate(WS2812BSeries *series);
 
 /**
  * @brief Fill DMA buffer
@@ -118,7 +118,7 @@ void WS2812BSeries_PushUpdate(WS2812BSeries* series);
  * @param bufferId The ID of the buffer to be filled
  * @retval None
 */
-void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId);
+void WS2812BSeries_FillBuffer(WS2812BSeries *series, uint8_t bufferId);
 
 /**
  * @brief Handle HT event of DMA
@@ -126,7 +126,7 @@ void WS2812BSeries_FillBuffer(WS2812BSeries* series, uint8_t bufferId);
  * @param series The WS2812BSeries that associated to the event
  * @retval None
 */
-void WS2812BSeries_OnHT(WS2812BSeries* series);
+void WS2812BSeries_OnHT(WS2812BSeries *series);
 
 /**
  * @brief Handle TC event of DMA
@@ -134,7 +134,7 @@ void WS2812BSeries_OnHT(WS2812BSeries* series);
  * @param series The WS2812BSeries that associated to the event
  * @retval None
 */
-void WS2812BSeries_OnTC(WS2812BSeries* series);
+void WS2812BSeries_OnTC(WS2812BSeries *series);
 
 /**
  * @brief Convert HSV to RGB
@@ -167,7 +167,7 @@ typedef struct AlphaFilterParams {
  * @param rgb Input RGB value
  * @retval Filtered RGB value
 */
-RGB AlphaFilter(Filter* filter, RGB rgb);
+RGB AlphaFilter(Filter *filter, RGB rgb);
 
 // Resolution on easing timing
 #define EASING_RESOLUTION 200
@@ -181,7 +181,7 @@ typedef struct EasingFilterParams {
   uint32_t BeginTime;   // Begin time of the easing
   uint32_t Duration;    // Duration of the easing
   uint8_t IsCompleted;  // Whether the easing is completed
-  Color* EasingFrom;    // Easing from color
+  Color *EasingFrom;    // Easing from color
 
   /**
    * @brief Easing function that mapping time ratio to easing ratio.
@@ -200,7 +200,7 @@ typedef struct EasingFilterParams {
  * @param rgb Input RGB value
  * @retval Filtered RGB value
 */
-RGB EasingFilter(Filter* filter, RGB rgb);
+RGB EasingFilter(Filter *filter, RGB rgb);
 
 
 #ifdef __cplusplus

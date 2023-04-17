@@ -1,12 +1,12 @@
 #include "midicc_conf.h"
 #include "lighting_conf.h"
 
-MIDICCBuffer* midiBuffers = NULL;
+MIDICCBuffer *midiBuffers = NULL;
 
-MIDICCBuffer* MIDI_GetBuffer(uint8_t channelNumber, uint8_t controllerNumber) {
+MIDICCBuffer *MIDI_GetBuffer(uint8_t channelNumber, uint8_t controllerNumber) {
 
   uint32_t midiBufferID = channelNumber | controllerNumber << 8;
-  MIDICCBuffer* midiBuf = midiBuffers;
+  MIDICCBuffer *midiBuf = midiBuffers;
   if(midiBuffers == NULL) {
     // init buffer list
     midiBuffers = calloc(1, sizeof(MIDICCBuffer));
@@ -30,14 +30,14 @@ MIDICCBuffer* MIDI_GetBuffer(uint8_t channelNumber, uint8_t controllerNumber) {
 
 void MIDICC_OnChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value) {
 
-  MIDICCBuffer* midiBuf = MIDI_GetBuffer(channelNumber, controllerNumber);
+  MIDICCBuffer *midiBuf = MIDI_GetBuffer(channelNumber, controllerNumber);
 
   midiBuf->Value = value;
 
   Lighting_OnMIDICCChanged(channelNumber, controllerNumber, value);
 }
 
-void USBD_MIDI_DataOutHandler(uint8_t * usbRxBuffer, uint8_t usbRxBufferLength)
+void USBD_MIDI_DataOutHandler(uint8_t *usbRxBuffer, uint8_t usbRxBufferLength)
 {
   uint8_t code_index_number = usbRxBuffer[0] & 0xf;
   uint8_t cable_number = usbRxBuffer[0] >> 4 & 0xf;
@@ -51,7 +51,7 @@ void USBD_MIDI_DataOutHandler(uint8_t * usbRxBuffer, uint8_t usbRxBufferLength)
 
 uint8_t MIDICC_OnChangeDelta(uint8_t channelNumber, uint8_t controllerNumber, int8_t delta) {
 
-  MIDICCBuffer* midiBuf = MIDI_GetBuffer(channelNumber, controllerNumber);
+  MIDICCBuffer *midiBuf = MIDI_GetBuffer(channelNumber, controllerNumber);
 
   int16_t value = midiBuf->Value;
   if(delta != 0) {

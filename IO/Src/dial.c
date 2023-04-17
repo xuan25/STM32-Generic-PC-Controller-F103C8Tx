@@ -1,9 +1,9 @@
 #include "dial.h"
 
-void Dial_OnEncoderTick(struct Encoder* sender, int8_t direction, Encoder_Edge edge);
-void Dial_InputTick(Dial* dial, int8_t direction, Encoder_Edge edge);
+void Dial_OnEncoderTick(struct Encoder *sender, int8_t direction, Encoder_Edge edge);
+void Dial_InputTick(Dial *dial, int8_t direction, Encoder_Edge edge);
 
-void Dial_Init(Dial* dial) {
+void Dial_Init(Dial *dial) {
   uint32_t tickMs = HAL_GetTick();
   dial->Internal.LastInputTickMs = tickMs;
   dial->Internal.InputState = 0;
@@ -12,16 +12,16 @@ void Dial_Init(Dial* dial) {
   Encoder_Init(dial->Encoder);
 }
 
-void Dial_Scan(Dial* dial) {
+void Dial_Scan(Dial *dial) {
   Encoder_Scan(dial->Encoder);
 }
 
-void Dial_OnEncoderTick(struct Encoder* sender, int8_t direction, Encoder_Edge edge) {
-  Dial* dial = ((Dial*)sender->Internal.Parent);
+void Dial_OnEncoderTick(struct Encoder *sender, int8_t direction, Encoder_Edge edge) {
+  Dial *dial = (Dial *)sender->Internal.Parent;
   Dial_InputTick(dial, direction, edge);
 }
 
-void Dial_InputTick(Dial* dial, int8_t direction, Encoder_Edge edge) {
+void Dial_InputTick(Dial *dial, int8_t direction, Encoder_Edge edge) {
   // Check for reset delay 
   uint32_t currentTick = HAL_GetTick();
   if(dial->ResetDelayMs > 0 && currentTick - dial->Internal.LastInputTickMs > dial->ResetDelayMs){

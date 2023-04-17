@@ -11,12 +11,12 @@
 
 uint8_t Inputs_KeyboardStateAddKey(uint8_t key);
 uint8_t Inputs_KeyboardStateRemoveKey(uint8_t key);
-void Inputs_ActionSet(ActionConfig* actionConfig);
-void Inputs_ActionReset(ActionConfig* actionConfig);
-uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, BinaryPushKeyState state);
-uint8_t Inputs_OnPushableDialReleasedTicked(PushableDial* sender, int8_t direction);
-uint8_t Inputs_OnPushableDialPressedTicked(PushableDial* sender, int8_t direction);
-uint8_t Inputs_OnPushableDialKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked);
+void Inputs_ActionSet(ActionConfig *actionConfig);
+void Inputs_ActionReset(ActionConfig *actionConfig);
+uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix *sender, MatrixKey *matrixKey, BinaryPushKeyState state);
+uint8_t Inputs_OnPushableDialReleasedTicked(PushableDial *sender, int8_t direction);
+uint8_t Inputs_OnPushableDialPressedTicked(PushableDial *sender, int8_t direction);
+uint8_t Inputs_OnPushableDialKeyStateChanged(PushableDial *sender, BinaryPushKeyState state, uint8_t isDialTicked);
 
 uint16_t ctrlState = 0x0000;
 uint8_t keyboardModifierState = 0x00;
@@ -136,227 +136,199 @@ ActionConfig actionConfigs[] = {
   },
 };
 
-KeyMatrix* keyMatrix = &((KeyMatrix){
-  .MatrixKeys = ((MatrixKey*[]){
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+KeyMatrix *keyMatrix = &(KeyMatrix){
+  .MatrixKeys = (MatrixKey *[]){
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 0,
       .Y = 0,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 0,
       .Y = 1,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 0,
       .Y = 2,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 0,
       .Y = 3,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 1,
       .Y = 0,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 1,
       .Y = 1,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 1,
       .Y = 2,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 1,
       .Y = 3,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 2,
       .Y = 0,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 2,
       .Y = 1,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 3,
       .Y = 0,
-    }),
-    &((MatrixKey){
-      .Key = &((Key){
-        
-      }),
+    },
+    &(MatrixKey){
+      .Key = &(Key){ },
       .X = 3,
       .Y = 1,
-    }),
+    },
     NULL
-  }),
-  .Rows = ((GPIO_Pin*[]){
-    &((GPIO_Pin){
+  },
+  .Rows = (GPIO_Pin *[]){
+    &(GPIO_Pin){
       .GPIOx = ROW_0_GPIO_Port,
       .GPIO_Pin = ROW_0_Pin,
-    }),
-    &((GPIO_Pin){
+    },
+    &(GPIO_Pin){
       .GPIOx = ROW_1_GPIO_Port,
       .GPIO_Pin = ROW_1_Pin,
-    }),
-    &((GPIO_Pin){
+    },
+    &(GPIO_Pin){
       .GPIOx = ROW_2_GPIO_Port,
       .GPIO_Pin = ROW_2_Pin,
-    }),
-    &((GPIO_Pin){
+    },
+    &(GPIO_Pin){
       .GPIOx = ROW_3_GPIO_Port,
       .GPIO_Pin = ROW_3_Pin,
-    }),
+    },
     NULL
-  }),
-  .Cols = ((GPIO_Pin*[]){
-    &((GPIO_Pin){
+  },
+  .Cols = (GPIO_Pin *[]){
+    &(GPIO_Pin){
       .GPIOx = COL_0_GPIO_Port,
       .GPIO_Pin = COL_0_Pin,
-    }),
-    &((GPIO_Pin){
+    },
+    &(GPIO_Pin){
       .GPIOx = COL_1_GPIO_Port,
       .GPIO_Pin = COL_1_Pin,
-    }),
-    &((GPIO_Pin){
+    },
+    &(GPIO_Pin){
       .GPIOx = COL_2_GPIO_Port,
       .GPIO_Pin = COL_2_Pin,
-    }),
-    &((GPIO_Pin){
+    },
+    &(GPIO_Pin){
       .GPIOx = COL_3_GPIO_Port,
       .GPIO_Pin = COL_3_Pin,
-    }),
+    },
     NULL
-  }),
+  },
   .ReleasedLevel = GPIO_PIN_RESET,
   .OnStateChanged = Inputs_OnKeyMatrixStateChanged,
-});
+};
 
-PushableDial* pushableDials[] = {
-  &((PushableDial){
-    .ReleasedDial = &((Dial){
-      .Encoder = &((Encoder){
-        .PinA = &((GPIO_Pin){
+PushableDial *pushableDials[] = {
+  &(PushableDial){
+    .ReleasedDial = &(Dial){
+      .Encoder = &(Encoder){
+        .PinA = &(GPIO_Pin){
           .GPIOx = ENC_1_A_GPIO_Port,
           .GPIO_Pin = ENC_1_A_Pin,
-        }),
-        .PinB = &((GPIO_Pin){
+        },
+        .PinB = &(GPIO_Pin){
           .GPIOx = ENC_1_B_GPIO_Port,
           .GPIO_Pin = ENC_1_B_Pin,
-        }),
+        },
         .OffLevel = GPIO_PIN_RESET,
-      }),
+      },
       .TickInterval = 5,
       .ResetDelayMs = 500,
-    }),
-    .PressedDial = &((Dial){
-      .Encoder = &((Encoder){
-        .PinA = &((GPIO_Pin){
+    },
+    .PressedDial = &(Dial){
+      .Encoder = &(Encoder){
+        .PinA = &(GPIO_Pin){
           .GPIOx = ENC_1_A_GPIO_Port,
           .GPIO_Pin = ENC_1_A_Pin,
-        }),
-        .PinB = &((GPIO_Pin){
+        },
+        .PinB = &(GPIO_Pin){
           .GPIOx = ENC_1_B_GPIO_Port,
           .GPIO_Pin = ENC_1_B_Pin,
-        }),
+        },
         .OffLevel = GPIO_PIN_RESET,
-      }),
+      },
       .TickInterval = 2,
       .ResetDelayMs = 500,
-    }),
-    .PushKey = &((BinaryPushKey){
-      .Key = &((Key){
-        
-      }),
-      .Pin = &((GPIO_Pin){
+    },
+    .PushKey = &(BinaryPushKey){
+      .Key = &(Key){ },
+      .Pin = &(GPIO_Pin){
         .GPIOx = COL_0_GPIO_Port,
         .GPIO_Pin = COL_0_Pin,
-      }),
+      },
       .ReleasedLevel = GPIO_PIN_RESET
-    }),
+    },
     .OnReleasedDialTicked = Inputs_OnPushableDialReleasedTicked,
     .OnPressedDialTicked = Inputs_OnPushableDialPressedTicked,
     .OnPushKeyStateChanged = Inputs_OnPushableDialKeyStateChanged,
-  }),
-  &((PushableDial){
-    .ReleasedDial = &((Dial){
-      .Encoder = &((Encoder){
-        .PinA = &((GPIO_Pin){
+  },
+  &(PushableDial){
+    .ReleasedDial = &(Dial){
+      .Encoder = &(Encoder){
+        .PinA = &(GPIO_Pin){
           .GPIOx = ENC_2_A_GPIO_Port,
           .GPIO_Pin = ENC_2_A_Pin,
-        }),
-        .PinB = &((GPIO_Pin){
+        },
+        .PinB = &(GPIO_Pin){
           .GPIOx = ENC_2_B_GPIO_Port,
           .GPIO_Pin = ENC_2_B_Pin,
-        }),
+        },
         .OffLevel = GPIO_PIN_RESET,
-      }),
+      },
       .TickInterval = 5,
       .ResetDelayMs = 500,
-    }),
-    .PressedDial = &((Dial){
-      .Encoder = &((Encoder){
-        .PinA = &((GPIO_Pin){
+    },
+    .PressedDial = &(Dial){
+      .Encoder = &(Encoder){
+        .PinA = &(GPIO_Pin){
           .GPIOx = ENC_2_A_GPIO_Port,
           .GPIO_Pin = ENC_2_A_Pin,
-        }),
-        .PinB = &((GPIO_Pin){
+        },
+        .PinB = &(GPIO_Pin){
           .GPIOx = ENC_2_B_GPIO_Port,
           .GPIO_Pin = ENC_2_B_Pin,
-        }),
+        },
         .OffLevel = GPIO_PIN_RESET,
-      }),
+      },
       .TickInterval = 2,
       .ResetDelayMs = 500,
-    }),
-    .PushKey = &((BinaryPushKey){
-      .Key = &((Key){
-        
-      }),
-      .Pin = &((GPIO_Pin){
+    },
+    .PushKey = &(BinaryPushKey){
+      .Key = &(Key){ },
+      .Pin = &(GPIO_Pin){
         .GPIOx = ENC_2_P_GPIO_Port,
         .GPIO_Pin = ENC_2_P_Pin,
-      }),
+      },
       .ReleasedLevel = GPIO_PIN_RESET
-    }),
+    },
     .OnReleasedDialTicked = Inputs_OnPushableDialReleasedTicked,
     .OnPressedDialTicked = Inputs_OnPushableDialPressedTicked,
     .OnPushKeyStateChanged = Inputs_OnPushableDialKeyStateChanged,
-  })
+  }
 };
 
 uint8_t Inputs_KeyboardStateAddKey(uint8_t key) {
@@ -385,7 +357,7 @@ uint8_t Inputs_KeyboardStateRemoveKey(uint8_t key) {
   return 0;
 }
 
-void Inputs_ActionSet(ActionConfig* actionConfig) {
+void Inputs_ActionSet(ActionConfig *actionConfig) {
   switch (actionConfig->Type)
   {
   case ACTION_NONE:
@@ -439,7 +411,7 @@ void Inputs_ActionSet(ActionConfig* actionConfig) {
   }
 }
 
-void Inputs_ActionReset(ActionConfig* actionConfig) {
+void Inputs_ActionReset(ActionConfig *actionConfig) {
   switch (actionConfig->Type)
   {
   case ACTION_NONE:
@@ -483,12 +455,12 @@ void Inputs_ActionReset(ActionConfig* actionConfig) {
   }
 }
 
-uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, BinaryPushKeyState state) {
+uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix *sender, MatrixKey *matrixKey, BinaryPushKeyState state) {
   int8_t keyID = matrixKey->X + matrixKey->Y * sender->Internal.Stride;
 
   Lighting_OnKeyMatrixStateChanged(keyID, state);
 
-  ActionConfig* actionConfig = ACTION_MatrixKey_00 + matrixKeyConfigsMapping[keyID];
+  ActionConfig *actionConfig = ACTION_MatrixKey_00 + matrixKeyConfigsMapping[keyID];
   if(state == PushKeyPressed) {
     Inputs_ActionSet(actionConfig);
   } 
@@ -497,7 +469,7 @@ uint8_t Inputs_OnKeyMatrixStateChanged(KeyMatrix* sender, MatrixKey* matrixKey, 
   }
 }
 
-uint8_t Inputs_OnPushableDialReleasedTicked(PushableDial* sender, int8_t direction) {
+uint8_t Inputs_OnPushableDialReleasedTicked(PushableDial *sender, int8_t direction) {
   int dialID;
   for (dialID = 0; dialID < sizeof(pushableDials); dialID++) {
     if(sender == pushableDials[dialID]) {
@@ -518,7 +490,7 @@ uint8_t Inputs_OnPushableDialReleasedTicked(PushableDial* sender, int8_t directi
   return 1;
 }
 
-uint8_t Inputs_OnPushableDialPressedTicked(PushableDial* sender, int8_t direction) {
+uint8_t Inputs_OnPushableDialPressedTicked(PushableDial *sender, int8_t direction) {
   int dialID;
   for (dialID = 0; dialID < sizeof(pushableDials); dialID++) {
     if(sender == pushableDials[dialID]) {
@@ -539,7 +511,7 @@ uint8_t Inputs_OnPushableDialPressedTicked(PushableDial* sender, int8_t directio
   return 1;
 }
 
-uint8_t Inputs_OnPushableDialKeyStateChanged(PushableDial* sender, BinaryPushKeyState state, uint8_t isDialTicked) {
+uint8_t Inputs_OnPushableDialKeyStateChanged(PushableDial *sender, BinaryPushKeyState state, uint8_t isDialTicked) {
   int dialID;
   for (dialID = 0; dialID < sizeof(pushableDials); dialID++) {
     if(sender == pushableDials[dialID]) {

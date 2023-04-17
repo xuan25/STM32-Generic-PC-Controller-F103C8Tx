@@ -1,6 +1,6 @@
 #include "encoder.h"
 
-void Encoder_Init(Encoder* encoder) {
+void Encoder_Init(Encoder *encoder) {
   uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
   uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
   encoder->Internal.LastStateA = levelA;
@@ -15,7 +15,7 @@ void Encoder_Init(Encoder* encoder) {
 #endif
 }
 
-void Encoder_Scan(Encoder* encoder) {
+void Encoder_Scan(Encoder *encoder) {
   uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
   uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
 
