@@ -749,11 +749,14 @@
           }
         });
 
-        navigator.hid.addEventListener("connect", (event) => {
+        navigator.hid.addEventListener("connect", async (event) => {
           if (event.device.vendorId == VENDER_ID && event.device.productId == PRODUCT_ID) {
-            this.device = event.device
-            this.device.open()
-            console.log(`Device connected`);
+
+            // FIX-IT: need to gain permission for sending to achieve auto-connect
+
+            // this.device = event.device
+            // await this.device.open()
+            // console.log(`Device connected`);
           }
         });
       },
@@ -895,7 +898,7 @@
           }
           var data = await this.setActionToData()
           console.log(data)
-          await device.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+          await this.device.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
         },
 
         async setActionToData() {
@@ -1018,7 +1021,7 @@
           }
           var data = await this.setLightingToData()
           console.log(data)
-          await device.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
+          await this.device.sendReport(GENERIC_CONTROL_REPORT_ID, data.buffer);
         },
 
         async setLightingToData() {
@@ -1248,7 +1251,7 @@
             await this.connect()
           }
 
-          return await device.sendReport(reportID, buffer);
+          return await this.device.sendReport(reportID, buffer);
         },
 
         async connect() {
@@ -1259,7 +1262,7 @@
             return
           }
           
-          [ device ] = await navigator.hid.requestDevice({ filters : [
+          var [ device ] = await navigator.hid.requestDevice({ filters : [
             {
               vendorId: VENDER_ID,
               productId: PRODUCT_ID
