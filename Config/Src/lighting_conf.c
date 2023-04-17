@@ -2,15 +2,18 @@
 #include "tim.h"
 #include "stm32f1xx_hal.h"
 
-uint8_t matrixKeyLightMapping[] = {
-  0, 0, 1, 2, 
-  3, 4, 5, 6, 
-  7, 8, 0, 0, 
-  9, 10, 0, 0
+// 1 << lightID
+uint16_t matrixKeyLightMapping[] = {
+  0,        1 << 0,   1 << 1,   1 << 2, 
+  1 << 3,   1 << 4,   1 << 5,   1 << 6, 
+  1 << 7,   1 << 8,   0,        0, 
+  1 << 9,   1 << 10,  0,        0
 };
 
-uint8_t dialLightMapping[] = {
-  0, 0
+// 1 << lightID
+uint16_t dialLightMapping[] = {
+  1 << 1,
+  1 << 1
 };
 
 // channelID | controllerID << 8
@@ -347,104 +350,125 @@ void Lighting_PushUpdate() {
 }
 
 void Lighting_OnKeyMatrixStateChanged(uint8_t keyID, BinaryPushKeyState state) {
-  uint8_t lightId = matrixKeyLightMapping[keyID];
-  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams *alphaParams = (AlphaFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams *easingParams = (EasingFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color *easingFrom = easingParams->EasingFrom;
-  // evaluate color under current config first
-  *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
-  // then update config
-  easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
-  if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
-    if(state == PushKeyPressed) {
-      easingTo->RGB = RGB_KEY_00_PRESSED + lightId;
-    } 
-    else {
-      easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+  for(uint8_t lightId = 0; ws2812bSeries->Series[lightId] != NULL; lightId++) {
+    if(~matrixKeyLightMapping[keyID] >> lightId & 0b1) {
+      continue;
     }
-  }
 
-  easingParams->BeginTime = HAL_GetTick();
-  easingParams->IsCompleted = 0;
-  easingParams->Duration = LIGHT_EASING_DURATION;
-}
-
-void Lighting_OnDialReleasedTicked(uint8_t dialID, int8_t direction) {
-  uint8_t lightId = dialLightMapping[dialID];
-  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams *alphaParams = (AlphaFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams *easingParams = (EasingFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color *easingFrom = easingParams->EasingFrom;
-
-  if(direction > 0) {
-    easingFrom->RGB = RGB_DIAL_1_RELEASED_CW + dialID;
-  } else {
-    easingFrom->RGB = RGB_DIAL_1_RELEASED_CCW + dialID;
-  }
-
-  // easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
-
-  easingParams->BeginTime = HAL_GetTick();
-  easingParams->IsCompleted = 0;
-  easingParams->Duration = LIGHT_EASING_DURATION;
-}
-
-void Lighting_OnDialPressedTicked(uint8_t dialID, int8_t direction) {
-  uint8_t lightId = dialLightMapping[dialID];
-  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color *easingFrom = easingParams->EasingFrom;
-
-  if(direction > 0) {
-    easingFrom->RGB = RGB_DIAL_1_PRESSED_CW + dialID;
-  } else {
-    easingFrom->RGB = RGB_DIAL_1_PRESSED_CCW + dialID;
-  }
-
-  // easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
-
-  easingParams->BeginTime = HAL_GetTick();
-  easingParams->IsCompleted = 0;
-  easingParams->Duration = LIGHT_EASING_DURATION;
-}
-
-void Lighting_OnDialKeyStateChanged(uint8_t dialID, BinaryPushKeyState state, uint8_t isDialTicked) {
-  uint8_t lightId = dialLightMapping[dialID];
-  Color *easingTo = ws2812bSeries->Series[lightId]->Color;
-  AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
-  EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
-  Color *easingFrom = easingParams->EasingFrom;
-
-  if(state == PushKeyPressed) {
+    Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+    AlphaFilterParams *alphaParams = (AlphaFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+    EasingFilterParams *easingParams = (EasingFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+    Color *easingFrom = easingParams->EasingFrom;
     // evaluate color under current config first
     *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
     // then update config
     easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
     if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
-      easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
-    }
-  } else {
-    if (!isDialTicked) {
-      easingFrom->RGB = RGB_DIAL_1_RELEASED + dialID;
-      if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+      if(state == PushKeyPressed) {
+        easingTo->RGB = RGB_KEY_00_PRESSED + lightId;
+      } 
+      else {
         easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
       }
+    }
+
+    easingParams->BeginTime = HAL_GetTick();
+    easingParams->IsCompleted = 0;
+    easingParams->Duration = LIGHT_EASING_DURATION;
+  }
+}
+
+void Lighting_OnDialReleasedTicked(uint8_t dialID, int8_t direction) {
+  for(uint8_t lightId = 0; ws2812bSeries->Series[lightId] != NULL; lightId++) {
+    if(~dialLightMapping[dialID] >> lightId & 0b1) {
+      continue;
+    }
+
+    Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+    AlphaFilterParams *alphaParams = (AlphaFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+    EasingFilterParams *easingParams = (EasingFilterParams *)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+    Color *easingFrom = easingParams->EasingFrom;
+
+    if(direction > 0) {
+      easingFrom->RGB = RGB_DIAL_1_RELEASED_CW + dialID;
     } else {
+      easingFrom->RGB = RGB_DIAL_1_RELEASED_CCW + dialID;
+    }
+
+    // easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+
+    easingParams->BeginTime = HAL_GetTick();
+    easingParams->IsCompleted = 0;
+    easingParams->Duration = LIGHT_EASING_DURATION;
+  }
+}
+
+void Lighting_OnDialPressedTicked(uint8_t dialID, int8_t direction) {
+  for(uint8_t lightId = 0; ws2812bSeries->Series[lightId] != NULL; lightId++) {
+    if(~dialLightMapping[dialID] >> lightId & 0b1) {
+      continue;
+    }
+
+    Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+    AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+    EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+    Color *easingFrom = easingParams->EasingFrom;
+
+    if(direction > 0) {
+      easingFrom->RGB = RGB_DIAL_1_PRESSED_CW + dialID;
+    } else {
+      easingFrom->RGB = RGB_DIAL_1_PRESSED_CCW + dialID;
+    }
+    
+
+    // easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
+
+    easingParams->BeginTime = HAL_GetTick();
+    easingParams->IsCompleted = 0;
+    easingParams->Duration = LIGHT_EASING_DURATION;
+  }
+}
+
+void Lighting_OnDialKeyStateChanged(uint8_t dialID, BinaryPushKeyState state, uint8_t isDialTicked) {
+  for(uint8_t lightId = 0; ws2812bSeries->Series[lightId] != NULL; lightId++) {
+    if(~dialLightMapping[dialID] >> lightId & 0b1) {
+      continue;
+    }
+
+    Color *easingTo = ws2812bSeries->Series[lightId]->Color;
+    AlphaFilterParams *alphaParams = (AlphaFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Params;
+    EasingFilterParams *easingParams = (EasingFilterParams*)ws2812bSeries->Series[lightId]->Color->Filter->Next->Params;
+    Color *easingFrom = easingParams->EasingFrom;
+
+    if(state == PushKeyPressed) {
       // evaluate color under current config first
       *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
       // then update config
       easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
       if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
-        easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+        easingTo->RGB = RGB_DIAL_1_PRESSED + dialID;
+      }
+    } else {
+      if (!isDialTicked) {
+        easingFrom->RGB = RGB_DIAL_1_RELEASED + dialID;
+        if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+          easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+        }
+      } else {
+        // evaluate color under current config first
+        *(RGB_KEY_00_TEMP + lightId) = Color_EvaluateRGB(easingTo);
+        // then update config
+        easingFrom->RGB = RGB_KEY_00_TEMP + lightId;
+        if (easingTo->RGB != RGB_KEY_00_ACTIVATED + lightId) {
+          easingTo->RGB = RGB_KEY_00_DEFAULT + lightId;
+        }
       }
     }
-  }
 
-  easingParams->BeginTime = HAL_GetTick();
-  easingParams->IsCompleted = 0;
-  easingParams->Duration = LIGHT_EASING_DURATION;
+    easingParams->BeginTime = HAL_GetTick();
+    easingParams->IsCompleted = 0;
+    easingParams->Duration = LIGHT_EASING_DURATION;
+  }
 }
 
 void Lighting_OnMIDICCChanged(uint8_t channelNumber, uint8_t controllerNumber, uint8_t value) {
