@@ -10,6 +10,7 @@ extern "C" {
 
 #define LIGHT_EASING_DURATION    200
 
+extern uint16_t dialLightMapping[2];
 extern uint16_t lightMIDICCMappings[11];
 extern RGB rgbIndex[56];
 

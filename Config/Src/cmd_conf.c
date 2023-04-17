@@ -73,6 +73,37 @@ uint8_t *CMD_Exec(uint8_t *cmd) {
       }
     }
     break;
+   case 'D':
+    {
+      // dial-light mapping
+      switch (cmd[1])
+      {
+      case 'W':
+        {
+          // dial-light mapping write
+          uint8_t id = cmd[2];
+          uint16_t *dest = dialLightMapping + id;
+          uint8_t *src = &cmd[3];
+          memcpy(dest, src, sizeof(uint16_t));
+          strcpy(returnBuffer, "S: OK");
+        }
+        break;
+      case 'R':
+        {
+          // dial-light mapping read
+          uint8_t id = cmd[2];
+          uint16_t *src = dialLightMapping + id;
+          strcpy(returnBuffer, "S\0");
+          uint8_t *dest = &returnBuffer[2];
+          memcpy(dest, src, sizeof(uint16_t));
+        }
+        break;
+      default:
+        strcpy(returnBuffer, "E: Unknown command for dial-light mapping");
+        break;
+      }
+    }
+    break;
   case 'M':
     {
       // light-MIDICC mapping
