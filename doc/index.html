@@ -91,13 +91,13 @@
               <div class="m-2">
                 <label for="action-keyboard-oem" class="form-label">OEM</label>
                 <div id="action-keyboard-oem" class="d-flex flex-wrap">
-                  <div v-for="i in 8" class="m-1 form-check form-check-inline">
+                  <div v-for="i in actionKeyboardOEMCount" class="m-1 form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" :id="'action-keyboard-oem-' + i" :value="i - 1" v-model="actionKeyboardOEMBits">
                     <label class="form-check-label" :for="'action-keyboard-oem-' + i">{{ i - 1 }}</label>
                   </div>
                 </div>
               </div>
-              <div v-for="i in 6" class="m-2">
+              <div v-for="i in actionKeyboardKeycodesCount" class="m-2">
                 <label for="'action-keyboard-key-code-' + i" class="form-label">Key Code {{i}}</label>
                 <select class="form-select" :id="'action-keyboard-key-code-' + i" :aria-label="'Select keycode ' + i" v-model="actionKeyboardKeycodes[i - 1]">
                   <option v-for="(it, i) in actionKeyboardKeycodeOptions" :value="i">{{ i + ' - ' + it }}</option>
@@ -109,7 +109,7 @@
               <div class="m-2">
                 <label for="action-mouse-buttons" class="form-label" >Buttons</label>
                 <div id="action-mouse-buttons" class="d-flex flex-wrap">
-                  <div v-for="i in 3" class="m-1 form-check form-check-inline">
+                  <div v-for="i in actionMouseButtonsCount" class="m-1 form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" :id="'action-mouse-button-' + i" :value="i - 1" v-model="actionMouseButtons">
                     <label class="form-check-label" :for="'action-mouse-button-' + i">{{ i }}</label>
                   </div>
@@ -133,7 +133,7 @@
               <div class="m-2">
                 <label for="action-radial-buttons" class="form-label">Buttons</label>
                 <div id="action-radial-buttons" class="d-flex flex-wrap">
-                  <div v-for="i in 1" class="m-1 form-check form-check-inline">
+                  <div v-for="i in actionRadialButtonsCount" class="m-1 form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" :id="'action-radial-button-' + i" :value="i - 1" v-model="actionRadialButtons">
                     <label class="form-check-label" :for="'action-radial-button-' + i">{{ i }}</label>
                   </div>
@@ -161,19 +161,19 @@
               <div class="m-2">
                 <label for="action-midi-cable" class="form-label">Cable Number</label>
                 <select class="form-select" id="action-midi-cable" aria-label="'Select MIDI cable number" v-model="actionMidiCable">
-                  <option v-for="i in 16" :value="i - 1">{{ i }}</option>
+                  <option v-for="i in actionMidiCableCount" :value="i - 1">{{ i }}</option>
                 </select>
               </div>
               <div class="m-2">
                 <label for="action-midi-channel" class="form-label">Channel Number</label>
                 <select class="form-select" id="action-midi-channel" aria-label="'Select MIDI channel number" v-model="actionMidiChannel">
-                  <option v-for="i in 16" :value="i - 1">{{ i }}</option>
+                  <option v-for="i in actionMidiChannelCount" :value="i - 1">{{ i }}</option>
                 </select>
               </div>
               <div class="m-2">
                 <label for="action-midi-controller" class="form-label">Controller Number</label>
                 <select class="form-select" id="action-midi-controller" aria-label="'Select MIDI controller number" v-model="actionMidiController">
-                  <option v-for="i in 128" :value="i - 1">{{ i - 1 }}</option>
+                  <option v-for="i in actionMidiControllerCount" :value="i - 1">{{ i - 1 }}</option>
                 </select>
               </div>
               <div class="m-2">
@@ -206,7 +206,7 @@
                 <div class="m-2">
                   <label for="action-midi-value" class="form-label">Value</label>
                   <select class="form-select" id="action-midi-controller" aria-label="'Select MIDI value" v-model="actionMidiValue">
-                    <option v-for="i in 128" :value="i - 1">{{ i - 1 }}</option>
+                    <option v-for="i in actionMidiValueCount" :value="i - 1">{{ i - 1 }}</option>
                   </select>
                 </div>
               </div>
@@ -248,7 +248,7 @@
             <div class="m-2">
               <label for="dial-light-mappings-lights" class="form-label">Lights</label>
               <div id="dial-light-mappings-lights" class="d-flex flex-wrap">
-                <div v-for="i in 11" class="m-1 form-check form-check-inline">
+                <div v-for="i in dialLightMappingLightBitsCount" class="m-1 form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" :id="'dial-light-mappings-lights-' + i" :value="i - 1" v-model="dialLightMappingLightBits">
                   <label class="form-check-label" :for="'dial-light-mappings-lights-' + i">{{ i - 1 }}</label>
                 </div>
@@ -261,7 +261,7 @@
 
           <div class="tab-pane fade" id="tab-light-midi-mappings" role="tabpanel" aria-labelledby="tab-item-light-midi-mappings" tabindex="0">
             <div class="m-2">
-              <label for="light-midi-mapping-target" class="form-label">MIDI-light Mapping Target</label>
+              <label for="light-midi-mapping-target" class="form-label">Light-MIDI Mapping Target</label>
               <select v-model="lightMIDIMappingTarget" class="form-select" id="light-midi-mapping-target" aria-label="Select Light-MIDI Mapping target">
                 <option disabled value="">Please select an target</option>
                 <option v-for="(it, i) in lightMappingTargetOptions" :value="i">
@@ -279,13 +279,13 @@
               <div class="m-2">
                 <label for="light-midi-mapping-channel" class="form-label">Channel Number</label>
                 <select class="form-select" id="light-midi-mapping-channel" aria-label="'Select MIDI channel number" v-model="lightMIDIMappingChannel">
-                  <option v-for="i in 16" :value="i - 1">{{ i }}</option>
+                  <option v-for="i in lightMIDIMappingChannelCount" :value="i - 1">{{ i }}</option>
                 </select>
               </div>
               <div class="m-2">
                 <label for="light-midi-mapping-controller" class="form-label">Controller Number</label>
                 <select class="form-select" id="light-midi-mapping-controller" aria-label="'Select MIDI controller number" v-model="lightMIDIMappingController">
-                  <option v-for="i in 128" :value="i - 1">{{ i - 1 }}</option>
+                  <option v-for="i in lightMIDIMappingControllerCount" :value="i - 1">{{ i - 1 }}</option>
                 </select>
               </div>
             </div>
@@ -402,7 +402,9 @@
             "Keyboard Right GUI",
           ],
           actionKeyboardOEMBits: [],
+          actionKeyboardOEMCount: 8,
           actionKeyboardKeycodes: [ 0, 0, 0, 0, 0, 0, ],
+          actionKeyboardKeycodesCount: 6,
           actionKeyboardKeycodeOptions: [
             "Reserved (no event indicated)",
             "Keyboard ErrorRollOver",
@@ -630,20 +632,26 @@
             "Reserved",
           ],
           actionMouseButtons: [],
+          actionMouseButtonsCount: 3,
           actionMouseX: 0,
           actionMouseY: 0,
           actionMouseWheel: 0,
           actionRadialButtons: [],
+          actionRadialButtonsCount: 1,
           actionRadialAngle: 0,
           actionRadialX: 0,
           actionRadialY: 0,
           actionRadialWidth: 0,
           actionMidiCable: 0,
+          actionMidiCableCount: 16,
           actionMidiChannel: 0,
+          actionMidiChannelCount: 16,
           actionMidiController: 0,
+          actionMidiControllerCount: 128,
           actionMidiToggleValue: 0,
           actionMidiAbsValue: 0,
           actionMidiValue: 0,
+          actionMidiValueCount: 128,
 
           lightingTarget: null,
           lightingTargetOptions: [
@@ -701,6 +709,7 @@
             "Dial Large",
           ],
           dialLightMappingLightBits: [],
+          dialLightMappingLightBitsCount: 11,
 
           lightMIDIMappingTarget: null,
           lightMappingTargetOptions: [
@@ -718,7 +727,9 @@
           ],
           lightMIDIMappingEnable: false,
           lightMIDIMappingChannel: 0,
+          lightMIDIMappingChannelCount: 16,
           lightMIDIMappingController: 0,
+          lightMIDIMappingControllerCount: 128,
 
           reportInCallback: null,
 
@@ -1128,14 +1139,11 @@
             console.error("Unknown response data type")
           }
           
-          console.log(buffer[2])
           if ((buffer[2] >> 7 & 0b1) != 1) {
-            console.log(1);
             this.lightMIDIMappingEnable = true
             this.lightMIDIMappingChannel = buffer[2]
             this.lightMIDIMappingController = buffer[3]
           } else {
-            console.log(2);
             this.lightMIDIMappingEnable = false
           }
         },
@@ -1263,7 +1271,7 @@
 
           device.addEventListener("inputreport", event => {
             const { data, device, reportId } = event
-            if (device.productId !== PRODUCT_ID && reportId !== GENERIC_CONTROL_REPORT_ID) return
+            if (device.productId != PRODUCT_ID || reportId != GENERIC_CONTROL_REPORT_ID) return
             this.reportInCallback(data)
           });
 
