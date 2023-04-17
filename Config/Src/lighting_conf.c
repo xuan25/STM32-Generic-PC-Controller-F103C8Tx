@@ -12,8 +12,8 @@ uint16_t matrixKeyLightMapping[] = {
 
 // 1 << lightID
 uint16_t dialLightMapping[] = {
-  1 << 1,
-  1 << 1
+  1 << 0,
+  1 << 0
 };
 
 // channelID | controllerID << 8
