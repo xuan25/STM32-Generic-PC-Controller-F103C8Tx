@@ -112,15 +112,18 @@ int main(void)
 
   MX_USB_DEVICE_Init();
 
-  if (HAL_GPIO_ReadPin(ENC_2_P_GPIO_Port, ENC_2_P_Pin) == GPIO_PIN_SET) {
+  if (HAL_GPIO_ReadPin(ENC_2_P_GPIO_Port, ENC_2_P_Pin) == GPIO_PIN_RESET) {
     // skip config loading, wait for release
-    while (HAL_GPIO_ReadPin(ENC_2_P_GPIO_Port, ENC_2_P_Pin) == GPIO_PIN_SET);
+    while (HAL_GPIO_ReadPin(ENC_2_P_GPIO_Port, ENC_2_P_Pin) == GPIO_PIN_RESET);
   } else {
     FlashConfig_Load();
   }
 
   Inputs_Init();
   Lighting_Init();
+
+  // Enable USB
+  HAL_GPIO_WritePin(DP_PULLUP_GPIO_Port, DP_PULLUP_Pin, GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 

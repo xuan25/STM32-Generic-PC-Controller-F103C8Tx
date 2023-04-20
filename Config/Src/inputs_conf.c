@@ -238,7 +238,7 @@ KeyMatrix *keyMatrix = &(KeyMatrix){
     },
     NULL
   },
-  .ReleasedLevel = GPIO_PIN_RESET,
+  .ReleasedLevel = GPIO_PIN_SET,
   .OnStateChanged = Inputs_OnKeyMatrixStateChanged,
 };
 
@@ -254,7 +254,7 @@ PushableDial *pushableDials[] = {
           .GPIOx = ENC_1_B_GPIO_Port,
           .GPIO_Pin = ENC_1_B_Pin,
         },
-        .OffLevel = GPIO_PIN_RESET,
+        .OffLevel = GPIO_PIN_SET,
       },
       .TickInterval = 5,
       .ResetDelayMs = 500,
@@ -269,7 +269,7 @@ PushableDial *pushableDials[] = {
           .GPIOx = ENC_1_B_GPIO_Port,
           .GPIO_Pin = ENC_1_B_Pin,
         },
-        .OffLevel = GPIO_PIN_RESET,
+        .OffLevel = GPIO_PIN_SET,
       },
       .TickInterval = 2,
       .ResetDelayMs = 500,
@@ -280,7 +280,7 @@ PushableDial *pushableDials[] = {
         .GPIOx = COL_0_GPIO_Port,
         .GPIO_Pin = COL_0_Pin,
       },
-      .ReleasedLevel = GPIO_PIN_RESET
+      .ReleasedLevel = GPIO_PIN_SET
     },
     .OnReleasedDialTicked = Inputs_OnPushableDialReleasedTicked,
     .OnPressedDialTicked = Inputs_OnPushableDialPressedTicked,
@@ -297,7 +297,7 @@ PushableDial *pushableDials[] = {
           .GPIOx = ENC_2_B_GPIO_Port,
           .GPIO_Pin = ENC_2_B_Pin,
         },
-        .OffLevel = GPIO_PIN_RESET,
+        .OffLevel = GPIO_PIN_SET,
       },
       .TickInterval = 5,
       .ResetDelayMs = 500,
@@ -312,7 +312,7 @@ PushableDial *pushableDials[] = {
           .GPIOx = ENC_2_B_GPIO_Port,
           .GPIO_Pin = ENC_2_B_Pin,
         },
-        .OffLevel = GPIO_PIN_RESET,
+        .OffLevel = GPIO_PIN_SET,
       },
       .TickInterval = 2,
       .ResetDelayMs = 500,
@@ -323,7 +323,7 @@ PushableDial *pushableDials[] = {
         .GPIOx = ENC_2_P_GPIO_Port,
         .GPIO_Pin = ENC_2_P_Pin,
       },
-      .ReleasedLevel = GPIO_PIN_RESET
+      .ReleasedLevel = GPIO_PIN_SET
     },
     .OnReleasedDialTicked = Inputs_OnPushableDialReleasedTicked,
     .OnPressedDialTicked = Inputs_OnPushableDialPressedTicked,
@@ -544,12 +544,12 @@ void Inputs_Init() {
 void Inputs_Scan() {
   KeyMatrix_Scan(keyMatrix);
 
-  HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
 #if GPIO_GENERIC_DELAY_US > 0
   Delay_Us(GPIO_GENERIC_DELAY_US);
 #endif
   PushableDial_Scan(pushableDials[0]);
-  HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);
 
   PushableDial_Scan(pushableDials[1]);
 }
