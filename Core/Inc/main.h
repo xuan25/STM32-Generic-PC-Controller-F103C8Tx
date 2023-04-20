@@ -61,6 +61,10 @@ void Error_Handler(void);
 #define ENC_1_B_GPIO_Port GPIOA
 #define ENC_1_A_Pin GPIO_PIN_5
 #define ENC_1_A_GPIO_Port GPIOA
+#define COL_3_Pin GPIO_PIN_1
+#define COL_3_GPIO_Port GPIOB
+#define COL_2_Pin GPIO_PIN_2
+#define COL_2_GPIO_Port GPIOB
 #define LED_DATA_Pin GPIO_PIN_11
 #define LED_DATA_GPIO_Port GPIOB
 #define ENC_2_A_Pin GPIO_PIN_12
@@ -71,10 +75,8 @@ void Error_Handler(void);
 #define ENC_2_P_GPIO_Port GPIOB
 #define STATE_LED_Pin GPIO_PIN_15
 #define STATE_LED_GPIO_Port GPIOB
-#define COL_3_Pin GPIO_PIN_15
-#define COL_3_GPIO_Port GPIOA
-#define COL_2_Pin GPIO_PIN_3
-#define COL_2_GPIO_Port GPIOB
+#define DP_PULLUP_Pin GPIO_PIN_8
+#define DP_PULLUP_GPIO_Port GPIOA
 #define ROW_3_Pin GPIO_PIN_4
 #define ROW_3_GPIO_Port GPIOB
 #define ROW_2_Pin GPIO_PIN_5
