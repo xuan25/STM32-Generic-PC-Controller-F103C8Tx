@@ -1,3 +1,20 @@
+/**
+  ******************************************************************************
+  * @file    dial.c
+  * @brief   
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 Xuan25.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+
 #include "dial.h"
 
 void Dial_OnEncoderTick(struct Encoder *sender, int8_t direction, Encoder_Edge edge);
