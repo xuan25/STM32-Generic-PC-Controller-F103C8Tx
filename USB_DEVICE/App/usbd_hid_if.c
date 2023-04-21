@@ -201,10 +201,10 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0x95, 0x06,                    //   REPORT_COUNT (6)
   0x75, 0x08,                    //   REPORT_SIZE (8) (6 report in 6 bytes; each byte controlling one key)
   0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-  0x25, 0x65,                    //   LOGICAL_MAXIMUM (101) (Sel)
+  0x25, 0xDF,                    //   LOGICAL_MAXIMUM (223)
   0x05, 0x07,                    //   USAGE_PAGE (Keyboard)
   0x19, 0x00,                    //   USAGE_MINIMUM (Reserved (no event indicated))
-  0x29, 0x65,                    //   USAGE_MAXIMUM (Keyboard Application)
+  0x29, 0xDF,                    //   USAGE_MAXIMUM (Reserved)
   0x81, 0x00,                    //   INPUT (Data,Ary,Abs)
 
   0xc0,                          // END_COLLECTION
