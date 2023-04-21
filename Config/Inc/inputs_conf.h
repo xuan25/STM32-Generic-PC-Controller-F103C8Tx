@@ -20,17 +20,6 @@ extern "C" {
 #define ACTION_DIAL_0_CLICKED       (actionConfigs + 10)
 #define ACTION_DIAL_1_CLICKED       (actionConfigs + 11)
 #define ACTION_MatrixKey_00         (actionConfigs + 12)
-#define ACTION_MatrixKey_01         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 1])
-#define ACTION_MatrixKey_02         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 2])
-#define ACTION_MatrixKey_03         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 3])
-#define ACTION_MatrixKey_04         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 4])
-#define ACTION_MatrixKey_05         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 5])
-#define ACTION_MatrixKey_06         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 6])
-#define ACTION_MatrixKey_07         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 7])
-#define ACTION_MatrixKey_08         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 8])
-#define ACTION_MatrixKey_09         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[ 9])
-#define ACTION_MatrixKey_10         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[10])
-#define ACTION_MatrixKey_11         (ACTION_MatrixKey_00 + matrixKeyConfigsMapping[11])
 
 typedef enum ActionType {
   ACTION_NONE = 0,
@@ -84,7 +73,7 @@ typedef struct ActionConfig {
   uint8_t Byte08;
 } ActionConfig;
 
-extern ActionConfig actionConfigs[24];
+extern ActionConfig actionConfigs[23];
 
 void Inputs_Init();
 void Inputs_Scan();

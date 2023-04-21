@@ -29,10 +29,10 @@ uint8_t keyboardKeyState[6] = {
 };
 
 uint8_t matrixKeyConfigsMapping[] = {
-  0, 1, 2, 3, 
-  4, 5, 6, 7, 
-  8, 9, 0, 0,
-  10, 11, 0, 0
+  0, 0, 1, 2, 
+  3, 4, 5, 6, 
+  7, 8, 0, 0,
+  9, 10, 0, 0
 };
 
 ActionConfig actionConfigs[] = {
@@ -103,7 +103,6 @@ ActionConfig actionConfigs[] = {
   },
   // MatrixKeys
   // row 0
-  { ACTION_NONE },
   { 
     .Type = ACTION_MIDI,
     .Byte00 = 0,
@@ -138,11 +137,6 @@ ActionConfig actionConfigs[] = {
 
 KeyMatrix *keyMatrix = &(KeyMatrix){
   .MatrixKeys = (MatrixKey *[]){
-    &(MatrixKey){
-      .Key = &(Key){ },
-      .X = 0,
-      .Y = 0,
-    },
     &(MatrixKey){
       .Key = &(Key){ },
       .X = 0,
