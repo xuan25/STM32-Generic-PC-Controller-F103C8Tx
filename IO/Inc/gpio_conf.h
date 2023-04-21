@@ -1,0 +1,1 @@
+#define GPIO_GENERIC_DELAY_US 10U

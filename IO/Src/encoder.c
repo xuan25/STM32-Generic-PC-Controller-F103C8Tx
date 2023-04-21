@@ -1,4 +1,5 @@
 #include "encoder.h"
+#include "hpt.h"
 
 void Encoder_Init(Encoder *encoder) {
   uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
@@ -6,10 +7,10 @@ void Encoder_Init(Encoder *encoder) {
   encoder->Internal.LastStateA = levelA;
   encoder->Internal.LastStateB = levelB;
 
-#if ENCODER_DEBOUNCE_MS > 0
-  uint32_t tickMs = HAL_GetTick();
+#if ENCODER_DEBOUNCE_US > 0
+  uint64_t tickUs = HPT_GetUs();
 
-  encoder->Internal.LastLevelChangedMs = tickMs;
+  encoder->Internal.LastLevelChangedUs = tickUs;
   encoder->Internal.LastChangedLevelA = levelA;
   encoder->Internal.LastChangedLevelB = levelB;
 #endif
@@ -19,26 +20,26 @@ void Encoder_Scan(Encoder *encoder) {
   uint8_t levelA = HAL_GPIO_ReadPin(encoder->PinA->GPIOx, encoder->PinA->GPIO_Pin);
   uint8_t levelB = HAL_GPIO_ReadPin(encoder->PinB->GPIOx, encoder->PinB->GPIO_Pin);
 
-#if ENCODER_DEBOUNCE_MS > 0
-  uint32_t tickMs = HAL_GetTick();
+#if ENCODER_DEBOUNCE_US > 0
+  uint64_t tickUs = HPT_GetUs();
 
   // Level update
   if(encoder->Internal.LastChangedLevelA != levelA) {
     encoder->Internal.LastChangedLevelA = levelA;
-    encoder->Internal.LastLevelChangedMs = tickMs;
+    encoder->Internal.LastLevelChangedUs = tickUs;
   }
   if(encoder->Internal.LastChangedLevelB != levelB) {
     encoder->Internal.LastChangedLevelB = levelB;
-    encoder->Internal.LastLevelChangedMs = tickMs;
+    encoder->Internal.LastLevelChangedUs = tickUs;
   }
 
   // State update
   uint8_t stateA = encoder->Internal.LastStateA;
   uint8_t stateB = encoder->Internal.LastStateB;
-  if(encoder->Internal.LastStateA != levelA && tickMs - encoder->Internal.LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
+  if(encoder->Internal.LastStateA != levelA && tickUs - encoder->Internal.LastLevelChangedUs > ENCODER_DEBOUNCE_US) {
     stateA = levelA;
   }
-  if(encoder->Internal.LastStateB != levelB && tickMs - encoder->Internal.LastLevelChangedMs > ENCODER_DEBOUNCE_MS) {
+  if(encoder->Internal.LastStateB != levelB && tickUs - encoder->Internal.LastLevelChangedUs > ENCODER_DEBOUNCE_US) {
     stateB = levelB;
   }
 #else

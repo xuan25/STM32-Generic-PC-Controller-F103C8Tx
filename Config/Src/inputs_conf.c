@@ -5,9 +5,9 @@
 #include "usbd_midi_if.h"
 #include "key_matrix.h"
 #include "pushable_dial.h"
-#include "delay.h"
 #include "midicc_conf.h"
-
+#include "gpio_conf.h"
+#include "hpt.h"
 
 uint8_t Inputs_KeyboardStateAddKey(uint8_t key);
 uint8_t Inputs_KeyboardStateRemoveKey(uint8_t key);
@@ -540,7 +540,7 @@ void Inputs_Scan() {
 
   HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_RESET);
 #if GPIO_GENERIC_DELAY_US > 0
-  Delay_Us(GPIO_GENERIC_DELAY_US);
+  HPT_DelayUs(GPIO_GENERIC_DELAY_US);
 #endif
   PushableDial_Scan(pushableDials[0]);
   HAL_GPIO_WritePin(ROW_0_GPIO_Port, ROW_0_Pin, GPIO_PIN_SET);

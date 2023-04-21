@@ -13,7 +13,7 @@ struct Encoder_Internal;
 struct Encoder;
 
 // Debounce time for encoder pins.
-#define ENCODER_DEBOUNCE_MS 0u
+#define ENCODER_DEBOUNCE_US 10u
 
 /**
  * @brief Pin which rising/falling edge occurred.
@@ -26,8 +26,8 @@ typedef enum Encoder_Edge
 
 typedef struct Encoder_Internal {
   void *Parent;                       // Parent
-#if ENCODER_DEBOUNCE_MS > 0
-  uint32_t LastLevelChangedMs;        // Time of the last level change on either pin
+#if ENCODER_DEBOUNCE_US > 0
+  uint64_t LastLevelChangedUs;        // Time of the last level change on either pin
   uint8_t LastChangedLevelA;          // Last voltage level of Pin A
   uint8_t LastChangedLevelB;          // Last voltage level of Pin B
 #endif

@@ -1,6 +1,7 @@
 #include "key_matrix.h"
 #include <stdlib.h>
-#include "delay.h"
+#include "gpio_conf.h"
+#include "hpt.h"
 
 void MatrixKey_OnKeyStateChanged(Key *sender, uint8_t oldState, uint8_t newState);
 void KeyMatrix_OnMatrixKeyStateChanged(MatrixKey *sender, BinaryPushKeyState state);
@@ -42,7 +43,7 @@ void KeyMatrix_Init(KeyMatrix *keyMatrix) {
   }
   
   // Init state
-  uint32_t tickMs = HAL_GetTick();
+  uint64_t tickUs = HPT_GetUs();
   for (uint16_t x = 0; keyMatrix->Rows[x] != NULL; x++) {
     GPIO_Pin *row = keyMatrix->Rows[x];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, keyMatrix->ReleasedLevel);
@@ -61,7 +62,7 @@ void KeyMatrix_Init(KeyMatrix *keyMatrix) {
       GPIO_PinState level = HAL_GPIO_ReadPin(col->GPIOx, col->GPIO_Pin);
 
       key->Internal.LastChangedLevel = level;
-      key->Internal.LastLevelChangedMs = tickMs;
+      key->Internal.LastLevelChangedUs = tickUs;
     }
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, keyMatrix->ReleasedLevel);
   }
@@ -77,7 +78,7 @@ void KeyMatrix_Scan(KeyMatrix *keyMatrix) {
     GPIO_Pin *row = keyMatrix->Rows[r];
     HAL_GPIO_WritePin(row->GPIOx, row->GPIO_Pin, ~keyMatrix->ReleasedLevel & 0b1);
 #if GPIO_GENERIC_DELAY_US > 0
-    Delay_Us(GPIO_GENERIC_DELAY_US);
+    HPT_DelayUs(GPIO_GENERIC_DELAY_US);
 #endif
     for (uint16_t c = 0; keyMatrix->Cols[c] != NULL; c++) {
       uint8_t idx = r * keyMatrix->Internal.Stride + c;

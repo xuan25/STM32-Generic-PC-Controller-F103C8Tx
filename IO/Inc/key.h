@@ -12,13 +12,13 @@ struct Key_Internal;
 struct Key;
 
 // Debounce time for key pins.
-#define KEY_DEBOUNCE_MS 10u
+#define KEY_DEBOUNCE_US 10u
 
 typedef struct Key_Internal {
   void *Parent;                     // Parent
   uint8_t State;                    // State for the key
-#if KEY_DEBOUNCE_MS > 0
-  uint32_t LastLevelChangedMs;      // Time of the last level change
+#if KEY_DEBOUNCE_US > 0
+  uint64_t LastLevelChangedUs;      // Time of the last level change
   uint8_t LastChangedLevel;         // Last voltage level
 #endif
 
