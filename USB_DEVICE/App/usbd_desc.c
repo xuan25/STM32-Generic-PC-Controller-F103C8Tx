@@ -66,9 +66,9 @@
 #define USBD_LANGID_STRING     1033
 #define USBD_MANUFACTURER_STRING     "STMicroelectronics"
 #define USBD_PID_FS     22352
-#define USBD_PRODUCT_STRING_FS     "STM32 Controller"
-#define USBD_CONFIGURATION_STRING_FS     "STM32 Controller Config"
-#define USBD_INTERFACE_STRING_FS     "STM32 Controller Interface"
+#define USBD_PRODUCT_STRING_FS     "Generic Controller"
+#define USBD_CONFIGURATION_STRING_FS     "Generic Controller Config"
+#define USBD_INTERFACE_STRING_FS     "Generic Controller Interface"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
