@@ -122,6 +122,9 @@ int main(void)
   // Enable USB
   HAL_GPIO_WritePin(DP_PULLUP_GPIO_Port, DP_PULLUP_Pin, GPIO_PIN_SET);
 
+  // Turn STATE_LED off
+  HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_SET);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -197,6 +200,10 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+  
+  // Turn STATE_LED on
+  HAL_GPIO_WritePin(STATE_LED_GPIO_Port, STATE_LED_Pin, GPIO_PIN_RESET);
+
   while (1)
   {
   }
