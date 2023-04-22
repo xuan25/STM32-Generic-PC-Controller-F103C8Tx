@@ -29,7 +29,9 @@ enum Encoder_Edge;
 struct Encoder_Internal;
 struct Encoder;
 
-// Debounce time for encoder pins.
+// Low-pass debouncing filter config for encoder pins. 
+// Should be greater than the half of the bouncing period in microseconds
+// ((1 / frequency) / 2)
 #define ENCODER_DEBOUNCE_US 10u
 
 /**

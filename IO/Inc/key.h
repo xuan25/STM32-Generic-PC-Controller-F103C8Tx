@@ -28,7 +28,9 @@ extern "C" {
 struct Key_Internal;
 struct Key;
 
-// Debounce time for key pins.
+// Low-pass debouncing filter config for key pins. 
+// Should be greater than the half of the bouncing period in microseconds
+// ((1 / frequency) / 2)
 #define KEY_DEBOUNCE_US 10u
 
 typedef struct Key_Internal {
