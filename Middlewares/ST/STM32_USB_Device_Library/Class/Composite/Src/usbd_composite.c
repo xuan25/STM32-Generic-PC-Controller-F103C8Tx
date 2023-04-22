@@ -127,7 +127,7 @@ __ALIGN_BEGIN uint8_t USBD_COMPOSITE_CfgDesc[USB_COMPOSITE_CONFIG_DESC_SIZ] __AL
 	0x02,         /*bNumInterfaces: 2 interface*/
 	0x01,         /*bConfigurationValue: Configuration value*/
 	0x00,         /*iConfiguration: Index of string descriptor describing the configuration*/
-	0xC0,         /*bmAttributes: bus powered and Supports Remote Wakeup */
+	0xA0,         /*bmAttributes: bus powered and Supports Remote Wakeup */
 	0x32,         /*MaxPower 100 mA: this current is used for detecting Vbus*/
 	/* 09 bytes */
 
@@ -135,7 +135,7 @@ __ALIGN_BEGIN uint8_t USBD_COMPOSITE_CfgDesc[USB_COMPOSITE_CONFIG_DESC_SIZ] __AL
   /* 09 */
   0x09,                                               /* bLength: Interface Descriptor size*/
   USB_DESC_TYPE_INTERFACE,                            /* bDescriptorType: Interface descriptor type */
-  COMPOSITE_HID_INTERFACE_IDX,                 /* bInterfaceNumber: Number of Interface */
+  COMPOSITE_HID_INTERFACE_IDX,                        /* bInterfaceNumber: Number of Interface */
   0x00,                                               /* bAlternateSetting: Alternate setting */
   0x02,                                               /* bNumEndpoints*/
   0x03,                                               /* bInterfaceClass: HID */
@@ -145,7 +145,7 @@ __ALIGN_BEGIN uint8_t USBD_COMPOSITE_CfgDesc[USB_COMPOSITE_CONFIG_DESC_SIZ] __AL
   /******************** Descriptor of HID *************************/
   /* 18 */
   0x09,                                               /* bLength: HID Descriptor size */
-  HID_DESCRIPTOR_TYPE,                         /* bDescriptorType: HID */
+  HID_DESCRIPTOR_TYPE,                                /* bDescriptorType: HID */
   0x11,                                               /* bHIDUSTOM_HID: HID Class Spec release number */
   0x01,
   0x00,                                               /* bCountryCode: Hardware target country */
@@ -160,20 +160,20 @@ __ALIGN_BEGIN uint8_t USBD_COMPOSITE_CfgDesc[USB_COMPOSITE_CONFIG_DESC_SIZ] __AL
   0x07,                                               /* bLength: Endpoint Descriptor size */
   USB_DESC_TYPE_ENDPOINT,                             /* bDescriptorType: */
 
-  COMPOSITE_HID_EPIN_ADDR,                     /* bEndpointAddress: Endpoint Address (IN) */
+  COMPOSITE_HID_EPIN_ADDR,                            /* bEndpointAddress: Endpoint Address (IN) */
   0x03,                                               /* bmAttributes: Interrupt endpoint */
-  HID_EPIN_SIZE,                               /* wMaxPacketSize: 2 Bytes max */
+  HID_EPIN_SIZE,                                      /* wMaxPacketSize: 2 Bytes max */
   0x00,
-  HID_FS_BINTERVAL,                            /* bInterval: Polling Interval */
+  HID_FS_BINTERVAL,                                   /* bInterval: Polling Interval */
   /* 34 */
 
   0x07,                                               /* bLength: Endpoint Descriptor size */
   USB_DESC_TYPE_ENDPOINT,                             /* bDescriptorType: */
-  COMPOSITE_HID_EPOUT_ADDR,                    /* bEndpointAddress: Endpoint Address (OUT) */
+  COMPOSITE_HID_EPOUT_ADDR,                           /* bEndpointAddress: Endpoint Address (OUT) */
   0x03,                                               /* bmAttributes: Interrupt endpoint */
-  HID_EPOUT_SIZE,                              /* wMaxPacketSize: 2 Bytes max  */
+  HID_EPOUT_SIZE,                                     /* wMaxPacketSize: 2 Bytes max  */
   0x00,
-  HID_FS_BINTERVAL,                            /* bInterval: Polling Interval */
+  HID_FS_BINTERVAL,                                   /* bInterval: Polling Interval */
   /* 41 */
 
   /************** MIDI Adapter Standard MS Interface Descriptor ****************/
