@@ -51,7 +51,7 @@ void Dial_InputTick(Dial *dial, int8_t direction, Encoder_Edge edge) {
     return;
   }
   dial->Internal.InputState += direction;
-  if (dial->Internal.InputState > dial->TickInterval || dial->Internal.InputState < -dial->TickInterval) {
+  if (dial->Internal.InputState >= dial->TickInterval || dial->Internal.InputState <= -dial->TickInterval) {
     if(dial->OnTicked == NULL || !dial->OnTicked(dial, dial->Internal.InputState)) {
       if(dial->Internal.OnTicked != NULL) {
         dial->Internal.OnTicked(dial, dial->Internal.InputState);
