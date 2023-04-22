@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    hpt.c
-  * @brief   This file provides code for High Precision Timing with SysTick timer
+  * @brief   This file provides code for High Precision Timing with HAL and SysTick timer
   ******************************************************************************
   * @attention
   *
@@ -18,6 +18,7 @@
 #include "hpt.h"
 
 extern __IO uint32_t uwTick;
+extern HAL_TickFreqTypeDef uwTickFreq;
 
 /**
  * @brief Get the milliseconds from system initialization to the present moment
@@ -38,16 +39,16 @@ uint32_t HPT_GetMs()
 */
 uint64_t HPT_GetUs()
 {
-	uint32_t msTotal, usPart;
+	uint32_t tickMs, subTickUs;
+
+  // read both tick and sub-tick part. Re-read if SysTick->VAL reloaded during the process.
 	do {
-		msTotal = uwTick;
-		usPart = 1000U * (SysTick->LOAD - SysTick->VAL) / (SysTick->LOAD + 1);
+		tickMs = uwTick;
+		subTickUs = (1000U * uwTickFreq) * (SysTick->LOAD - SysTick->VAL) / (SysTick->LOAD + 1);
 	}
-	while (msTotal != uwTick);	// read both ms and us part. Re-read if SysTick->VAL reloaded during the process.
+	while (tickMs != uwTick);	
 
-	uint64_t usTotal = msTotal * 1000U + usPart;
-
-	return usTotal;
+	return tickMs * 1000U + subTickUs;
 }
 
 /**
