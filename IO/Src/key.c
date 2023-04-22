@@ -35,7 +35,7 @@ void Key_Update(Key *key, uint8_t level) {
     key->Internal.LastLevelChangedUs = tickUs;
   }
   // State update
-  if(key->Internal.State != level && tickUs - key->Internal.LastLevelChangedUs > KEY_DEBOUNCE_US) {
+  if(key->Internal.State != level && HPT_DeltaUs(key->Internal.LastLevelChangedUs, tickUs) > KEY_DEBOUNCE_US) {
     uint8_t oldState = key->Internal.State;
     key->Internal.State = level;
     if(key->OnStateChanged == NULL || !key->OnStateChanged(key, oldState, level)) {

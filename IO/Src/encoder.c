@@ -53,10 +53,10 @@ void Encoder_Scan(Encoder *encoder) {
   // State update
   uint8_t stateA = encoder->Internal.LastStateA;
   uint8_t stateB = encoder->Internal.LastStateB;
-  if(encoder->Internal.LastStateA != levelA && tickUs - encoder->Internal.LastLevelChangedUs > ENCODER_DEBOUNCE_US) {
+  if(encoder->Internal.LastStateA != levelA && HPT_DeltaUs(encoder->Internal.LastLevelChangedUs, tickUs) > ENCODER_DEBOUNCE_US) {
     stateA = levelA;
   }
-  if(encoder->Internal.LastStateB != levelB && tickUs - encoder->Internal.LastLevelChangedUs > ENCODER_DEBOUNCE_US) {
+  if(encoder->Internal.LastStateB != levelB && HPT_DeltaUs(encoder->Internal.LastLevelChangedUs, tickUs) > ENCODER_DEBOUNCE_US) {
     stateB = levelB;
   }
 #else

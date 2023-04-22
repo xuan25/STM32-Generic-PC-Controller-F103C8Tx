@@ -25,5 +25,7 @@ uint32_t HPT_GetMs();
 uint64_t HPT_GetUs();
 void HPT_DelayUs(uint64_t us);
 void HPT_DelayMs(uint32_t ms);
+uint32_t HPT_DeltaMs(uint32_t from, uint32_t to);
+uint64_t HPT_DeltaUs(uint64_t from, uint64_t to);
 
 #endif

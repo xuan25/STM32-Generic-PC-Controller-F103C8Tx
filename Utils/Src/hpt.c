@@ -59,8 +59,7 @@ uint64_t HPT_GetUs()
 void HPT_DelayMs(uint32_t ms)
 {
 	uint64_t startingMs = HPT_GetMs();
-	uint64_t targetMs = startingMs + ms;
-	while (HPT_GetMs() < targetMs);
+	while (HPT_DeltaMs(startingMs, HPT_GetMs()) < ms);
 }
 
 /**
@@ -72,6 +71,43 @@ void HPT_DelayMs(uint32_t ms)
 void HPT_DelayUs(uint64_t us)
 {
 	uint64_t startingUs = HPT_GetUs();
-	uint64_t targetUs = startingUs + us;
-	while (HPT_GetUs() < targetUs);
+  while (HPT_DeltaMs(startingUs, HPT_GetUs()) < us);
+}
+
+/**
+ * @brief Calculate time delta in milliseconds. 
+ * Can handle a 32-bit millisecond timer overflow once.
+ * 
+ * @param from from in milliseconds
+ * @param to to in milliseconds
+ * 
+ * @return time delta in milliseconds
+ * 
+*/
+uint32_t HPT_DeltaMs(uint32_t from, uint32_t to)
+{
+  if (to >= from) {
+    return to - from;
+  } else {
+    return (UINT32_MAX - from) + to;
+  }
+}
+
+/**
+ * @brief Calculate time delta in microseconds. 
+ * Can handle a 32-bit millisecond timer overflow once.
+ * 
+ * @param from from in microseconds
+ * @param to to in microseconds
+ * 
+ * @return time delta in microseconds
+ * 
+*/
+uint64_t HPT_DeltaUs(uint64_t from, uint64_t to)
+{
+  if (to >= from) {
+    return to - from;
+  } else {
+    return ((uint64_t)UINT32_MAX * 1000 - from) + to;
+  }
 }
