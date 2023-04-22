@@ -50,9 +50,9 @@
 
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
-#define VENDER_REPORT_ID        1u
-#define VENDER_REPORT_LENGTH    0x40u
-#define VENDER_DATA_LENGTH    VENDER_REPORT_LENGTH - 1  // reserve one byte for report ID
+#define VENDOR_REPORT_ID        1u
+#define VENDOR_REPORT_LENGTH    0x40u
+#define VENDOR_DATA_LENGTH    VENDOR_REPORT_LENGTH - 1  // reserve one byte for report ID
 
 #define CTRL_REPORT_ID      2u
 #define CTRL_REPORT_LENGTH  0x03u

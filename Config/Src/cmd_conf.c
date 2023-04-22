@@ -23,7 +23,7 @@
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
-uint8_t returnBuffer[VENDER_DATA_LENGTH];
+uint8_t returnBuffer[VENDOR_DATA_LENGTH];
 
 uint8_t *CMD_Exec(uint8_t *cmd) {
   switch (cmd[0])
@@ -180,13 +180,13 @@ int8_t HID_OutEvent_FS(uint8_t *buffer)
   uint8_t reportId = buffer[0];
   switch (reportId)
   {
-  case VENDER_REPORT_ID:
+  case VENDOR_REPORT_ID:
   {
     uint8_t *returnBuffer = CMD_Exec(buffer + 1);
-    uint8_t venderBuffer[VENDER_REPORT_LENGTH];
-    venderBuffer[0] = VENDER_REPORT_ID;
-    memcpy(venderBuffer + 1, returnBuffer, VENDER_DATA_LENGTH);
-    while (USBD_HID_SendReport(&hUsbDeviceFS, venderBuffer, VENDER_REPORT_LENGTH) == USBD_BUSY);
+    uint8_t vendorBuffer[VENDOR_REPORT_LENGTH];
+    vendorBuffer[0] = VENDOR_REPORT_ID;
+    memcpy(vendorBuffer + 1, returnBuffer, VENDOR_DATA_LENGTH);
+    while (USBD_HID_SendReport(&hUsbDeviceFS, vendorBuffer, VENDOR_REPORT_LENGTH) == USBD_BUSY);
     return (USBD_OK);
     break;
   }

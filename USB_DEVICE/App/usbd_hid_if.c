@@ -95,12 +95,12 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
 {
   /* USER CODE BEGIN 0 */
 
-  // ==== Vender Report ====
+  // ==== Vendor Report ====
   /*                                     == Report Structure ==
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |        |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
-    |  0x00  |                                  Report ID (Vender)                                   |
+    |  0x00  |                                  Report ID (Vendor)                                   |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
     |  0x01  |                                         Data                                          |
     |  ...   |                                                                                       |
@@ -108,19 +108,19 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
 
   */
-  0x06, 0x00, 0xff,              // Usage Page (Vender)
-  0x09, 0x01,                    // Usage (Vender)
+  0x06, 0x00, 0xff,              // Usage Page (Vendor)
+  0x09, 0x01,                    // Usage (Vendor)
   0xa1, 0x01,                    // Collection (Application)
-  0x85, VENDER_REPORT_ID,        //   REPORT_ID (1)
+  0x85, VENDOR_REPORT_ID,        //   REPORT_ID (1)
 
-  0x09, 0x01,                    //   Usage (Vender)
+  0x09, 0x01,                    //   Usage (Vendor)
   0x15, 0x00,                    //   Logical Minimum (0)
   0x26, 0xff, 0x00,              //   Logical Maximum (255) (1 byte)
   0x75, 0x08,                    //   Report Size (8) (1 byte = 8 bit)
-  0x95, VENDER_DATA_LENGTH,      //   Report Count (63)
+  0x95, VENDOR_DATA_LENGTH,      //   Report Count (63)
   0x81, 0x00,                    //   Input (Data, Ary, Abs)
-  0x09, 0x01,                    //   Usage (Vender)
-  0x95, VENDER_DATA_LENGTH,      //   Report Count (63)
+  0x09, 0x01,                    //   Usage (Vendor)
+  0x95, VENDOR_DATA_LENGTH,      //   Report Count (63)
   0x91, 0x00,                    //   Output (Data, Ary, Abs)
 
   0xc0,                          // End Collection

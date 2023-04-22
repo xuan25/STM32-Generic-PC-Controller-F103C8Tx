@@ -313,7 +313,7 @@
 
   <script>
     
-    const VENDER_ID = 0x1209
+    const VENDOR_ID = 0x1209
     const PRODUCT_ID = 0x0250
 
     const GENERIC_CONTROL_REPORT_ID = 0x01
@@ -749,7 +749,7 @@
         });
 
         navigator.hid.addEventListener("connect", async (event) => {
-          if (event.device.vendorId == VENDER_ID && event.device.productId == PRODUCT_ID) {
+          if (event.device.vendorId == VENDOR_ID && event.device.productId == PRODUCT_ID) {
 
             // FIX-IT: need to gain permission for sending to achieve auto-connect
 
@@ -1263,7 +1263,7 @@
           
           var [ device ] = await navigator.hid.requestDevice({ filters : [
             {
-              vendorId: VENDER_ID,
+              vendorId: VENDOR_ID,
               productId: PRODUCT_ID
             }
           ]})
