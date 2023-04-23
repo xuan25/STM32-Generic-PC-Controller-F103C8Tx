@@ -81,7 +81,8 @@ ActionConfig actionConfigs[] = {
     .Byte00 = 0,
     .Byte01 = 0,
     .Byte02 = 7,
-    .Byte03 = 1,
+    .Byte03 = 0,
+    .Byte04 = 1,
   },
   {
     .Type = ACTION_RADIAL,
@@ -94,7 +95,8 @@ ActionConfig actionConfigs[] = {
     .Byte00 = 0,
     .Byte01 = 0,
     .Byte02 = 7,
-    .Byte03 = -1,
+    .Byte03 = 0,
+    .Byte04 = -1,
   },
   {
     .Type = ACTION_RADIAL,
@@ -126,6 +128,7 @@ ActionConfig actionConfigs[] = {
     .Byte01 = 0,
     .Byte02 = 80,
     .Byte03 = 0,
+    .Byte04 = 0,
   },
   { 
     .Type = ACTION_MIDI,
@@ -133,6 +136,7 @@ ActionConfig actionConfigs[] = {
     .Byte01 = 0,
     .Byte02 = 81,
     .Byte03 = 0,
+    .Byte04 = 0,
   },
   { ACTION_NONE },
   // row 1
@@ -406,13 +410,13 @@ void Inputs_ActionSet(ActionConfig *actionConfig) {
     break;
   case ACTION_MIDI:
     {
-      if(actionConfig->Byte03 >> 7) {
+      if(actionConfig->Byte03) {
         // abs value
-        MIDICC_OnChanged(actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03 & 0x7F);
-        while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte03 & 0x7F) != USBD_OK);
+        MIDICC_OnChanged(actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte04 & 0x7F);
+        while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, actionConfig->Byte04 & 0x7F) != USBD_OK);
       } else {
         // rel value
-        uint8_t val = MIDICC_OnChangeDelta(actionConfig->Byte01, actionConfig->Byte02, (int8_t)actionConfig->Byte03);
+        uint8_t val = MIDICC_OnChangeDelta(actionConfig->Byte01, actionConfig->Byte02, (int8_t)actionConfig->Byte04);
         while(USBD_MIDI_SendCCMessage_FS(actionConfig->Byte00, actionConfig->Byte01, actionConfig->Byte02, val) != USBD_OK);
       }
     }

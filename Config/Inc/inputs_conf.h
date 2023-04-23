@@ -69,13 +69,11 @@ typedef struct ActionConfig {
   // ACTION_KEYBOARD: key2
   // ACTION_MOUSE: wheel
   // ACTION_RADIAL: x lower byte
-  // ACTION_MIDI: value 
-  //   0 for on/off toggle; 
-  //   set highest bit to 0 for relative value change on pressed/ticked;
-  //   set highest bit to 1 for absolute value report on pressed/ticked;
+  // ACTION_MIDI: 0 for relative value mode, 1 for absolute value mode
   uint8_t Byte03;
   // ACTION_KEYBOARD: key3
   // ACTION_RADIAL: x higher byte
+  // ACTION_MIDI: value (0 for on/off toggle in relative mode)
   uint8_t Byte04;
   // ACTION_KEYBOARD: key4
   // ACTION_RADIAL: y lower byte

@@ -206,7 +206,9 @@
                 <div class="m-2">
                   <label for="action-midi-value" class="form-label">Value</label>
                   <select class="form-select" id="action-midi-controller" aria-label="'Select MIDI value" v-model="actionMidiValue">
-                    <option v-for="i in actionMidiValueCount" :value="i - 1">{{ i - 1 }}</option>
+                    <option v-if="actionMidiAbsValue == 1" :value="0">{{ 0 }}</option>
+                    <option v-for="i in actionMidiValueCount - 1" :value="i">{{ i }}</option>
+                    <option v-if="actionMidiAbsValue == 0" v-for="i in actionMidiValueCount" :value="i - 1 + actionMidiValueCount">-{{ actionMidiValueCount - (i - 1) }}</option>
                   </select>
                 </div>
               </div>
@@ -859,17 +861,17 @@
               this.actionMidiChannel = buffer[4]
               this.actionMidiController = buffer[5]
 
-              if (buffer[6] == 0) {
-                this.actionMidiToggleValue = 1
-              } else {
-                this.actionMidiToggleValue = 0
-              }
-              if (buffer[6] >> 7 & 0b1) {
+              if (buffer[6] == 1) {
                 this.actionMidiAbsValue = 1
               } else {
                 this.actionMidiAbsValue = 0
               }
-              this.actionMidiValue = buffer[6] & 0b01111111
+              if (this.actionMidiAbsValue != 1 && buffer[7] == 0) {
+                this.actionMidiToggleValue = 1
+              } else {
+                this.actionMidiToggleValue = 0
+              }
+              this.actionMidiValue = buffer[7]
               break;
             default:
               console.error("Unknown action type")
@@ -950,13 +952,15 @@
               buffer[5] = this.actionMidiChannel
               buffer[6] = this.actionMidiController
               
-              if (this.actionMidiToggleValue) {
-                buffer[7] = 0
+              if (this.actionMidiAbsValue == 1) {
+                buffer[7] = 1;
               } else {
-                buffer[7] = this.actionMidiValue
-                if (this.actionMidiAbsValue) {
-                  buffer[7] |= 1 << 7
-                }
+                buffer[7] = 0;
+              }
+              if (this.actionMidiAbsValue != 1 && this.actionMidiToggleValue) {
+                buffer[8] = 0
+              } else {
+                buffer[8] = this.actionMidiValue
               }
               break;
             default:
