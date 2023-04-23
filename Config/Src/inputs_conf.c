@@ -86,8 +86,8 @@ ActionConfig actionConfigs[] = {
   },
   {
     .Type = ACTION_RADIAL,
-    .Byte01 = ((int16_t)20) & 0xff,
-    .Byte02 = ((int16_t)20) >> 8 & 0xff,
+    .Byte01 = ((int16_t)200) & 0xff,
+    .Byte02 = ((int16_t)200) >> 8 & 0xff,
   },
   // Dial PressedCCW
   {
@@ -100,8 +100,8 @@ ActionConfig actionConfigs[] = {
   },
   {
     .Type = ACTION_RADIAL,
-    .Byte01 = ((int16_t)-20) & 0xff,
-    .Byte02 = ((int16_t)-20) >> 8 & 0xff,
+    .Byte01 = ((int16_t)-200) & 0xff,
+    .Byte02 = ((int16_t)-200) >> 8 & 0xff,
   },
   // Dial PushKey
   {
@@ -149,11 +149,7 @@ ActionConfig actionConfigs[] = {
   { ACTION_NONE },
   // row 3
   { ACTION_NONE },
-  {
-    .Type = ACTION_CTRL,
-    .Byte00 = CTRL_PLAY_PAUSE & 0xff,
-    .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
-  },
+  { ACTION_NONE },
 };
 
 KeyMatrix *keyMatrix = &(KeyMatrix){
@@ -286,7 +282,7 @@ PushableDial *pushableDials[] = {
         },
         .OffLevel = GPIO_PIN_SET,
       },
-      .TickInterval = 2,
+      .TickInterval = 1,
       .ResetDelayMs = 500,
     },
     .PushKey = &(BinaryPushKey){
@@ -314,7 +310,7 @@ PushableDial *pushableDials[] = {
         },
         .OffLevel = GPIO_PIN_SET,
       },
-      .TickInterval = 5,
+      .TickInterval = 2,
       .ResetDelayMs = 500,
     },
     .PressedDial = &(Dial){
