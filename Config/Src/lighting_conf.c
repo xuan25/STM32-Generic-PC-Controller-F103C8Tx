@@ -29,14 +29,14 @@ uint16_t matrixKeyLightMapping[] = {
 
 // 1 << lightID
 uint16_t dialLightMapping[] = {
-  1 << 0,
-  1 << 0
+  0,
+  0
 };
 
 // channelID | controllerID << 8
 uint16_t lightMIDICCMappings[] = {
-  0x0 | 80 << 8,
-  0x0 | 81 << 8,
+  0xff,
+  0xff,
   0xff,
   0xff,
   0xff,
@@ -49,66 +49,66 @@ uint16_t lightMIDICCMappings[] = {
 };
 
 RGB rgbIndex[] = {
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 pressed brighter white
-  { .R = 0x52 * 0.8, .G = 0xf7 * 0.8, .B = 0xf1 * 0.8 },  // dial 0 pressed CW blue
-  { .R = 0x52 * 0.8, .G = 0xf7 * 0.8, .B = 0xf1 * 0.8 },  // dial 1 pressed CW blue
-  { .R = 0xf7 * 0.8, .G = 0xd6 * 0.8, .B = 0x39 * 0.8 },  // dial 0 pressed CCW yellow
-  { .R = 0xf7 * 0.8, .G = 0xd6 * 0.8, .B = 0x39 * 0.8 },  // dial 1 pressed CCW yellow
-  { .R = 0xfa * 0.8, .G = 0x49 * 0.8, .B = 0xd6 * 0.8},   // dial 0 released pink
-  { .R = 0xfa * 0.8, .G = 0x49 * 0.8, .B = 0xd6 * 0.8},   // dial 1 released pink
-  { .R = 0x52 * 0.8, .G = 0xf7 * 0.8, .B = 0xf1 * 0.8 },  // dial 0 released CW blue
-  { .R = 0x52 * 0.8, .G = 0xf7 * 0.8, .B = 0xf1 * 0.8 },  // dial 1 released CW blue
-  { .R = 0xf7 * 0.8, .G = 0xd6 * 0.8, .B = 0x39 * 0.8 },  // dial 0 released CCW yellow
-  { .R = 0xf7 * 0.8, .G = 0xd6 * 0.8, .B = 0x39 * 0.8 },  // dial 1 released CCW yellow
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 released
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 released
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 released
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 released
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 0 released
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // dial 1 released
 
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 00 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 01 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 02 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 03 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 04 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 05 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 06 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 07 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 08 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 09 default dim white
-  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 10 default dim white
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 00 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 01 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 02 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 03 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 04 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 05 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 06 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 07 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 08 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 09 default
+  { .R = 0xff * 0.2, .G = 0xff * 0.2, .B = 0xff * 0.2 },  // key 10 default
 
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 00 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 01 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 02 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 03 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 04 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 05 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 06 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 07 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 08 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 09 pressed brighter white
-  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 10 pressed brighter white
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 00 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 01 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 02 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 03 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 04 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 05 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 06 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 07 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 08 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 09 pressed
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 10 pressed
 
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 00 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 01 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 02 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 03 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 04 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 05 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 06 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 07 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 08 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 09 Activated
-  { .R = 0xff, .G = 0x00, .B = 0x00 },                    // key 10 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 00 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 01 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 02 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 03 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 04 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 05 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 06 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 07 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 08 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 09 Activated
+  { .R = 0xff * 0.5, .G = 0xff * 0.5, .B = 0xff * 0.5 },  // key 10 Activated
   
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 00 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 01 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 02 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 03 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 04 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 05 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 06 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 07 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 08 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 09 temp black
-  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 10 temp black
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 00 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 01 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 02 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 03 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 04 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 05 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 06 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 07 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 08 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 09 temp
+  { .R = 0x00, .G = 0x00, .B = 0x00 },                    // key 10 temp
 };
 
 WS2812BSeries *ws2812bSeries = &(WS2812BSeries) {

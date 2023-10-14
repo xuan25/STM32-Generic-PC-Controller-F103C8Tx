@@ -54,90 +54,27 @@ uint8_t matrixKeyConfigsMapping[] = {
 
 ActionConfig actionConfigs[] = {
   // Dial ReleasedCW
-  {
-    .Type = ACTION_CTRL,
-    .Byte00 = CTRL_NEXT & 0xff,
-    .Byte01 = CTRL_NEXT >> 8 & 0xff,
-  },
-  {
-    .Type = ACTION_RADIAL,
-    .Byte01 = ((int16_t)100) & 0xff,
-    .Byte02 = ((int16_t)100) >> 8 & 0xff,
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   // Dial ReleasedCCW
-  {
-    .Type = ACTION_CTRL,
-    .Byte00 = CTRL_PREVIOUS & 0xff,
-    .Byte01 = CTRL_PREVIOUS >> 8 & 0xff,
-  },
-  {
-    .Type = ACTION_RADIAL,
-    .Byte01 = ((int16_t)-100) & 0xff,
-    .Byte02 = ((int16_t)-100) >> 8 & 0xff,
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   // Dial PressedCW
-  {
-    .Type = ACTION_MIDI,
-    .Byte00 = 0,
-    .Byte01 = 0,
-    .Byte02 = 7,
-    .Byte03 = 0,
-    .Byte04 = 1,
-  },
-  {
-    .Type = ACTION_RADIAL,
-    .Byte01 = ((int16_t)200) & 0xff,
-    .Byte02 = ((int16_t)200) >> 8 & 0xff,
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   // Dial PressedCCW
-  {
-    .Type = ACTION_MIDI,
-    .Byte00 = 0,
-    .Byte01 = 0,
-    .Byte02 = 7,
-    .Byte03 = 0,
-    .Byte04 = -1,
-  },
-  {
-    .Type = ACTION_RADIAL,
-    .Byte01 = ((int16_t)-200) & 0xff,
-    .Byte02 = ((int16_t)-200) >> 8 & 0xff,
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   // Dial PushKey
-  {
-    ACTION_NONE
-  },
-  {
-    .Type = ACTION_RADIAL,
-    .Byte00 = 1,
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   // Dial Clicked
-  {
-    .Type = ACTION_CTRL,
-    .Byte00 = CTRL_PLAY_PAUSE & 0xff,
-    .Byte01 = CTRL_PLAY_PAUSE >> 8 & 0xff,
-  },
-  {
-    ACTION_NONE
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   // MatrixKeys
   // row 0
-  { 
-    .Type = ACTION_MIDI,
-    .Byte00 = 0,
-    .Byte01 = 0,
-    .Byte02 = 80,
-    .Byte03 = 0,
-    .Byte04 = 0,
-  },
-  { 
-    .Type = ACTION_MIDI,
-    .Byte00 = 0,
-    .Byte01 = 0,
-    .Byte02 = 81,
-    .Byte03 = 0,
-    .Byte04 = 0,
-  },
+  { ACTION_NONE },
+  { ACTION_NONE },
   { ACTION_NONE },
   // row 1
   { ACTION_NONE },
@@ -267,7 +204,7 @@ PushableDial *pushableDials[] = {
         },
         .OffLevel = GPIO_PIN_SET,
       },
-      .TickInterval = 5,
+      .TickInterval = 1,
       .ResetDelayMs = 500,
     },
     .PressedDial = &(Dial){
