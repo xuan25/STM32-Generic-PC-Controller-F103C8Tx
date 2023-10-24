@@ -83,7 +83,7 @@
                 <label for="action-keyboard-modifiers" class="form-label">Modifiers</label>
                 <div id="action-keyboard-modifiers" class="d-flex flex-wrap">
                   <div v-for="(it, i) in actionKeyboardModifierOptions" class="m-1 form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" :id="it" :value="i + 1" v-model="actionKeyboardModifiers">
+                    <input class="form-check-input" type="checkbox" :id="it" :value="i" v-model="actionKeyboardModifiers">
                     <label class="form-check-label" :for="it">{{ it }}</label>
                   </div>
                 </div>
@@ -840,9 +840,9 @@
                   this.actionMouseButtons.push(i)
                 }
               }
-              this.actionMouseX = buffer[4]
-              this.actionMouseY = buffer[5]
-              this.actionMouseWheel = buffer[6]
+              this.actionMouseX = data.getInt8(4, true)
+              this.actionMouseY = data.getInt8(5, true)
+              this.actionMouseWheel = data.getInt8(6, true)
               break;
             case ACTION_RADIAL:
               this.actionRadialButtons = []
@@ -934,9 +934,9 @@
               for (const i of this.actionMouseButtons) {
                 buffer[4] |= 1 << i
               }
-              buffer[5] = this.actionMouseX
-              buffer[6] = this.actionMouseY
-              buffer[7] = this.actionMouseWheel
+              data.setInt8(5, this.actionMouseX, true)
+              data.setInt8(6, this.actionMouseY, true)
+              data.setInt8(7, this.actionMouseWheel, true)
               break;
             case ACTION_RADIAL:
               for (const i of this.actionRadialButtons) {
