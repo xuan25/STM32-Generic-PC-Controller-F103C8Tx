@@ -132,9 +132,9 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
     +========+==========+==========+==========+==========+==========+==========+==========+==========+
     |  0x00  |                             Report ID (Consumer Control)                              |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x01  | Vol Inc  | Vol Dec  |   Mute   |Play/Pause|   Next   | Previous | Reserved | Reserved |
+    |  0x01  |   Play   |  Pause   |  Record  |    FF    |  Rewind  |   Next   | Previous |   Stop   |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
-    |  0x02  | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved |
+    |  0x02  |  Eject   |  Random  |Track-Inc |Track-Dec |Play/Pause|   Mute   | Vol-Inc  | Vol-Dec  |
     +--------+----------+----------+----------+----------+----------+----------+----------+----------+
   */
   0x05, 0x0c,                    // Usage Page (Consumer Devices)
@@ -142,12 +142,22 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc_FS[USBD_HID_REPORT_DESC_SIZE] __ALIG
   0xa1, 0x01,                    // Collection (Application)
   0x85, CTRL_REPORT_ID,          //   REPORT_ID (2)
   
-  0x09, 0xe9,                    //   Usage (Volume Increment)
-  0x09, 0xea,                    //   Usage (Volume Decrement)
-  0x09, 0xe2,                    //   Usage (Mute)
-  0x09, 0xcd,                    //   Usage (Play/Pause)
+  0x09, 0xb0,                    //   Usage (Play)
+  0x09, 0xb1,                    //   Usage (Pause)
+  0x09, 0xb2,                    //   Usage (Record)
+  0x09, 0xb3,                    //   Usage (Fast Forward)
+  0x09, 0xb4,                    //   Usage (Rewind)
   0x09, 0xb5,                    //   Usage (Scan Next Track)
   0x09, 0xb6,                    //   Usage (Scan Previous Track)
+  0x09, 0xb7,                    //   Usage (Stop)
+  0x09, 0xb8,                    //   Usage (Eject)
+  0x09, 0xb9,                    //   Usage (Random Play)
+  0x09, 0xca,                    //   Usage (Tracking Increment)
+  0x09, 0xcb,                    //   Usage (Tracking Decrement)
+  0x09, 0xcd,                    //   Usage (Play/Pause)
+  0x09, 0xe2,                    //   Usage (Mute)
+  0x09, 0xe9,                    //   Usage (Volume Increment)
+  0x09, 0xea,                    //   Usage (Volume Decrement)
   0x15, 0x00,                    //   Logical Minimum (0)
   0x25, 0x01,                    //   Logical Maximum (1) (OOC: single throw momentary switch)
   0x75, 0x01,                    //   Report Size (1)
